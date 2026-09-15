@@ -1,0 +1,132 @@
+[
+  {
+    "name": "AT&T Stadium",
+    "city": "Dallas (Arlington), TX",
+    "lat": 32.74778,
+    "lon": -97.09278,
+    "station_id": "72259003927",
+    "candidates_checked": [
+      "72259003927",
+      "72258013960"
+    ]
+  },
+  {
+    "name": "Mercedes-Benz Stadium",
+    "city": "Atlanta, GA",
+    "lat": 33.75556,
+    "lon": -84.4,
+    "station_id": "72219503888",
+    "candidates_checked": [
+      "72219503888",
+      "72219013874",
+      "72219653863"
+    ]
+  },
+  {
+    "name": "Gillette Stadium",
+    "city": "Boston (Foxborough), MA",
+    "lat": 42.091,
+    "lon": -71.264,
+    "station_id": "72509854704",
+    "candidates_checked": [
+      "72509854704",
+      "72506854777",
+      "72509014739"
+    ]
+  },
+  {
+    "name": "NRG Stadium",
+    "city": "Houston, TX",
+    "lat": 29.68472,
+    "lon": -95.41083,
+    "station_id": "72244012918",
+    "candidates_checked": [
+      "72244012918",
+      "72243012960"
+    ]
+  },
+  {
+    "name": "Arrowhead Stadium",
+    "city": "Kansas City, MO",
+    "lat": 39.04889,
+    "lon": -94.48389,
+    "station_id": "72446313988",
+    "candidates_checked": [
+      "72446313988",
+      "72030653879",
+      "72446803967",
+      "72446003947"
+    ]
+  },
+  {
+    "name": "SoFi Stadium",
+    "city": "Los Angeles (Inglewood), CA",
+    "lat": 33.953,
+    "lon": -118.339,
+    "station_id": "72295023174",
+    "candidates_checked": [
+      "72295023174",
+      "72297023129",
+      "72288623130"
+    ]
+  },
+  {
+    "name": "Hard Rock Stadium",
+    "city": "Miami (Miami Gardens), FL",
+    "lat": 25.95806,
+    "lon": -80.23889,
+    "station_id": "74783012849",
+    "candidates_checked": [
+      "74783012849",
+      "72202012839"
+    ]
+  },
+  {
+    "name": "MetLife Stadium",
+    "city": "New York/New Jersey",
+    "lat": 40.813528,
+    "lon": -74.074361,
+    "station_id": "72502014734",
+    "candidates_checked": [
+      "72502014734",
+      "72503014732",
+      "74486094789"
+    ]
+  },
+  {
+    "name": "Lincoln Financial Field",
+    "city": "Philadelphia, PA",
+    "lat": 39.90083,
+    "lon": -75.1675,
+    "station_id": "72408013739",
+    "candidates_checked": [
+      "72408013739",
+      "72408594732",
+      "72408614793"
+    ]
+  },
+  {
+    "name": "Levi's Stadium",
+    "city": "San Francisco Bay Area (Santa Clara), CA",
+    "lat": 37.403,
+    "lon": -121.97,
+    "station_id": "72494523293",
+    "candidates_checked": [
+      "72494523293",
+      "72492723285",
+      "72493023230"
+    ]
+  },
+  {
+    "name": "Lumen Field",
+    "city": "Seattle, WA",
+    "lat": 47.5952,
+    "lon": -122.3316,
+    "station_id": "72793524234",
+    "candidates_checked": [
+      "72793524234",
+      "72793024233",
+      "72793724222"
+    ]
+  }
+]

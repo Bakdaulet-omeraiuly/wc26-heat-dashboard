@@ -1,0 +1,395 @@
+<title>The Heat Instrument</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0b0d;
+    --bg-raised: #131519;
+    --bg-sunken: #060708;
+    --border: #26282e;
+    --border-bright: #3a3d45;
+    --text: #eef0f2;
+    --text-dim: #9a9ea6;
+    --text-faint: #5b5f68;
+    --accent: #ff5a3c;
+    --accent-dim: #7a2e1f;
+    --magenta: #c2469f;
+    --green: #2fa869;
+    --yellow: #d4af28;
+    --orange: #db8226;
+    --red: #c43c30;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1, h2, h3 { font-family: var(--serif); text-wrap: balance; margin: 0; }
+
+  a { color: inherit; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(10,11,13,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; padding-bottom: 16px; }
+  .nav-name { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); }
+  .nav-cta {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+    color: var(--bg); background: var(--text); padding: 9px 16px; border-radius: 3px;
+    text-decoration: none; white-space: nowrap;
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero { padding: 96px 0 72px; border-bottom: 1px solid var(--border); }
+  .hero h1 {
+    font-size: clamp(40px, 6.4vw, 78px);
+    font-weight: 600;
+    line-height: 1.03;
+    letter-spacing: -0.01em;
+    max-width: 920px;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero .lede {
+    margin-top: 26px; max-width: 620px; font-size: 18px; color: var(--text-dim);
+  }
+  .hero .lede b { color: var(--text); font-weight: 600; }
+  .hero-stats {
+    margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+  }
+  .hero-stat { background: var(--bg-raised); padding: 22px 20px; }
+  .hero-stat .n { font-family: var(--serif); font-size: 34px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .hero-stat .l { font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+
+  /* ---------- Section scaffolding ---------- */
+  section { padding: 88px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  .section-head { max-width: 640px; margin-bottom: 48px; }
+  .section-head h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 600; margin-top: 10px; }
+  .section-head p { color: var(--text-dim); margin-top: 16px; font-size: 16.5px; }
+
+  /* ---------- Gap grid ---------- */
+  .gap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .gap-card { background: var(--bg-raised); padding: 28px 30px; }
+  .gap-card .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; display: inline-block; }
+  .gap-card.no .tag { color: var(--text-faint); border: 1px solid var(--border-bright); }
+  .gap-card.yes .tag { color: var(--bg); background: var(--accent); }
+  .gap-card h3 { font-family: var(--sans); font-size: 16.5px; font-weight: 700; margin-top: 14px; }
+  .gap-card p { color: var(--text-dim); margin-top: 8px; font-size: 14.5px; }
+
+  /* ---------- Screenshots ---------- */
+  figure { margin: 0; }
+  .shot-frame {
+    border: 1px solid var(--border-bright); border-radius: 6px; overflow: hidden;
+    background: var(--bg-sunken); box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  figcaption {
+    font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); margin-top: 14px; line-height: 1.55;
+  }
+  figcaption .cap-label { color: var(--text); font-weight: 600; }
+  .shot-stack { display: flex; flex-direction: column; gap: 56px; }
+  .shot-row { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; }
+  .shot-row.reverse { grid-template-columns: 0.85fr 1.15fr; }
+  .shot-row.reverse .shot-text { order: 2; }
+  .shot-text .eyebrow { display: block; margin-bottom: 10px; }
+  .shot-text h3 { font-size: 22px; font-weight: 600; }
+  .shot-text p { color: var(--text-dim); margin-top: 12px; font-size: 15px; }
+  .shot-text ul { margin: 14px 0 0; padding: 0; list-style: none; }
+  .shot-text li { font-size: 14px; color: var(--text-dim); padding-left: 18px; position: relative; margin-top: 8px; }
+  .shot-text li::before { content: "\2192"; position: absolute; left: 0; color: var(--accent); }
+
+  /* ---------- Numbers ---------- */
+  .num-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .num-card { background: var(--bg-raised); padding: 30px 26px; }
+  .num-card .n { font-family: var(--serif); font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .num-card .l { font-size: 13.5px; color: var(--text-dim); margin-top: 8px; }
+  .num-card .tag { display: inline-block; margin-top: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--green); border: 1px solid #1f4a34; background: #0e2019; padding: 2px 7px; border-radius: 3px; }
+
+  /* ---------- Discovery ---------- */
+  .finding { border: 1px solid var(--border); border-radius: 4px; padding: 22px 26px; background: var(--bg-raised); }
+  .finding + .finding { margin-top: 14px; }
+  .finding .k { font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .finding .v { font-family: var(--serif); font-size: 21px; margin-top: 6px; }
+  .finding .v b { color: var(--accent); }
+  .finding p { color: var(--text-dim); font-size: 14px; margin-top: 8px; }
+
+  /* ---------- Honest AI ---------- */
+  .honest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .data-tag { font-family: var(--mono); font-size: 11px; padding: 4px 9px; border-radius: 3px; border: 1px solid; }
+  .data-tag.real { color: var(--green); border-color: #1f4a34; background: #0e2019; }
+  .data-tag.semi { color: var(--yellow); border-color: #4a3f1f; background: #201a0e; }
+  .data-tag.mock { color: var(--red); border-color: #4a1f1f; background: #200e0e; }
+  .data-tag.forecast { color: #6fb3ff; border-color: #1f334a; background: #0e1620; }
+  .honest-quote {
+    font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--text);
+    border-left: 3px solid var(--accent); padding-left: 20px;
+  }
+
+  /* ---------- Live section ---------- */
+  .live-banner {
+    border: 1px solid var(--border-bright); border-radius: 6px; padding: 32px;
+    background: linear-gradient(160deg, #171114 0%, var(--bg-raised) 60%);
+    display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center;
+  }
+  .live-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px #0e2019; }
+  .timeline { margin-top: 40px; display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .timeline .step { border-top: 2px solid var(--border-bright); padding-top: 14px; }
+  .timeline .step.now { border-color: var(--accent); }
+  .timeline .step .when { font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; }
+  .timeline .step h4 { font-family: var(--sans); font-size: 15px; font-weight: 700; margin-top: 6px; }
+  .timeline .step p { font-size: 13.5px; color: var(--text-dim); margin-top: 6px; }
+
+  /* ---------- Closing ---------- */
+  .close-section { text-align: left; }
+  .close-section h2 { font-size: clamp(30px, 4.4vw, 52px); max-width: 760px; }
+  .close-links { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; padding: 13px 22px;
+    border-radius: 4px; text-decoration: none; display: inline-block;
+  }
+  .btn.primary { background: var(--accent); color: #1a0a06; font-weight: 600; }
+  .btn.ghost { border: 1px solid var(--border-bright); color: var(--text); }
+  footer { padding: 40px 0 60px; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
+
+  @media (max-width: 820px) {
+    .hero-stats { grid-template-columns: repeat(2,1fr); }
+    .gap-grid, .num-grid, .honest-grid { grid-template-columns: 1fr; }
+    .shot-row, .shot-row.reverse { grid-template-columns: 1fr; }
+    .shot-row.reverse .shot-text { order: 0; }
+    .timeline { grid-template-columns: 1fr; }
+  }
+</style>
+
+<nav>
+  <div class="wrap">
+    <span class="nav-name">THE HEAT INSTRUMENT &middot; Rice Urban Sustainability Hackathon</span>
+    <a class="nav-cta" href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">Open the live site &rarr;</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Track 3 &middot; Public Health &amp; the Built Environment</span>
+    <h1 style="margin-top:18px">A stadium heat dashboard that counts <em>every real parking stall</em>, not just the weather.</h1>
+    <p class="lede">Eleven FIFA World Cup 2026 US stadiums. <b>2.46 million</b> real hourly weather readings. <b>411</b> real parking lots measured down to the exact 9&times;18&nbsp;ft stall. A 3D model where the sun is in the astronomically correct position and the cars are counted, not sketched. And because the World Cup is already over &mdash; it didn't stop working: it now tracks these same 11 stadiums' real, ongoing 2026 NFL season, live.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="n">2.46M</div><div class="l">real NOAA hourly readings</div></div>
+      <div class="hero-stat"><div class="n">411</div><div class="l">real parking lots, exact stall counts</div></div>
+      <div class="hero-stat"><div class="n">104</div><div class="l">real upcoming NFL games, live</div></div>
+      <div class="hero-stat"><div class="n">0</div><div class="l">fabricated numbers</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="gap">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Why nothing quite like this exists</span>
+      <h2>Every heat tool stops at the parking lot fence. This one doesn't.</h2>
+      <p>Search for "stadium heat risk" and you get city-level heat indices, generic weather widgets, or a single WBGT number pinned to a stadium's coordinates. None of them ask the actual operational question a venue manager has: <i>which specific lot, how full, how hot is the walk from the car.</i></p>
+    </div>
+    <div class="gap-grid">
+      <div class="gap-card no"><span class="tag">Elsewhere</span><h3>City-wide heat index</h3><p>One number for an entire metro area &mdash; useless for deciding which of 40 lots to open first.</p></div>
+      <div class="gap-card yes"><span class="tag">Here</span><h3>Per-lot walk-in WBGT</h3><p>Real distance, real capacity, real occupancy curve &mdash; ranked lot by lot, for the exact stadium.</p></div>
+      <div class="gap-card no"><span class="tag">Elsewhere</span><h3>"Capacity" = area &divide; a constant</h3><p>The one other real attempt we could find at parking capacity from geometry still just divides square footage by a flat number.</p></div>
+      <div class="gap-card yes"><span class="tag">Here</span><h3>Real 9&times;18&nbsp;ft stalls, real 24&nbsp;ft aisles</h3><p>An actual ITE/ULI row-and-aisle yield calculation on each lot's real oriented rectangle. A 117.4m&times;35.7m lot resolves to exactly 126 spaces &mdash; verified by hand.</p></div>
+      <div class="gap-card no"><span class="tag">Elsewhere</span><h3>AI chatbot bolted on top</h3><p>Ask it a number and it recalls one from training data or hallucinates a plausible one.</p></div>
+      <div class="gap-card yes"><span class="tag">Here</span><h3>An agent that cannot invent a number</h3><p>Eleven tools, each a thin wrapper on a real data file. Every claim ships with REAL / SEMI / MOCK / FORECAST attached &mdash; verified live, not asserted.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tour">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The instrument, in three moments</span>
+      <h2>Screenshots from the live, deployed site &mdash; not mockups.</h2>
+    </div>
+    <div class="shot-stack">
+      <div class="shot-row">
+        <figure><div class="shot-frame"><img src="pitch/pitch_map.png" alt="US map with 11 real stadium markers colored by real-time heat risk"></div></figure>
+        <div class="shot-text">
+          <span class="eyebrow">01 &middot; The map</span>
+          <h3>Eleven real stadiums, ranked live</h3>
+          <p>A self-hosted US basemap (no map API key) with all 11 host cities colored by our own percentile-based heat-risk scale. Drag the month/hour scrubber and every marker recolors from 2.46M real readings &mdash; no page reload.</p>
+          <ul>
+            <li>Own percentile risk scale, not a borrowed NWS number we couldn't verify</li>
+            <li>Real WBGT (Wet-Bulb Globe Temperature) &mdash; the actual metric US sports medicine uses</li>
+          </ul>
+        </div>
+      </div>
+      <div class="shot-row reverse">
+        <figure><div class="shot-frame"><img src="pitch/pitch_stadium3d.png" alt="3D stadium model with real sun position and real parking lots showing an upcoming live NFL game"></div></figure>
+        <div class="shot-text">
+          <span class="eyebrow">02 &middot; The 3D model</span>
+          <h3>Real astronomy. Real geometry. Nobody else's 3D model does either.</h3>
+          <p>The sun's position comes from real orbital mechanics (SunCalc) for this exact stadium's lat/lon and the selected moment &mdash; verified against an independent calculation. The 11 parking lots around it are drawn at their real OpenStreetMap-measured shape and compass orientation, not a generic scatter.</p>
+          <ul>
+            <li>Click any lot &rarr; camera flies to it</li>
+            <li>Select a real upcoming game &rarr; cars fill in at the exact real stall count</li>
+          </ul>
+        </div>
+      </div>
+      <div class="shot-row">
+        <figure><div class="shot-frame"><img src="pitch/pitch_parking_zoom.png" alt="Zoomed-in 3D view showing individually rendered real parking-lot stalls with cars"></div></figure>
+        <div class="shot-text">
+          <span class="eyebrow">03 &middot; Zoom all the way in</span>
+          <h3>1,000 real spaces means 1,000 cars, not a sample</h3>
+          <p>Every rendered car is one real stall at its real position &mdash; not a decorative fill. Fill a lot to 40% and exactly 40% of its real stalls light up. We hit real WebGL and React-reconciliation limits building this and fixed both live, documented in the repo.</p>
+        </div>
+      </div>
+      <div class="shot-row reverse">
+        <figure><div class="shot-frame"><img src="pitch/pitch_ask_answer.png" alt="The Ask research agent answering a real question with a data-used trace"></div></figure>
+        <div class="shot-text">
+          <span class="eyebrow">04 &middot; Ask it anything</span>
+          <h3>An LLM that narrates. Formulas that measure.</h3>
+          <p>"Which stadium is the highest heat risk in July at 3pm?" &mdash; the agent calls a real tool, gets a real number (Hard Rock Stadium, 32.75&deg;C, n=759 real readings), and states it. It cannot answer any other way. Every answer's "data used" trace is one click away.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">By the numbers</span>
+      <h2>Depth of data was the actual hard part.</h2>
+      <p>Every figure below is reproducible from a checked-in script &mdash; <code style="font-family:var(--mono);font-size:13px;color:var(--text-dim)">scripts/*.py</code> in the repo, each one documented with exactly which real source it hits and why.</p>
+    </div>
+    <div class="num-grid">
+      <div class="num-card"><div class="n">20 yrs</div><div class="l">of real NOAA global-hourly data per stadium, 2006&ndash;2025</div><span class="tag">REAL</span></div>
+      <div class="num-card"><div class="n">78</div><div class="l">real FIFA World Cup 2026 matches, real final scores, real weather at kickoff</div><span class="tag">REAL</span></div>
+      <div class="num-card"><div class="n">35.3&deg;C</div><div class="l">the real peak WBGT during play &mdash; Canada 0&ndash;3 Morocco, Houston, July 4</div><span class="tag">REAL</span></div>
+      <div class="num-card"><div class="n">10 / 11</div><div class="l">stadiums measurably warming over 20 years (real linear regression)</div><span class="tag">REAL</span></div>
+      <div class="num-card"><div class="n">+0.89&deg;C</div><div class="l">how much hotter the real 2026 tournament ran vs. the 20-yr average</div><span class="tag">REAL</span></div>
+      <div class="num-card"><div class="n">411</div><div class="l">real parking lots across 11 stadiums, real OSM geometry</div><span class="tag">REAL</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="discovery">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Not a dashboard &mdash; a discovery</span>
+      <h2>Three findings this pipeline actually computed, not asserted.</h2>
+    </div>
+    <div class="finding">
+      <div class="k">Finding 01</div>
+      <div class="v">MetLife Stadium is warming at <b>+1.15&deg;C per decade</b> &mdash; the fastest of all 11 venues.</div>
+      <p>Real linear regression on 20 years of July WBGT. SoFi Stadium is the one honest exception: -0.17&deg;C/decade, reported plainly rather than hidden.</p>
+    </div>
+    <div class="finding">
+      <div class="k">Finding 02</div>
+      <div class="v">The real 2026 tournament ran <b>hotter than its own 20-year normal</b> &mdash; independently, not by restating the trend.</div>
+      <p>54 of 78 real matches ran above their stadium's own climatology mean for that exact hour. A live validation the trend actually held, computed from a completely separate real dataset (Iowa State Mesonet ASOS).</p>
+    </div>
+    <div class="finding">
+      <div class="k">Finding 03</div>
+      <div class="v">A 117.4m &times; 35.7m real parking lot yields exactly <b>126 real spaces</b> &mdash; not an estimate.</div>
+      <p>Rotate the lot's real OpenStreetMap boundary into its own long axis, fit real 9&times;18&nbsp;ft stalls and a real 24&nbsp;ft two-way aisle as double-loaded rows. Checked by hand against the formula.</p>
+    </div>
+  </div>
+</section>
+
+<section id="honest">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The discipline underneath it</span>
+      <h2>Every number on the site carries its own receipt.</h2>
+    </div>
+    <div class="honest-grid">
+      <div>
+        <p style="color:var(--text-dim)">Four data tiers, applied without exception across 11 tools, six data pipelines, and every card in the UI:</p>
+        <div class="tag-row">
+          <span class="data-tag real">REAL &mdash; measured or observed</span>
+          <span class="data-tag forecast">REAL-FORECAST &mdash; live NWS prediction</span>
+          <span class="data-tag semi">SEMI &mdash; real geometry, modeled formula</span>
+          <span class="data-tag mock">MOCK &mdash; a stated assumption</span>
+        </div>
+        <p style="color:var(--text-dim); margin-top:20px">The Ask agent's system prompt makes this a hard rule, not a style guide: it may only state a number a tool call actually returned, and must say "not yet verified" rather than fill a gap with something plausible. Caught in testing: asked which section of Mercedes-Benz Stadium gets the most sun, it correctly refused &mdash; that stadium's field orientation is still real OpenStreetMap data pending, tagged TODO-SEMI, not guessed.</p>
+      </div>
+      <div>
+        <p class="honest-quote">"AI doesn't measure. Formulas measure. AI narrates what the formulas already found &mdash; and says so."</p>
+        <p style="color:var(--text-dim); margin-top:20px; font-size:14px">A discipline carried over from an earlier project on this same team, applied here to eleven live function-calling tools instead of one offline narrative pass &mdash; and stress-tested with a real, reproduced WebGL buffer-overflow bug and a real 10-second render freeze, both found and fixed by measuring, not guessing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="live">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Built to outlast the tournament</span>
+      <h2>The World Cup ended in July. The site didn't stop.</h2>
+      <p>A one-event dashboard dies the day the event ends. These same 11 stadiums are also real NFL stadiums, and their 2026 season is happening right now &mdash; so instead of freezing in July, the dashboard's "what's next here" pivoted automatically to the real, ongoing schedule.</p>
+    </div>
+    <div class="live-banner">
+      <span class="live-dot"></span>
+      <div>
+        <div style="font-family:var(--mono); font-size:12px; color:var(--green); text-transform:uppercase; letter-spacing:0.06em">Live right now</div>
+        <div style="font-family:var(--serif); font-size:20px; margin-top:6px">104 real, unplayed NFL games across these 11 stadiums &mdash; each one's heat forecast fetched live from api.weather.gov the moment you select it.</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="step">
+        <div class="when">June &ndash; July 2026</div>
+        <h4>World Cup era</h4>
+        <p>78 real matches played. Now a closed, permanent historical record &mdash; real weather, real scores, real heat findings.</p>
+      </div>
+      <div class="step now">
+        <div class="when">Today</div>
+        <h4>Live NFL era</h4>
+        <p>Same 11 venues, same pipeline, new real schedule (nflverse/nfldata). Upcoming games get a live forecast; nothing about them is stored or stale.</p>
+      </div>
+      <div class="step">
+        <div class="when">Every future season</div>
+        <h4>Still running</h4>
+        <p>Re-run one script and the schedule refreshes. The heat-risk instrument doesn't belong to one tournament &mdash; it belongs to the stadiums.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="close-section">
+  <div class="wrap">
+    <span class="eyebrow">Rice University Urban Sustainability Hackathon &middot; Track 3</span>
+    <h2 style="margin-top:16px">Real data, honestly labeled, at a level of precision nobody else went to the trouble of building.</h2>
+    <p style="color:var(--text-dim); max-width:640px; margin-top:18px; font-size:16px">Not a mockup, not a demo video with a fake backend &mdash; the live site behind every screenshot above, deployed, and still answering real questions right now.</p>
+    <div class="close-links">
+      <a class="btn primary" href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">Open the live dashboard</a>
+      <a class="btn ghost" href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">wc26-heat-dashboard.vercel.app</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>WC26 Heat Risk Dashboard &middot; Track 3, Public Health &amp; the Built Environment</span>
+    <span>2.46M real readings &middot; 411 real lots &middot; 0 fabricated numbers</span>
+  </div>
+</footer>

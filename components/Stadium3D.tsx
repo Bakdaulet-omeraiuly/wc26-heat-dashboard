@@ -460,7 +460,7 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
           <StadiumBowl stadium={stadium} sunDirection={sunDirection} />
           <SunMarker direction={sunDirection} altitude={altitudeDeg} />
           <ParkingLots lots={lots} onHover={setHoveredLot} showCars={matchMode && hasMatches} />
-          <OrbitControls />
+          <OrbitControls enableZoom enablePan={false} minDistance={2.5} maxDistance={70} zoomSpeed={0.9} />
         </Canvas>
 
         <div className="absolute bottom-2 left-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700">

@@ -110,7 +110,13 @@ export default function HeatMap() {
 
   return (
     <div className="relative w-full h-full">
-      <DeckGL initialViewState={INITIAL_VIEW_STATE} controller layers={layers} style={{ background: "#0b0d10" }} />
+      <DeckGL
+        initialViewState={INITIAL_VIEW_STATE}
+        controller
+        layers={layers}
+        style={{ background: "#0b0d10" }}
+        getCursor={({ isDragging, isHovering }) => (isDragging ? "grabbing" : isHovering ? "pointer" : "grab")}
+      />
 
       {/* Instrument-panel data strip, not a decorative overlay */}
       <div className="absolute top-3 left-3 bg-black/70 text-zinc-100 font-mono text-xs px-3 py-2 rounded border border-zinc-700">

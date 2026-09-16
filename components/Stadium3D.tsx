@@ -8,6 +8,7 @@ import { useHeatDashboardStore } from "@/lib/store";
 
 type Occupancy = {
   estimated_spaces: number;
+  capacity_method: "real-layout" | "area-fallback";
   occupancy_fraction: number;
   estimated_cars_now: number;
 };
@@ -20,6 +21,9 @@ type LotExposure = {
     area_m2: number;
     distance_m: number;
     bearing_from_stadium_deg: number;
+    lot_orientation_deg?: number;
+    length_m?: number;
+    width_m?: number;
   };
   walk_minutes: number;
   adjusted_wbgt_c: number | null;
@@ -90,6 +94,27 @@ function ParkingLots({
   onHover: (l: LotExposure | null) => void;
   showCars: boolean;
 }) {
+  // Real-dimension footprint: use the lot's real oriented length/width
+  // (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
+  // ground marker's proportions and rotation match the real rectangle,
+  // not a generic square -- falls back to a sqrt(area) square for the
+  // handful of lots fetched before that field existed.
+  function footprintFor(lot: LotExposure["lot"]): { lengthScene: number; widthScene: number; rotationRad: number } {
+    if (lot.length_m && lot.width_m) {
+      return {
+        lengthScene: Math.min(4.5, Math.max(0.8, lot.length_m / 45)),
+        widthScene: Math.min(3, Math.max(0.5, lot.width_m / 45)),
+        rotationRad: ((lot.lot_orientation_deg ?? 0) * Math.PI) / 180,
+      };
+    }
+    const square = Math.min(3.2, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
+    return { lengthScene: square, widthScene: square, rotationRad: 0 };
+  }
+
+  function rotateXZ(x: number, z: number, rad: number): [number, number] {
+    return [x * Math.cos(rad) - z * Math.sin(rad), x * Math.sin(rad) + z * Math.cos(rad)];
+  }
+
   const cars = useMemo(() => {
     if (!showCars) return [];
     const items: { position: [number, number, number]; color: string; rotationY: number; key: string }[] = [];
@@ -97,20 +122,31 @@ function ParkingLots({
       if (!le.occupancy || le.occupancy.estimated_cars_now <= 0) continue;
       const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
       const [cx, cz] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
-      const footprint = Math.min(3.2, Math.max(0.6, Math.sqrt(le.lot.area_m2) / 15));
+      const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
       const count = Math.min(MAX_RENDERED_CARS_PER_LOT, le.occupancy.estimated_cars_now);
-      const cols = Math.ceil(Math.sqrt(count));
-      const spacing = Math.max(0.5, Math.min(0.75, (footprint * 0.9) / Math.max(1, cols)));
+      // Distribute cars along the real aspect ratio -- more columns
+      // than rows for a long/narrow real lot, matching its real shape,
+      // rather than always forcing a square grid.
+      const aspect = lengthScene / widthScene;
+      const cols = Math.max(1, Math.round(Math.sqrt(count * aspect)));
+      const rows = Math.max(1, Math.ceil(count / cols));
+      const spacingX = Math.max(0.45, Math.min(0.75, (lengthScene * 0.9) / cols));
+      const spacingZ = Math.max(0.45, Math.min(0.75, (widthScene * 0.9) / rows));
       for (let i = 0; i < count; i++) {
         const row = Math.floor(i / cols);
         const col = i % cols;
-        const offsetX = (col - (cols - 1) / 2) * spacing;
-        const offsetZ = (row - (cols - 1) / 2) * spacing;
+        const localX = (col - (cols - 1) / 2) * spacingX;
+        const localZ = (row - (rows - 1) / 2) * spacingZ;
+        const [offsetX, offsetZ] = rotateXZ(localX, localZ, rotationRad);
         items.push({
           key: `${le.lot.osm_id}-${i}`,
           position: [cx + offsetX, 0.02, cz + offsetZ],
           color: CAR_COLORS[(le.lot.osm_id + i) % CAR_COLORS.length],
-          rotationY: ((le.lot.osm_id % 4) * Math.PI) / 2,
+          // cars in a row all face the same way, aligned to the lot's
+          // real orientation (+ an alternating 180 deg so opposing
+          // rows in a double-loaded module visually face each other,
+          // like real nose-to-nose parking across an aisle)
+          rotationY: rotationRad + (row % 2 === 0 ? 0 : Math.PI),
         });
       }
     }
@@ -122,7 +158,7 @@ function ParkingLots({
       {lots.map((le) => {
         const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
         const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
-        const size = Math.min(3.2, Math.max(0.6, Math.sqrt(le.lot.area_m2) / 15));
+        const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
         const color = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#555555";
         // "Black" flag (#1a1a1a) is real-but-invisible against this
         // scene's dark background -- same problem hit in
@@ -134,6 +170,7 @@ function ParkingLots({
           <mesh
             key={le.lot.osm_id}
             position={[x, 0.05, z]}
+            rotation={[0, rotationRad, 0]}
             onPointerOver={(e) => {
               e.stopPropagation();
               onHover(le);
@@ -143,7 +180,7 @@ function ParkingLots({
               onHover(null);
             }}
           >
-            <boxGeometry args={[size, isBlackFlag ? 0.4 : 0.15, size]} />
+            <boxGeometry args={[lengthScene, isBlackFlag ? 0.4 : 0.15, widthScene]} />
             <meshStandardMaterial
               color={isBlackFlag ? "#3a0a0a" : color}
               emissive={isBlackFlag ? "#ff2222" : "#000000"}
@@ -364,6 +401,10 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
                   <div className="mt-0.5">
                     {hoveredLot.occupancy.estimated_cars_now}/{hoveredLot.occupancy.estimated_spaces} spaces (
                     {Math.round(hoveredLot.occupancy.occupancy_fraction * 100)}%)
+                    <span className="text-zinc-600">
+                      {" "}
+                      &mdash; {hoveredLot.occupancy.capacity_method === "real-layout" ? "real stall layout" : "area estimate"}
+                    </span>
                   </div>
                 )}
               </>

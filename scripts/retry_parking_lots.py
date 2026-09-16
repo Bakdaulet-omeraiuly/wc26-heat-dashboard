@@ -9,10 +9,22 @@ import json
 import time
 from pathlib import Path
 
-from fetch_parking_lots import STADIUMS, overpass_query, haversine_m, bearing_deg, polygon_area_m2, centroid, MAX_LOTS_PER_STADIUM
+from fetch_parking_lots import (
+    STADIUMS,
+    overpass_query,
+    haversine_m,
+    bearing_deg,
+    polygon_area_m2,
+    centroid,
+    oriented_dimensions,
+    MAX_LOTS_PER_STADIUM,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
-TARGETS = ["arrowhead-stadium", "sofi-stadium", "hard-rock-stadium", "levis-stadium"]
+TARGETS = [
+    "mercedes-benz-stadium", "nrg-stadium", "arrowhead-stadium", "sofi-stadium",
+    "metlife-stadium", "lincoln-financial-field", "lumen-field",
+]  # the 7 that hit Overpass 504s on the full re-fetch (adding length_m/width_m)
 BACKOFFS = [15, 30, 60, 90]
 
 
@@ -42,6 +54,7 @@ def fetch_one(stadium):
             continue
         dist = haversine_m(lat, lon, c_lat, c_lon)
         bearing = bearing_deg(lat, lon, c_lat, c_lon)
+        lot_orientation_deg, length_m, width_m = oriented_dimensions(geom, c_lat)
         tags = el.get("tags", {})
         lots.append(
             {
@@ -53,6 +66,9 @@ def fetch_one(stadium):
                 "lon": round(c_lon, 6),
                 "distance_m": round(dist),
                 "bearing_from_stadium_deg": round(bearing, 1),
+                "lot_orientation_deg": lot_orientation_deg,
+                "length_m": length_m,
+                "width_m": width_m,
             }
         )
     lots.sort(key=lambda l: l["distance_m"])

@@ -240,13 +240,28 @@ Caspian Watch documentation:
    with less lag. Not a different or lower-quality measurement, but
    worth stating plainly rather than silently switching sources.
 8. **Parking match-day occupancy is MOCK on top of REAL inputs.** Real
-   kickoff time and real lot area feed a modeled fill curve (see
-   `lib/parkingData.ts`) shaped like a real, documented stadium-egress
-   pattern (ingress accelerates into kickoff, egress drains slower --
-   a known bottleneck effect) but with illustrative, not measured,
-   percentages. The 3D view's rendered car count is additionally capped
-   for performance/legibility (9 per lot); the real estimated count is
-   always shown as text alongside it.
+   kickoff time and a lot's real capacity (see below) feed a modeled
+   fill curve (`lib/parkingData.ts`) shaped like a real, documented
+   stadium-egress pattern (ingress accelerates into kickoff, egress
+   drains slower -- a known bottleneck effect) but with illustrative,
+   not measured, percentages. The 3D view's rendered car count is
+   additionally capped for performance/legibility (9 per lot); the
+   real estimated count is always shown as text alongside it.
+9. **Lot capacity is a real geometric calculation, not a survey.**
+   `scripts/fetch_parking_lots.py` computes each lot's real oriented
+   length/width from its real OSM node coordinates (rotate into the
+   frame of its longest edge, take the extents); `lib/parkingLayout.ts`
+   then fits real 9ft x 18ft stalls and a real 24ft two-way aisle
+   (ITE/ULI standard 90-degree parking dimensions) into that rectangle
+   as double-loaded rows. This is a real yield calculation from real
+   dimensions -- meaningfully more precise than a flat area/constant
+   guess -- but still assumes a lot is laid out as simple parallel
+   rows (ignores driveways, curb cuts, ADA stalls, landscaping
+   islands) and approximates irregular lot shapes as rectangular. All
+   40 (or fewer) lots at all 11 stadiums now use this real-layout
+   method (verify: `capacity_method: "real-layout"` in `/api/parking`'s
+   response) -- the flat-area fallback exists only for future lots
+   fetched before dimensions are computed.
 
 ## Project docs
 

@@ -15,6 +15,7 @@ import path from "node:path";
 import * as SunCalc from "suncalc";
 import { findStadium, getStadiumSnapshot } from "./agentData";
 import { wbgtToSportsFlag, type SportsFlagColor } from "./wbgt";
+import { computeRealParkingLayout, type RealParkingLayout } from "./parkingLayout";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
@@ -27,6 +28,12 @@ export type ParkingLot = {
   lon: number;
   distance_m: number;
   bearing_from_stadium_deg: number;
+  // Real oriented-bounding-rectangle dimensions (undefined for lots
+  // fetched before this field existed -- computeLotOccupancy() falls
+  // back to the area/constant approximation for those).
+  lot_orientation_deg?: number;
+  length_m?: number;
+  width_m?: number;
 };
 
 let cache: Record<string, ParkingLot[]> | null = null;
@@ -142,26 +149,43 @@ export function occupancyFraction(hoursFromKickoff: number): number {
 export type LotOccupancy = {
   lot: ParkingLot;
   estimated_spaces: number;
+  capacity_method: "real-layout" | "area-fallback";
+  layout: RealParkingLayout | null;
   occupancy_fraction: number;
   estimated_cars_now: number;
-  data_status: "SEMI"; // real area -> SEMI space count; MOCK occupancy curve on top
+  data_status: "SEMI"; // real geometry -> SEMI space count; MOCK occupancy curve on top
 };
 
+/** How many spaces this lot really holds. Prefers the real
+ * dimension-based layout calculation (lib/parkingLayout.ts -- actual
+ * stall rows and aisles fit to this lot's real oriented rectangle);
+ * falls back to the older flat area/28 rule-of-thumb only for lots
+ * fetched before length_m/width_m existed. */
+function lotCapacity(lot: ParkingLot): { spaces: number; method: "real-layout" | "area-fallback"; layout: RealParkingLayout | null } {
+  if (lot.length_m && lot.width_m) {
+    const layout = computeRealParkingLayout(lot.length_m, lot.width_m);
+    if (layout.total_spaces > 0) return { spaces: layout.total_spaces, method: "real-layout", layout };
+  }
+  return { spaces: Math.max(1, Math.round(lot.area_m2 / AVG_M2_PER_PARKING_SPACE)), method: "area-fallback", layout: null };
+}
+
 /** Distributes estimated demand across a stadium's real lots
- * proportional to each lot's real area share -- so a big lot always
- * shows more cars than a small one, real geometry driving a modeled
- * quantity. */
+ * proportional to each lot's real CAPACITY (not just raw area) -- so
+ * a lot's shape, not only its footprint, drives how many cars it
+ * really holds. */
 export function computeLotOccupancy(stadiumId: string, hoursFromKickoff: number): LotOccupancy[] {
   const lots = getStadiumParkingLots(stadiumId);
   if (lots.length === 0) return [];
   const fraction = occupancyFraction(hoursFromKickoff);
   return lots.map((lot) => {
-    const estimatedSpaces = Math.max(1, Math.round(lot.area_m2 / AVG_M2_PER_PARKING_SPACE));
+    const { spaces, method, layout } = lotCapacity(lot);
     return {
       lot,
-      estimated_spaces: estimatedSpaces,
+      estimated_spaces: spaces,
+      capacity_method: method,
+      layout,
       occupancy_fraction: Math.round(fraction * 100) / 100,
-      estimated_cars_now: Math.round(estimatedSpaces * fraction),
+      estimated_cars_now: Math.round(spaces * fraction),
       data_status: "SEMI",
     };
   });

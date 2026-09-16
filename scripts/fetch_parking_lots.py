@@ -8,6 +8,13 @@ LLM description. For each lot, computes:
   - distance_m from the lot centroid to the stadium's known coordinates
   - bearing_from_stadium_deg (compass direction from stadium to lot,
     used to place it around the 3D model)
+  - length_m / width_m / orientation_deg: the lot's own real oriented
+    bounding rectangle -- rotate every real node into the frame of its
+    longest edge, then take the extent along vs. across that axis.
+    This is what lets lib/parkingLayout.ts compute a REAL stall-by-stall
+    parking capacity (rows x aisles) instead of a flat area/constant
+    guess -- same "verify from real geometry" discipline as field
+    orientation.
 
 Run once, by hand -- not part of the runtime app. Writes data/parking.json.
 
@@ -83,6 +90,48 @@ def centroid(geom):
     return lat, lon
 
 
+def to_local_meters(geom, ref_lat):
+    return [(p["lon"] * 111320 * math.cos(math.radians(ref_lat)), p["lat"] * 111320) for p in geom]
+
+
+def oriented_dimensions(geom, ref_lat):
+    """Real oriented bounding rectangle of this lot's real node
+    coordinates: find the longest edge's bearing (the lot's natural
+    "long axis" -- true for the large majority of real surface lots,
+    which are built as one or two rectangular rows), rotate every real
+    point into that axis-aligned frame, then take the coordinate
+    extents. Returns (orientation_deg, length_m, width_m) -- length
+    along the long axis, width across it. Not a substitute for the
+    lot's real as-built stall layout (which OSM doesn't carry), but a
+    real geometric measurement, not a guessed aspect ratio."""
+    pts = to_local_meters(geom, ref_lat)
+    n = len(pts)
+    best_len = -1
+    best_bearing = 0
+    for i in range(n):
+        x1, y1 = pts[i]
+        x2, y2 = pts[(i + 1) % n]
+        dx, dy = x2 - x1, y2 - y1
+        edge_len = math.hypot(dx, dy)
+        if edge_len > best_len:
+            best_len = edge_len
+            best_bearing = (math.degrees(math.atan2(dx, dy)) + 360) % 360
+
+    theta = math.radians(best_bearing)
+    sin_t, cos_t = math.sin(theta), math.cos(theta)
+    along = [x * sin_t + y * cos_t for x, y in pts]  # projection onto the long-axis direction
+    across = [x * cos_t - y * sin_t for x, y in pts]  # projection onto the perpendicular direction
+    length_m = max(along) - min(along)
+    width_m = max(across) - min(across)
+    # the "long axis" by construction is the longer of the two extents;
+    # occasionally the longest EDGE isn't the longest SPAN (an L-shaped
+    # or angled lot) -- guard by swapping if that happens, so length_m
+    # is always >= width_m as the name promises.
+    if width_m > length_m:
+        length_m, width_m = width_m, length_m
+    return round(best_bearing, 1), round(length_m, 1), round(width_m, 1)
+
+
 def main():
     all_results = {}
     for stadium in STADIUMS:
@@ -106,6 +155,7 @@ def main():
                 continue
             dist = haversine_m(lat, lon, c_lat, c_lon)
             bearing = bearing_deg(lat, lon, c_lat, c_lon)
+            lot_orientation_deg, length_m, width_m = oriented_dimensions(geom, c_lat)
             tags = el.get("tags", {})
             lots.append(
                 {
@@ -117,6 +167,9 @@ def main():
                     "lon": round(c_lon, 6),
                     "distance_m": round(dist),
                     "bearing_from_stadium_deg": round(bearing, 1),
+                    "lot_orientation_deg": lot_orientation_deg,
+                    "length_m": length_m,
+                    "width_m": width_m,
                 }
             )
 

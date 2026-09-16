@@ -8,7 +8,10 @@
       "lat": 32.746452,
       "lon": -97.092249,
       "distance_m": 156,
-      "bearing_from_stadium_deg": 161.4
+      "bearing_from_stadium_deg": 161.4,
+      "lot_orientation_deg": 77.0,
+      "length_m": 117.4,
+      "width_m": 35.7
     },
     {
       "osm_id": 96901159,
@@ -18,7 +21,10 @@
       "lat": 32.746117,
       "lon": -97.093863,
       "distance_m": 211,
-      "bearing_from_stadium_deg": 208.7
+      "bearing_from_stadium_deg": 208.7,
+      "lot_orientation_deg": 25.6,
+      "length_m": 140.1,
+      "width_m": 129.1
     },
     {
       "osm_id": 96902240,
@@ -28,7 +34,10 @@
       "lat": 32.749519,
       "lon": -97.093669,
       "distance_m": 211,
-      "bearing_from_stadium_deg": 336.7
+      "bearing_from_stadium_deg": 336.7,
+      "lot_orientation_deg": 147.6,
+      "length_m": 151.4,
+      "width_m": 103.2
     },
     {
       "osm_id": 96902235,
@@ -38,7 +47,10 @@
       "lat": 32.749476,
       "lon": -97.091717,
       "distance_m": 213,
-      "bearing_from_stadium_deg": 27.8
+      "bearing_from_stadium_deg": 27.8,
+      "lot_orientation_deg": 188.4,
+      "length_m": 111.7,
+      "width_m": 54.4
     },
     {
       "osm_id": 96901160,
@@ -48,7 +60,10 @@
       "lat": 32.747355,
       "lon": -97.090488,
       "distance_m": 220,
-      "bearing_from_stadium_deg": 102.4
+      "bearing_from_stadium_deg": 102.4,
+      "lot_orientation_deg": 90.8,
+      "length_m": 164.2,
+      "width_m": 161.6
     },
     {
       "osm_id": 1050968478,
@@ -58,7 +73,10 @@
       "lat": 32.749486,
       "lon": -97.090672,
       "distance_m": 274,
-      "bearing_from_stadium_deg": 46.1
+      "bearing_from_stadium_deg": 46.1,
+      "lot_orientation_deg": 231.6,
+      "length_m": 134.7,
+      "width_m": 5.8
     },
     {
       "osm_id": 1050968477,
@@ -68,7 +86,10 @@
       "lat": 32.749445,
       "lon": -97.09059,
       "distance_m": 276,
-      "bearing_from_stadium_deg": 47.9
+      "bearing_from_stadium_deg": 47.9,
+      "lot_orientation_deg": 51.7,
+      "length_m": 129.0,
+      "width_m": 5.3
     },
     {
       "osm_id": 96901210,
@@ -78,7 +99,10 @@
       "lat": 32.749587,
       "lon": -97.090641,
       "distance_m": 283,
-      "bearing_from_stadium_deg": 44.9
+      "bearing_from_stadium_deg": 44.9,
+      "lot_orientation_deg": 51.6,
+      "length_m": 165.0,
+      "width_m": 53.6
     },
     {
       "osm_id": 96901223,
@@ -88,7 +112,10 @@
       "lat": 32.748789,
       "lon": -97.095612,
       "distance_m": 288,
-      "bearing_from_stadium_deg": 293.0
+      "bearing_from_stadium_deg": 293.0,
+      "lot_orientation_deg": 266.1,
+      "length_m": 272.4,
+      "width_m": 208.3
     },
     {
       "osm_id": 1050968479,
@@ -98,7 +125,10 @@
       "lat": 32.749663,
       "lon": -97.090663,
       "distance_m": 288,
-      "bearing_from_stadium_deg": 43.4
+      "bearing_from_stadium_deg": 43.4,
+      "lot_orientation_deg": 51.5,
+      "length_m": 79.4,
+      "width_m": 11.1
     },
     {
       "osm_id": 96988552,
@@ -108,7 +138,10 @@
       "lat": 32.75074,
       "lon": -97.093494,
       "distance_m": 336,
-      "bearing_from_stadium_deg": 348.5
+      "bearing_from_stadium_deg": 348.5,
+      "lot_orientation_deg": 180.5,
+      "length_m": 184.1,
+      "width_m": 157.1
     },
     {
       "osm_id": 1523036114,
@@ -118,7 +151,10 @@
       "lat": 32.744384,
       "lon": -97.093175,
       "distance_m": 379,
-      "bearing_from_stadium_deg": 185.6
+      "bearing_from_stadium_deg": 185.6,
+      "lot_orientation_deg": 90.1,
+      "length_m": 56.7,
+      "width_m": 32.9
     },
     {
       "osm_id": 96901205,
@@ -128,7 +164,10 @@
       "lat": 32.748357,
       "lon": -97.088659,
       "distance_m": 391,
-      "bearing_from_stadium_deg": 80.5
+      "bearing_from_stadium_deg": 80.5,
+      "lot_orientation_deg": 180.3,
+      "length_m": 403.7,
+      "width_m": 136.3
     },
     {
       "osm_id": 96901161,
@@ -138,7 +177,10 @@
       "lat": 32.744551,
       "lon": -97.090973,
       "distance_m": 397,
-      "bearing_from_stadium_deg": 154.8
+      "bearing_from_stadium_deg": 154.8,
+      "lot_orientation_deg": 359.9,
+      "length_m": 290.8,
+      "width_m": 140.1
     },
     {
       "osm_id": 96764327,
@@ -148,7 +190,10 @@
       "lat": 32.74449,
       "lon": -97.095815,
       "distance_m": 463,
-      "bearing_from_stadium_deg": 217.8
+      "bearing_from_stadium_deg": 217.8,
+      "lot_orientation_deg": 0.8,
+      "length_m": 312.2,
+      "width_m": 223.7
     },
     {
       "osm_id": 96901156,
@@ -158,7 +203,10 @@
       "lat": 32.744322,
       "lon": -97.089922,
       "distance_m": 468,
-      "bearing_from_stadium_deg": 145.2
+      "bearing_from_stadium_deg": 145.2,
+      "lot_orientation_deg": 90.3,
+      "length_m": 257.5,
+      "width_m": 175.2
     },
     {
       "osm_id": 913408540,
@@ -168,7 +216,10 @@
       "lat": 32.747412,
       "lon": -97.085902,
       "distance_m": 645,
-      "bearing_from_stadium_deg": 93.6
+      "bearing_from_stadium_deg": 93.6,
+      "lot_orientation_deg": 355.8,
+      "length_m": 106.8,
+      "width_m": 46.7
     },
     {
       "osm_id": 1150779433,
@@ -178,7 +229,10 @@
       "lat": 32.750804,
       "lon": -97.086431,
       "distance_m": 682,
-      "bearing_from_stadium_deg": 60.5
+      "bearing_from_stadium_deg": 60.5,
+      "lot_orientation_deg": 104.6,
+      "length_m": 94.8,
+      "width_m": 81.9
     },
     {
       "osm_id": 1050912230,
@@ -188,7 +242,10 @@
       "lat": 32.74147,
       "lon": -97.091091,
       "distance_m": 719,
-      "bearing_from_stadium_deg": 167.3
+      "bearing_from_stadium_deg": 167.3,
+      "lot_orientation_deg": 180.0,
+      "length_m": 57.0,
+      "width_m": 6.0
     },
     {
       "osm_id": 96904700,
@@ -198,7 +255,10 @@
       "lat": 32.741763,
       "lon": -97.089767,
       "distance_m": 726,
-      "bearing_from_stadium_deg": 157.2
+      "bearing_from_stadium_deg": 157.2,
+      "lot_orientation_deg": 179.9,
+      "length_m": 175.4,
+      "width_m": 150.0
     },
     {
       "osm_id": 737716734,
@@ -208,7 +268,10 @@
       "lat": 32.744635,
       "lon": -97.08565,
       "distance_m": 753,
-      "bearing_from_stadium_deg": 117.7
+      "bearing_from_stadium_deg": 117.7,
+      "lot_orientation_deg": 90.4,
+      "length_m": 325.1,
+      "width_m": 268.7
     },
     {
       "osm_id": 1050912212,
@@ -218,7 +281,10 @@
       "lat": 32.7409,
       "lon": -97.091483,
       "distance_m": 775,
-      "bearing_from_stadium_deg": 171.0
+      "bearing_from_stadium_deg": 171.0,
+      "lot_orientation_deg": 270.1,
+      "length_m": 64.1,
+      "width_m": 5.9
     },
     {
       "osm_id": 1304022646,
@@ -228,7 +294,10 @@
       "lat": 32.751478,
       "lon": -97.099983,
       "distance_m": 789,
-      "bearing_from_stadium_deg": 301.4
+      "bearing_from_stadium_deg": 301.4,
+      "lot_orientation_deg": 180.6,
+      "length_m": 60.7,
+      "width_m": 38.8
     },
     {
       "osm_id": 737716726,
@@ -238,7 +307,10 @@
       "lat": 32.741584,
       "lon": -97.088497,
       "distance_m": 797,
-      "bearing_from_stadium_deg": 149.8
+      "bearing_from_stadium_deg": 149.8,
+      "lot_orientation_deg": 180.5,
+      "length_m": 123.5,
+      "width_m": 97.5
     },
     {
       "osm_id": 1304023031,
@@ -248,7 +320,10 @@
       "lat": 32.749013,
       "lon": -97.102261,
       "distance_m": 897,
-      "bearing_from_stadium_deg": 278.8
+      "bearing_from_stadium_deg": 278.8,
+      "lot_orientation_deg": 90.4,
+      "length_m": 190.4,
+      "width_m": 171.8
     },
     {
       "osm_id": 96906434,
@@ -258,7 +333,10 @@
       "lat": 32.754482,
       "lon": -97.087354,
       "distance_m": 902,
-      "bearing_from_stadium_deg": 34.2
+      "bearing_from_stadium_deg": 34.2,
+      "lot_orientation_deg": 0.1,
+      "length_m": 247.3,
+      "width_m": 195.7
     },
     {
       "osm_id": 913408554,
@@ -268,7 +346,10 @@
       "lat": 32.749123,
       "lon": -97.083194,
       "distance_m": 909,
-      "bearing_from_stadium_deg": 80.5
+      "bearing_from_stadium_deg": 80.5,
+      "lot_orientation_deg": 91.1,
+      "length_m": 242.4,
+      "width_m": 126.7
     },
     {
       "osm_id": 1304019738,
@@ -278,7 +359,10 @@
       "lat": 32.75137,
       "lon": -97.084036,
       "distance_m": 910,
-      "bearing_from_stadium_deg": 64.0
+      "bearing_from_stadium_deg": 64.0,
+      "lot_orientation_deg": 0.5,
+      "length_m": 173.9,
+      "width_m": 4.4
     },
     {
       "osm_id": 913408550,
@@ -288,7 +372,10 @@
       "lat": 32.74586,
       "lon": -97.08328,
       "distance_m": 914,
-      "bearing_from_stadium_deg": 103.5
+      "bearing_from_stadium_deg": 103.5,
+      "lot_orientation_deg": 270.9,
+      "length_m": 64.4,
+      "width_m": 49.4
     },
     {
       "osm_id": 97568189,
@@ -298,7 +385,10 @@
       "lat": 32.756315,
       "lon": -97.092384,
       "distance_m": 950,
-      "bearing_from_stadium_deg": 2.2
+      "bearing_from_stadium_deg": 2.2,
+      "lot_orientation_deg": 90.6,
+      "length_m": 45.0,
+      "width_m": 39.7
     },
     {
       "osm_id": 97568326,
@@ -308,7 +398,10 @@
       "lat": 32.756491,
       "lon": -97.092537,
       "distance_m": 969,
-      "bearing_from_stadium_deg": 1.3
+      "bearing_from_stadium_deg": 1.3,
+      "lot_orientation_deg": 180.4,
+      "length_m": 122.4,
+      "width_m": 52.5
     },
     {
       "osm_id": 1523302746,
@@ -318,7 +411,10 @@
       "lat": 32.75417,
       "lon": -97.100122,
       "distance_m": 988,
-      "bearing_from_stadium_deg": 316.0
+      "bearing_from_stadium_deg": 316.0,
+      "lot_orientation_deg": 359.8,
+      "length_m": 119.1,
+      "width_m": 59.1
     },
     {
       "osm_id": 913408553,
@@ -328,7 +424,10 @@
       "lat": 32.74783,
       "lon": -97.082205,
       "distance_m": 989,
-      "bearing_from_stadium_deg": 89.7
+      "bearing_from_stadium_deg": 89.7,
+      "lot_orientation_deg": 166.3,
+      "length_m": 117.5,
+      "width_m": 104.3
     },
     {
       "osm_id": 641980075,
@@ -338,7 +437,10 @@
       "lat": 32.756626,
       "lon": -97.091478,
       "distance_m": 991,
-      "bearing_from_stadium_deg": 7.1
+      "bearing_from_stadium_deg": 7.1,
+      "lot_orientation_deg": 270.0,
+      "length_m": 27.8,
+      "width_m": 11.0
     },
     {
       "osm_id": 97520236,
@@ -348,7 +450,10 @@
       "lat": 32.756446,
       "lon": -97.090213,
       "distance_m": 993,
-      "bearing_from_stadium_deg": 14.0
+      "bearing_from_stadium_deg": 14.0,
+      "lot_orientation_deg": 90.3,
+      "length_m": 209.5,
+      "width_m": 164.8
     },
     {
       "osm_id": 97568267,
@@ -358,7 +463,10 @@
       "lat": 32.756633,
       "lon": -97.091305,
       "distance_m": 994,
-      "bearing_from_stadium_deg": 8.0
+      "bearing_from_stadium_deg": 8.0,
+      "lot_orientation_deg": 180.4,
+      "length_m": 141.2,
+      "width_m": 92.0
     },
     {
       "osm_id": 96906447,
@@ -368,7 +476,10 @@
       "lat": 32.755864,
       "lon": -97.088141,
       "distance_m": 998,
-      "bearing_from_stadium_deg": 25.8
+      "bearing_from_stadium_deg": 25.8,
+      "lot_orientation_deg": 172.4,
+      "length_m": 57.1,
+      "width_m": 49.0
     },
     {
       "osm_id": 641980077,
@@ -378,7 +489,10 @@
       "lat": 32.75677,
       "lon": -97.091467,
       "distance_m": 1007,
-      "bearing_from_stadium_deg": 7.0
+      "bearing_from_stadium_deg": 7.0,
+      "lot_orientation_deg": 270.1,
+      "length_m": 25.1,
+      "width_m": 11.1
     },
     {
       "osm_id": 97568312,
@@ -388,7 +502,10 @@
       "lat": 32.756784,
       "lon": -97.09149,
       "distance_m": 1008,
-      "bearing_from_stadium_deg": 6.9
+      "bearing_from_stadium_deg": 6.9,
+      "lot_orientation_deg": 0.5,
+      "length_m": 55.4,
+      "width_m": 47.9
     },
     {
       "osm_id": 96906442,
@@ -398,7 +515,10 @@
       "lat": 32.755911,
       "lon": -97.087606,
       "distance_m": 1025,
-      "bearing_from_stadium_deg": 28.2
+      "bearing_from_stadium_deg": 28.2,
+      "lot_orientation_deg": 52.8,
+      "length_m": 49.4,
+      "width_m": 24.8
     }
   ],
   "mercedes-benz-stadium": [
@@ -410,7 +530,10 @@
       "lat": 33.755292,
       "lon": -84.398698,
       "distance_m": 124,
-      "bearing_from_stadium_deg": 103.9
+      "bearing_from_stadium_deg": 103.9,
+      "lot_orientation_deg": 13.2,
+      "length_m": 100.0,
+      "width_m": 38.0
     },
     {
       "osm_id": 1265891823,
@@ -420,7 +543,10 @@
       "lat": 33.75339,
       "lon": -84.400698,
       "distance_m": 250,
-      "bearing_from_stadium_deg": 195.0
+      "bearing_from_stadium_deg": 195.0,
+      "lot_orientation_deg": 90.5,
+      "length_m": 132.4,
+      "width_m": 97.1
     },
     {
       "osm_id": 1265610947,
@@ -430,7 +556,10 @@
       "lat": 33.753194,
       "lon": -84.399308,
       "distance_m": 271,
-      "bearing_from_stadium_deg": 166.3
+      "bearing_from_stadium_deg": 166.3,
+      "lot_orientation_deg": 280.7,
+      "length_m": 46.4,
+      "width_m": 36.4
     },
     {
       "osm_id": 1265536434,
@@ -440,7 +569,10 @@
       "lat": 33.753334,
       "lon": -84.398355,
       "distance_m": 291,
-      "bearing_from_stadium_deg": 148.4
+      "bearing_from_stadium_deg": 148.4,
+      "lot_orientation_deg": 90.7,
+      "length_m": 100.9,
+      "width_m": 61.2
     },
     {
       "osm_id": 1265610954,
@@ -450,7 +582,10 @@
       "lat": 33.752725,
       "lon": -84.400368,
       "distance_m": 317,
-      "bearing_from_stadium_deg": 186.2
+      "bearing_from_stadium_deg": 186.2,
+      "lot_orientation_deg": 360.0,
+      "length_m": 23.3,
+      "width_m": 17.7
     },
     {
       "osm_id": 1265536417,
@@ -460,7 +595,10 @@
       "lat": 33.752544,
       "lon": -84.398824,
       "distance_m": 353,
-      "bearing_from_stadium_deg": 162.0
+      "bearing_from_stadium_deg": 162.0,
+      "lot_orientation_deg": 180.4,
+      "length_m": 42.1,
+      "width_m": 24.1
     },
     {
       "osm_id": 1265536421,
@@ -470,7 +608,10 @@
       "lat": 33.752895,
       "lon": -84.397894,
       "distance_m": 355,
-      "bearing_from_stadium_deg": 146.7
+      "bearing_from_stadium_deg": 146.7,
+      "lot_orientation_deg": 180.9,
+      "length_m": 104.9,
+      "width_m": 13.2
     },
     {
       "osm_id": 892824968,
@@ -480,7 +621,10 @@
       "lat": 33.756813,
       "lon": -84.403622,
       "distance_m": 363,
-      "bearing_from_stadium_deg": 292.6
+      "bearing_from_stadium_deg": 292.6,
+      "lot_orientation_deg": 90.7,
+      "length_m": 112.3,
+      "width_m": 50.9
     },
     {
       "osm_id": 800491501,
@@ -490,7 +634,10 @@
       "lat": 33.757581,
       "lon": -84.403212,
       "distance_m": 372,
-      "bearing_from_stadium_deg": 307.1
+      "bearing_from_stadium_deg": 307.1,
+      "lot_orientation_deg": 180.4,
+      "length_m": 116.5,
+      "width_m": 52.4
     },
     {
       "osm_id": 1265988127,
@@ -500,7 +647,10 @@
       "lat": 33.752162,
       "lon": -84.399684,
       "distance_m": 379,
-      "bearing_from_stadium_deg": 175.6
+      "bearing_from_stadium_deg": 175.6,
+      "lot_orientation_deg": 89.6,
+      "length_m": 53.0,
+      "width_m": 35.6
     },
     {
       "osm_id": 1265891866,
@@ -510,7 +660,10 @@
       "lat": 33.752627,
       "lon": -84.402462,
       "distance_m": 398,
-      "bearing_from_stadium_deg": 214.9
+      "bearing_from_stadium_deg": 214.9,
+      "lot_orientation_deg": 180.3,
+      "length_m": 29.5,
+      "width_m": 29.0
     },
     {
       "osm_id": 744765352,
@@ -520,7 +673,10 @@
       "lat": 33.751962,
       "lon": -84.398609,
       "distance_m": 420,
-      "bearing_from_stadium_deg": 162.2
+      "bearing_from_stadium_deg": 162.2,
+      "lot_orientation_deg": 89.3,
+      "length_m": 57.0,
+      "width_m": 38.3
     },
     {
       "osm_id": 1274708788,
@@ -530,7 +686,10 @@
       "lat": 33.752239,
       "lon": -84.402289,
       "distance_m": 426,
-      "bearing_from_stadium_deg": 209.8
+      "bearing_from_stadium_deg": 209.8,
+      "lot_orientation_deg": 260.8,
+      "length_m": 47.1,
+      "width_m": 18.7
     },
     {
       "osm_id": 501389325,
@@ -540,7 +699,10 @@
       "lat": 33.755914,
       "lon": -84.394765,
       "distance_m": 486,
-      "bearing_from_stadium_deg": 85.4
+      "bearing_from_stadium_deg": 85.4,
+      "lot_orientation_deg": 282.5,
+      "length_m": 217.1,
+      "width_m": 176.8
     },
     {
       "osm_id": 853099020,
@@ -550,7 +712,10 @@
       "lat": 33.754211,
       "lon": -84.405214,
       "distance_m": 505,
-      "bearing_from_stadium_deg": 252.7
+      "bearing_from_stadium_deg": 252.7,
+      "lot_orientation_deg": 270.0,
+      "length_m": 83.6,
+      "width_m": 40.6
     },
     {
       "osm_id": 1266623296,
@@ -560,7 +725,10 @@
       "lat": 33.751761,
       "lon": -84.396778,
       "distance_m": 517,
-      "bearing_from_stadium_deg": 144.8
+      "bearing_from_stadium_deg": 144.8,
+      "lot_orientation_deg": 213.4,
+      "length_m": 40.3,
+      "width_m": 18.6
     },
     {
       "osm_id": 1265295229,
@@ -570,7 +738,10 @@
       "lat": 33.751044,
       "lon": -84.401523,
       "distance_m": 521,
-      "bearing_from_stadium_deg": 195.7
+      "bearing_from_stadium_deg": 195.7,
+      "lot_orientation_deg": 342.7,
+      "length_m": 46.2,
+      "width_m": 30.0
     },
     {
       "osm_id": 1266623295,
@@ -580,7 +751,10 @@
       "lat": 33.751427,
       "lon": -84.397124,
       "distance_m": 531,
-      "bearing_from_stadium_deg": 149.9
+      "bearing_from_stadium_deg": 149.9,
+      "lot_orientation_deg": 33.9,
+      "length_m": 164.2,
+      "width_m": 38.9
     },
     {
       "osm_id": 1265989519,
@@ -590,7 +764,10 @@
       "lat": 33.750643,
       "lon": -84.400938,
       "distance_m": 554,
-      "bearing_from_stadium_deg": 189.0
+      "bearing_from_stadium_deg": 189.0,
+      "lot_orientation_deg": 341.7,
+      "length_m": 39.3,
+      "width_m": 27.1
     },
     {
       "osm_id": 823284398,
@@ -600,7 +777,10 @@
       "lat": 33.755911,
       "lon": -84.406103,
       "distance_m": 566,
-      "bearing_from_stadium_deg": 274.0
+      "bearing_from_stadium_deg": 274.0,
+      "lot_orientation_deg": 359.8,
+      "length_m": 70.5,
+      "width_m": 69.0
     },
     {
       "osm_id": 270497377,
@@ -610,7 +790,10 @@
       "lat": 33.756644,
       "lon": -84.393886,
       "distance_m": 578,
-      "bearing_from_stadium_deg": 78.0
+      "bearing_from_stadium_deg": 78.0,
+      "lot_orientation_deg": 140.3,
+      "length_m": 125.5,
+      "width_m": 54.0
     },
     {
       "osm_id": 1266620206,
@@ -620,7 +803,10 @@
       "lat": 33.751174,
       "lon": -84.396321,
       "distance_m": 595,
-      "bearing_from_stadium_deg": 145.1
+      "bearing_from_stadium_deg": 145.1,
+      "lot_orientation_deg": 269.7,
+      "length_m": 63.1,
+      "width_m": 42.9
     },
     {
       "osm_id": 971211524,
@@ -630,7 +816,10 @@
       "lat": 33.751305,
       "lon": -84.39586,
       "distance_m": 609,
-      "bearing_from_stadium_deg": 141.0
+      "bearing_from_stadium_deg": 141.0,
+      "lot_orientation_deg": 123.4,
+      "length_m": 130.1,
+      "width_m": 83.4
     },
     {
       "osm_id": 1266849590,
@@ -640,7 +829,10 @@
       "lat": 33.752338,
       "lon": -84.394672,
       "distance_m": 609,
-      "bearing_from_stadium_deg": 126.0
+      "bearing_from_stadium_deg": 126.0,
+      "lot_orientation_deg": 32.5,
+      "length_m": 31.3,
+      "width_m": 15.2
     },
     {
       "osm_id": 1260643491,
@@ -650,7 +842,10 @@
       "lat": 33.7501,
       "lon": -84.399395,
       "distance_m": 610,
-      "bearing_from_stadium_deg": 174.7
+      "bearing_from_stadium_deg": 174.7,
+      "lot_orientation_deg": 46.3,
+      "length_m": 48.6,
+      "width_m": 31.1
     },
     {
       "osm_id": 1266620220,
@@ -660,7 +855,10 @@
       "lat": 33.750781,
       "lon": -84.396627,
       "distance_m": 616,
-      "bearing_from_stadium_deg": 149.6
+      "bearing_from_stadium_deg": 149.6,
+      "lot_orientation_deg": 179.5,
+      "length_m": 41.9,
+      "width_m": 36.8
     },
     {
       "osm_id": 270497372,
@@ -670,7 +868,10 @@
       "lat": 33.757077,
       "lon": -84.393404,
       "distance_m": 633,
-      "bearing_from_stadium_deg": 74.5
+      "bearing_from_stadium_deg": 74.5,
+      "lot_orientation_deg": 322.3,
+      "length_m": 95.0,
+      "width_m": 37.7
     },
     {
       "osm_id": 1265295239,
@@ -680,7 +881,10 @@
       "lat": 33.750465,
       "lon": -84.403071,
       "distance_m": 634,
-      "bearing_from_stadium_deg": 206.6
+      "bearing_from_stadium_deg": 206.6,
+      "lot_orientation_deg": 72.0,
+      "length_m": 41.9,
+      "width_m": 11.7
     },
     {
       "osm_id": 1260667507,
@@ -690,7 +894,10 @@
       "lat": 33.749813,
       "lon": -84.3997,
       "distance_m": 640,
-      "bearing_from_stadium_deg": 177.5
+      "bearing_from_stadium_deg": 177.5,
+      "lot_orientation_deg": 137.6,
+      "length_m": 39.5,
+      "width_m": 27.3
     },
     {
       "osm_id": 1267254122,
@@ -700,7 +907,10 @@
       "lat": 33.750321,
       "lon": -84.396983,
       "distance_m": 646,
-      "bearing_from_stadium_deg": 154.4
+      "bearing_from_stadium_deg": 154.4,
+      "lot_orientation_deg": 30.8,
+      "length_m": 54.7,
+      "width_m": 26.4
     },
     {
       "osm_id": 888272701,
@@ -710,7 +920,10 @@
       "lat": 33.756468,
       "lon": -84.392984,
       "distance_m": 656,
-      "bearing_from_stadium_deg": 81.1
+      "bearing_from_stadium_deg": 81.1,
+      "lot_orientation_deg": 230.1,
+      "length_m": 53.4,
+      "width_m": 31.8
     },
     {
       "osm_id": 1260667505,
@@ -720,7 +933,10 @@
       "lat": 33.749654,
       "lon": -84.399937,
       "distance_m": 657,
-      "bearing_from_stadium_deg": 179.5
+      "bearing_from_stadium_deg": 179.5,
+      "lot_orientation_deg": 138.8,
+      "length_m": 57.0,
+      "width_m": 35.7
     },
     {
       "osm_id": 971211525,
@@ -730,7 +946,10 @@
       "lat": 33.75031,
       "lon": -84.396084,
       "distance_m": 687,
-      "bearing_from_stadium_deg": 148.2
+      "bearing_from_stadium_deg": 148.2,
+      "lot_orientation_deg": 90.0,
+      "length_m": 97.8,
+      "width_m": 60.1
     },
     {
       "osm_id": 1019876939,
@@ -740,7 +959,10 @@
       "lat": 33.760664,
       "lon": -84.395791,
       "distance_m": 688,
-      "bearing_from_stadium_deg": 34.4
+      "bearing_from_stadium_deg": 34.4,
+      "lot_orientation_deg": 159.5,
+      "length_m": 83.7,
+      "width_m": 44.6
     },
     {
       "osm_id": 1260667502,
@@ -750,7 +972,10 @@
       "lat": 33.749398,
       "lon": -84.400629,
       "distance_m": 688,
-      "bearing_from_stadium_deg": 184.8
+      "bearing_from_stadium_deg": 184.8,
+      "lot_orientation_deg": 138.0,
+      "length_m": 74.8,
+      "width_m": 61.6
     },
     {
       "osm_id": 1268484949,
@@ -760,7 +985,10 @@
       "lat": 33.75182,
       "lon": -84.393961,
       "distance_m": 696,
-      "bearing_from_stadium_deg": 126.7
+      "bearing_from_stadium_deg": 126.7,
+      "lot_orientation_deg": 212.7,
+      "length_m": 49.5,
+      "width_m": 22.5
     },
     {
       "osm_id": 343513439,
@@ -770,7 +998,10 @@
       "lat": 33.752435,
       "lon": -84.393465,
       "distance_m": 697,
-      "bearing_from_stadium_deg": 119.9
+      "bearing_from_stadium_deg": 119.9,
+      "lot_orientation_deg": 31.0,
+      "length_m": 44.9,
+      "width_m": 25.4
     },
     {
       "osm_id": 1267254109,
@@ -780,7 +1011,10 @@
       "lat": 33.749972,
       "lon": -84.396452,
       "distance_m": 703,
-      "bearing_from_stadium_deg": 152.2
+      "bearing_from_stadium_deg": 152.2,
+      "lot_orientation_deg": 303.5,
+      "length_m": 78.3,
+      "width_m": 41.8
     },
     {
       "osm_id": 888271238,
@@ -790,7 +1024,10 @@
       "lat": 33.757515,
       "lon": -84.392701,
       "distance_m": 709,
-      "bearing_from_stadium_deg": 72.1
+      "bearing_from_stadium_deg": 72.1,
+      "lot_orientation_deg": 140.0,
+      "length_m": 56.9,
+      "width_m": 33.2
     },
     {
       "osm_id": 1260667503,
@@ -800,7 +1037,10 @@
       "lat": 33.749175,
       "lon": -84.400897,
       "distance_m": 715,
-      "bearing_from_stadium_deg": 186.7
+      "bearing_from_stadium_deg": 186.7,
+      "lot_orientation_deg": 135.8,
+      "length_m": 26.4,
+      "width_m": 12.6
     }
   ],
   "gillette-stadium": [
@@ -812,7 +1052,10 @@
       "lat": 42.090483,
       "lon": -71.262131,
       "distance_m": 165,
-      "bearing_from_stadium_deg": 110.4
+      "bearing_from_stadium_deg": 110.4,
+      "lot_orientation_deg": 341.7,
+      "length_m": 120.0,
+      "width_m": 42.3
     },
     {
       "osm_id": 129189517,
@@ -822,7 +1065,10 @@
       "lat": 42.091555,
       "lon": -71.262009,
       "distance_m": 176,
-      "bearing_from_stadium_deg": 69.4
+      "bearing_from_stadium_deg": 69.4,
+      "lot_orientation_deg": 339.3,
+      "length_m": 136.4,
+      "width_m": 120.8
     },
     {
       "osm_id": 863624910,
@@ -832,7 +1078,10 @@
       "lat": 42.091457,
       "lon": -71.266365,
       "distance_m": 202,
-      "bearing_from_stadium_deg": 284.6
+      "bearing_from_stadium_deg": 284.6,
+      "lot_orientation_deg": 342.3,
+      "length_m": 84.1,
+      "width_m": 11.2
     },
     {
       "osm_id": 863624909,
@@ -842,7 +1091,10 @@
       "lat": 42.091738,
       "lon": -71.266257,
       "distance_m": 204,
-      "bearing_from_stadium_deg": 293.8
+      "bearing_from_stadium_deg": 293.8,
+      "lot_orientation_deg": 162.5,
+      "length_m": 48.5,
+      "width_m": 10.8
     },
     {
       "osm_id": 129189522,
@@ -852,7 +1104,10 @@
       "lat": 42.092581,
       "lon": -71.262706,
       "distance_m": 206,
-      "bearing_from_stadium_deg": 31.3
+      "bearing_from_stadium_deg": 31.3,
+      "lot_orientation_deg": 72.1,
+      "length_m": 166.3,
+      "width_m": 142.1
     },
     {
       "osm_id": 863623275,
@@ -862,7 +1117,10 @@
       "lat": 42.091875,
       "lon": -71.266258,
       "distance_m": 210,
-      "bearing_from_stadium_deg": 297.6
+      "bearing_from_stadium_deg": 297.6,
+      "lot_orientation_deg": 342.1,
+      "length_m": 68.5,
+      "width_m": 37.9
     },
     {
       "osm_id": 863623274,
@@ -872,7 +1130,10 @@
       "lat": 42.091538,
       "lon": -71.266592,
       "distance_m": 222,
-      "bearing_from_stadium_deg": 285.6
+      "bearing_from_stadium_deg": 285.6,
+      "lot_orientation_deg": 342.4,
+      "length_m": 101.7,
+      "width_m": 6.5
     },
     {
       "osm_id": 1349061133,
@@ -882,7 +1143,10 @@
       "lat": 42.088955,
       "lon": -71.263416,
       "distance_m": 232,
-      "bearing_from_stadium_deg": 168.0
+      "bearing_from_stadium_deg": 168.0,
+      "lot_orientation_deg": 252.9,
+      "length_m": 38.8,
+      "width_m": 30.7
     },
     {
       "osm_id": 821124585,
@@ -892,7 +1156,10 @@
       "lat": 42.092253,
       "lon": -71.266506,
       "distance_m": 249,
-      "bearing_from_stadium_deg": 304.0
+      "bearing_from_stadium_deg": 304.0,
+      "lot_orientation_deg": 31.9,
+      "length_m": 43.4,
+      "width_m": 18.7
     },
     {
       "osm_id": 129179921,
@@ -902,7 +1169,10 @@
       "lat": 42.089926,
       "lon": -71.261108,
       "distance_m": 267,
-      "bearing_from_stadium_deg": 116.6
+      "bearing_from_stadium_deg": 116.6,
+      "lot_orientation_deg": 162.6,
+      "length_m": 295.1,
+      "width_m": 130.1
     },
     {
       "osm_id": 129189519,
@@ -912,7 +1182,10 @@
       "lat": 42.094228,
       "lon": -71.262572,
       "distance_m": 378,
-      "bearing_from_stadium_deg": 18.2
+      "bearing_from_stadium_deg": 18.2,
+      "lot_orientation_deg": 341.3,
+      "length_m": 165.2,
+      "width_m": 101.1
     },
     {
       "osm_id": 863632948,
@@ -922,7 +1195,10 @@
       "lat": 42.087678,
       "lon": -71.265607,
       "distance_m": 392,
-      "bearing_from_stadium_deg": 199.7
+      "bearing_from_stadium_deg": 199.7,
+      "lot_orientation_deg": 248.3,
+      "length_m": 35.8,
+      "width_m": 18.6
     },
     {
       "osm_id": 819270597,
@@ -932,7 +1208,10 @@
       "lat": 42.088062,
       "lon": -71.267091,
       "distance_m": 414,
-      "bearing_from_stadium_deg": 218.0
+      "bearing_from_stadium_deg": 218.0,
+      "lot_orientation_deg": 342.4,
+      "length_m": 131.0,
+      "width_m": 62.6
     },
     {
       "osm_id": 819887399,
@@ -942,7 +1221,10 @@
       "lat": 42.089908,
       "lon": -71.268794,
       "distance_m": 414,
-      "bearing_from_stadium_deg": 252.9
+      "bearing_from_stadium_deg": 252.9,
+      "lot_orientation_deg": 289.1,
+      "length_m": 80.6,
+      "width_m": 51.4
     },
     {
       "osm_id": 863632398,
@@ -952,7 +1234,10 @@
       "lat": 42.087582,
       "lon": -71.266111,
       "distance_m": 418,
-      "bearing_from_stadium_deg": 204.6
+      "bearing_from_stadium_deg": 204.6,
+      "lot_orientation_deg": 248.2,
+      "length_m": 30.4,
+      "width_m": 18.6
     },
     {
       "osm_id": 129188747,
@@ -962,7 +1247,10 @@
       "lat": 42.095536,
       "lon": -71.264892,
       "distance_m": 510,
-      "bearing_from_stadium_deg": 351.7
+      "bearing_from_stadium_deg": 351.7,
+      "lot_orientation_deg": 132.4,
+      "length_m": 299.9,
+      "width_m": 260.9
     },
     {
       "osm_id": 821124579,
@@ -972,7 +1260,10 @@
       "lat": 42.089196,
       "lon": -71.269909,
       "distance_m": 527,
-      "bearing_from_stadium_deg": 247.6
+      "bearing_from_stadium_deg": 247.6,
+      "lot_orientation_deg": 71.1,
+      "length_m": 255.3,
+      "width_m": 154.7
     },
     {
       "osm_id": 821124581,
@@ -982,7 +1273,10 @@
       "lat": 42.087742,
       "lon": -71.26886,
       "distance_m": 540,
-      "bearing_from_stadium_deg": 227.9
+      "bearing_from_stadium_deg": 227.9,
+      "lot_orientation_deg": 146.7,
+      "length_m": 191.2,
+      "width_m": 104.7
     },
     {
       "osm_id": 1093638931,
@@ -992,7 +1286,10 @@
       "lat": 42.093483,
       "lon": -71.270468,
       "distance_m": 601,
-      "bearing_from_stadium_deg": 297.4
+      "bearing_from_stadium_deg": 297.4,
+      "lot_orientation_deg": 335.8,
+      "length_m": 227.8,
+      "width_m": 200.7
     },
     {
       "osm_id": 130818791,
@@ -1002,7 +1299,10 @@
       "lat": 42.095104,
       "lon": -71.268934,
       "distance_m": 612,
-      "bearing_from_stadium_deg": 318.3
+      "bearing_from_stadium_deg": 318.3,
+      "lot_orientation_deg": 155.9,
+      "length_m": 208.0,
+      "width_m": 162.9
     },
     {
       "osm_id": 821124582,
@@ -1012,7 +1312,10 @@
       "lat": 42.087737,
       "lon": -71.270058,
       "distance_m": 618,
-      "bearing_from_stadium_deg": 234.0
+      "bearing_from_stadium_deg": 234.0,
+      "lot_orientation_deg": 36.1,
+      "length_m": 114.0,
+      "width_m": 62.2
     },
     {
       "osm_id": 129626644,
@@ -1022,7 +1325,10 @@
       "lat": 42.09677,
       "lon": -71.26402,
       "distance_m": 642,
-      "bearing_from_stadium_deg": 359.9
+      "bearing_from_stadium_deg": 359.9,
+      "lot_orientation_deg": 133.4,
+      "length_m": 145.3,
+      "width_m": 37.0
     },
     {
       "osm_id": 130819588,
@@ -1032,7 +1338,10 @@
       "lat": 42.091866,
       "lon": -71.272194,
       "distance_m": 683,
-      "bearing_from_stadium_deg": 278.1
+      "bearing_from_stadium_deg": 278.1,
+      "lot_orientation_deg": 80.6,
+      "length_m": 287.0,
+      "width_m": 208.4
     },
     {
       "osm_id": 1016649185,
@@ -1042,7 +1351,10 @@
       "lat": 42.084744,
       "lon": -71.265468,
       "distance_m": 706,
-      "bearing_from_stadium_deg": 189.9
+      "bearing_from_stadium_deg": 189.9,
+      "lot_orientation_deg": 216.7,
+      "length_m": 30.7,
+      "width_m": 18.6
     },
     {
       "osm_id": 130818793,
@@ -1052,7 +1364,10 @@
       "lat": 42.095972,
       "lon": -71.269448,
       "distance_m": 713,
-      "bearing_from_stadium_deg": 320.9
+      "bearing_from_stadium_deg": 320.9,
+      "lot_orientation_deg": 246.4,
+      "length_m": 140.2,
+      "width_m": 80.0
     },
     {
       "osm_id": 1016649184,
@@ -1062,7 +1377,10 @@
       "lat": 42.084627,
       "lon": -71.265225,
       "distance_m": 716,
-      "bearing_from_stadium_deg": 188.1
+      "bearing_from_stadium_deg": 188.1,
+      "lot_orientation_deg": 221.4,
+      "length_m": 33.3,
+      "width_m": 18.4
     },
     {
       "osm_id": 819271596,
@@ -1072,7 +1390,10 @@
       "lat": 42.08833,
       "lon": -71.271916,
       "distance_m": 717,
-      "bearing_from_stadium_deg": 245.6
+      "bearing_from_stadium_deg": 245.6,
+      "lot_orientation_deg": 72.6,
+      "length_m": 129.1,
+      "width_m": 91.6
     },
     {
       "osm_id": 820110390,
@@ -1082,7 +1403,10 @@
       "lat": 42.086803,
       "lon": -71.270616,
       "distance_m": 718,
-      "bearing_from_stadium_deg": 229.5
+      "bearing_from_stadium_deg": 229.5,
+      "lot_orientation_deg": 252.1,
+      "length_m": 184.9,
+      "width_m": 59.4
     },
     {
       "osm_id": 1093638930,
@@ -1092,7 +1416,10 @@
       "lat": 42.094637,
       "lon": -71.271334,
       "distance_m": 728,
-      "bearing_from_stadium_deg": 303.8
+      "bearing_from_stadium_deg": 303.8,
+      "lot_orientation_deg": 246.0,
+      "length_m": 193.6,
+      "width_m": 111.3
     },
     {
       "osm_id": 819272022,
@@ -1102,7 +1429,10 @@
       "lat": 42.085297,
       "lon": -71.26838,
       "distance_m": 730,
-      "bearing_from_stadium_deg": 209.7
+      "bearing_from_stadium_deg": 209.7,
+      "lot_orientation_deg": 211.7,
+      "length_m": 34.1,
+      "width_m": 18.2
     },
     {
       "osm_id": 1016649183,
@@ -1112,7 +1442,10 @@
       "lat": 42.084447,
       "lon": -71.265046,
       "distance_m": 734,
-      "bearing_from_stadium_deg": 186.8
+      "bearing_from_stadium_deg": 186.8,
+      "lot_orientation_deg": 225.6,
+      "length_m": 39.2,
+      "width_m": 18.3
     },
     {
       "osm_id": 1016649182,
@@ -1122,7 +1455,10 @@
       "lat": 42.084331,
       "lon": -71.264792,
       "distance_m": 744,
-      "bearing_from_stadium_deg": 185.0
+      "bearing_from_stadium_deg": 185.0,
+      "lot_orientation_deg": 230.3,
+      "length_m": 41.7,
+      "width_m": 18.6
     },
     {
       "osm_id": 130819585,
@@ -1132,7 +1468,10 @@
       "lat": 42.093529,
       "lon": -71.272537,
       "distance_m": 758,
-      "bearing_from_stadium_deg": 291.8
+      "bearing_from_stadium_deg": 291.8,
+      "lot_orientation_deg": 156.1,
+      "length_m": 211.9,
+      "width_m": 110.0
     },
     {
       "osm_id": 129183874,
@@ -1142,7 +1481,10 @@
       "lat": 42.087304,
       "lon": -71.271982,
       "distance_m": 776,
-      "bearing_from_stadium_deg": 238.0
+      "bearing_from_stadium_deg": 238.0,
+      "lot_orientation_deg": 72.8,
+      "length_m": 171.0,
+      "width_m": 78.6
     },
     {
       "osm_id": 130820619,
@@ -1152,7 +1494,10 @@
       "lat": 42.090633,
       "lon": -71.273713,
       "distance_m": 803,
-      "bearing_from_stadium_deg": 267.1
+      "bearing_from_stadium_deg": 267.1,
+      "lot_orientation_deg": 308.1,
+      "length_m": 238.3,
+      "width_m": 111.2
     },
     {
       "osm_id": 130819584,
@@ -1162,7 +1507,10 @@
       "lat": 42.092686,
       "lon": -71.273728,
       "distance_m": 824,
-      "bearing_from_stadium_deg": 283.1
+      "bearing_from_stadium_deg": 283.1,
+      "lot_orientation_deg": 335.1,
+      "length_m": 67.0,
+      "width_m": 54.9
     },
     {
       "osm_id": 130819200,
@@ -1172,7 +1520,10 @@
       "lat": 42.09535,
       "lon": -71.272163,
       "distance_m": 829,
-      "bearing_from_stadium_deg": 305.7
+      "bearing_from_stadium_deg": 305.7,
+      "lot_orientation_deg": 246.4,
+      "length_m": 287.5,
+      "width_m": 87.2
     },
     {
       "osm_id": 130819202,
@@ -1182,7 +1533,10 @@
       "lat": 42.097298,
       "lon": -71.270005,
       "distance_m": 858,
-      "bearing_from_stadium_deg": 324.7
+      "bearing_from_stadium_deg": 324.7,
+      "lot_orientation_deg": 241.5,
+      "length_m": 232.5,
+      "width_m": 135.8
     },
     {
       "osm_id": 820110389,
@@ -1192,7 +1546,10 @@
       "lat": 42.08607,
       "lon": -71.272648,
       "distance_m": 900,
-      "bearing_from_stadium_deg": 232.5
+      "bearing_from_stadium_deg": 232.5,
+      "lot_orientation_deg": 150.9,
+      "length_m": 146.7,
+      "width_m": 118.7
     },
     {
       "osm_id": 1334808777,
@@ -1202,7 +1559,10 @@
       "lat": 42.09924,
       "lon": -71.263984,
       "distance_m": 916,
-      "bearing_from_stadium_deg": 0.1
+      "bearing_from_stadium_deg": 0.1,
+      "lot_orientation_deg": 24.3,
+      "length_m": 142.7,
+      "width_m": 108.0
     }
   ],
   "nrg-stadium": [
@@ -1214,7 +1574,10 @@
       "lat": 29.687003,
       "lon": -95.411464,
       "distance_m": 261,
-      "bearing_from_stadium_deg": 346.4
+      "bearing_from_stadium_deg": 346.4,
+      "lot_orientation_deg": 178.6,
+      "length_m": 75.5,
+      "width_m": 62.4
     },
     {
       "osm_id": 119422952,
@@ -1224,7 +1587,10 @@
       "lat": 29.685933,
       "lon": -95.413485,
       "distance_m": 290,
-      "bearing_from_stadium_deg": 297.7
+      "bearing_from_stadium_deg": 297.7,
+      "lot_orientation_deg": 179.0,
+      "length_m": 250.0,
+      "width_m": 107.8
     },
     {
       "osm_id": 43055128,
@@ -1234,7 +1600,10 @@
       "lat": 29.687271,
       "lon": -95.409903,
       "distance_m": 297,
-      "bearing_from_stadium_deg": 17.5
+      "bearing_from_stadium_deg": 17.5,
+      "lot_orientation_deg": 89.8,
+      "length_m": 144.1,
+      "width_m": 122.0
     },
     {
       "osm_id": 51905620,
@@ -1244,7 +1613,10 @@
       "lat": 29.684187,
       "lon": -95.414566,
       "distance_m": 366,
-      "bearing_from_stadium_deg": 260.7
+      "bearing_from_stadium_deg": 260.7,
+      "lot_orientation_deg": 178.8,
+      "length_m": 321.4,
+      "width_m": 238.1
     },
     {
       "osm_id": 626284526,
@@ -1254,7 +1626,10 @@
       "lat": 29.685662,
       "lon": -95.406801,
       "distance_m": 403,
-      "bearing_from_stadium_deg": 74.9
+      "bearing_from_stadium_deg": 74.9,
+      "lot_orientation_deg": 39.6,
+      "length_m": 36.4,
+      "width_m": 25.4
     },
     {
       "osm_id": 43055129,
@@ -1264,7 +1639,10 @@
       "lat": 29.68831,
       "lon": -95.410023,
       "distance_m": 407,
-      "bearing_from_stadium_deg": 11.0
+      "bearing_from_stadium_deg": 11.0,
+      "lot_orientation_deg": 90.0,
+      "length_m": 166.0,
+      "width_m": 140.3
     },
     {
       "osm_id": 119422707,
@@ -1274,7 +1652,10 @@
       "lat": 29.681073,
       "lon": -95.408754,
       "distance_m": 452,
-      "bearing_from_stadium_deg": 153.7
+      "bearing_from_stadium_deg": 153.7,
+      "lot_orientation_deg": 88.8,
+      "length_m": 591.9,
+      "width_m": 564.5
     },
     {
       "osm_id": 43055130,
@@ -1284,7 +1665,10 @@
       "lat": 29.688823,
       "lon": -95.411388,
       "distance_m": 459,
-      "bearing_from_stadium_deg": 353.3
+      "bearing_from_stadium_deg": 353.3,
+      "lot_orientation_deg": 178.2,
+      "length_m": 229.9,
+      "width_m": 210.1
     },
     {
       "osm_id": 43055418,
@@ -1294,7 +1678,10 @@
       "lat": 29.688222,
       "lon": -95.414033,
       "distance_m": 497,
-      "bearing_from_stadium_deg": 321.5
+      "bearing_from_stadium_deg": 321.5,
+      "lot_orientation_deg": 124.6,
+      "length_m": 295.0,
+      "width_m": 106.1
     },
     {
       "osm_id": 119430131,
@@ -1304,7 +1691,10 @@
       "lat": 29.685373,
       "lon": -95.404634,
       "distance_m": 603,
-      "bearing_from_stadium_deg": 83.1
+      "bearing_from_stadium_deg": 83.1,
+      "lot_orientation_deg": 179.2,
+      "length_m": 739.0,
+      "width_m": 298.7
     },
     {
       "osm_id": 119430128,
@@ -1314,7 +1704,10 @@
       "lat": 29.689087,
       "lon": -95.406193,
       "distance_m": 661,
-      "bearing_from_stadium_deg": 42.7
+      "bearing_from_stadium_deg": 42.7,
+      "lot_orientation_deg": 89.6,
+      "length_m": 435.4,
+      "width_m": 96.2
     },
     {
       "osm_id": 43055396,
@@ -1324,7 +1717,10 @@
       "lat": 29.686794,
       "lon": -95.417443,
       "distance_m": 679,
-      "bearing_from_stadium_deg": 289.9
+      "bearing_from_stadium_deg": 289.9,
+      "lot_orientation_deg": 125.0,
+      "length_m": 553.0,
+      "width_m": 447.7
     },
     {
       "osm_id": 43055194,
@@ -1334,7 +1730,10 @@
       "lat": 29.690546,
       "lon": -95.41393,
       "distance_m": 714,
-      "bearing_from_stadium_deg": 335.2
+      "bearing_from_stadium_deg": 335.2,
+      "lot_orientation_deg": 304.0,
+      "length_m": 283.5,
+      "width_m": 125.8
     },
     {
       "osm_id": 626470679,
@@ -1344,7 +1743,10 @@
       "lat": 29.687413,
       "lon": -95.417844,
       "distance_m": 741,
-      "bearing_from_stadium_deg": 293.8
+      "bearing_from_stadium_deg": 293.8,
+      "lot_orientation_deg": 126.2,
+      "length_m": 211.5,
+      "width_m": 162.7
     },
     {
       "osm_id": 43055195,
@@ -1354,7 +1756,10 @@
       "lat": 29.691058,
       "lon": -95.41333,
       "distance_m": 745,
-      "bearing_from_stadium_deg": 341.1
+      "bearing_from_stadium_deg": 341.1,
+      "lot_orientation_deg": 71.6,
+      "length_m": 116.0,
+      "width_m": 58.2
     },
     {
       "osm_id": 119430802,
@@ -1364,7 +1769,10 @@
       "lat": 29.678851,
       "lon": -95.414611,
       "distance_m": 748,
-      "bearing_from_stadium_deg": 209.2
+      "bearing_from_stadium_deg": 209.2,
+      "lot_orientation_deg": 178.6,
+      "length_m": 162.8,
+      "width_m": 88.0
     },
     {
       "osm_id": 43055800,
@@ -1374,7 +1782,10 @@
       "lat": 29.680235,
       "lon": -95.404664,
       "distance_m": 777,
-      "bearing_from_stadium_deg": 129.9
+      "bearing_from_stadium_deg": 129.9,
+      "lot_orientation_deg": 210.3,
+      "length_m": 405.1,
+      "width_m": 196.8
     },
     {
       "osm_id": 1425968056,
@@ -1384,7 +1795,10 @@
       "lat": 29.691773,
       "lon": -95.412449,
       "distance_m": 800,
-      "bearing_from_stadium_deg": 348.7
+      "bearing_from_stadium_deg": 348.7,
+      "lot_orientation_deg": 337.9,
+      "length_m": 63.9,
+      "width_m": 7.0
     },
     {
       "osm_id": 1425968055,
@@ -1394,7 +1808,10 @@
       "lat": 29.691827,
       "lon": -95.412321,
       "distance_m": 803,
-      "bearing_from_stadium_deg": 349.7
+      "bearing_from_stadium_deg": 349.7,
+      "lot_orientation_deg": 158.0,
+      "length_m": 62.0,
+      "width_m": 6.6
     },
     {
       "osm_id": 45850504,
@@ -1404,7 +1821,10 @@
       "lat": 29.690818,
       "lon": -95.405124,
       "distance_m": 874,
-      "bearing_from_stadium_deg": 39.1
+      "bearing_from_stadium_deg": 39.1,
+      "lot_orientation_deg": 0.0,
+      "length_m": 149.8,
+      "width_m": 133.3
     },
     {
       "osm_id": 218802505,
@@ -1414,7 +1834,10 @@
       "lat": 29.692582,
       "lon": -95.412213,
       "distance_m": 884,
-      "bearing_from_stadium_deg": 351.3
+      "bearing_from_stadium_deg": 351.3,
+      "lot_orientation_deg": 67.3,
+      "length_m": 117.0,
+      "width_m": 68.8
     },
     {
       "osm_id": 218895502,
@@ -1424,7 +1847,10 @@
       "lat": 29.691903,
       "lon": -95.406087,
       "distance_m": 921,
-      "bearing_from_stadium_deg": 29.8
+      "bearing_from_stadium_deg": 29.8,
+      "lot_orientation_deg": 269.5,
+      "length_m": 223.1,
+      "width_m": 93.6
     },
     {
       "osm_id": 1267544125,
@@ -1434,7 +1860,10 @@
       "lat": 29.692898,
       "lon": -95.408271,
       "distance_m": 942,
-      "bearing_from_stadium_deg": 15.2
+      "bearing_from_stadium_deg": 15.2,
+      "lot_orientation_deg": 359.7,
+      "length_m": 92.9,
+      "width_m": 34.9
     },
     {
       "osm_id": 775142748,
@@ -1444,7 +1873,10 @@
       "lat": 29.676005,
       "lon": -95.408416,
       "distance_m": 997,
-      "bearing_from_stadium_deg": 166.5
+      "bearing_from_stadium_deg": 166.5,
+      "lot_orientation_deg": 178.7,
+      "length_m": 470.3,
+      "width_m": 259.7
     },
     {
       "osm_id": 1495169457,
@@ -1454,7 +1886,10 @@
       "lat": 29.690534,
       "lon": -95.419056,
       "distance_m": 1024,
-      "bearing_from_stadium_deg": 309.1
+      "bearing_from_stadium_deg": 309.1,
+      "lot_orientation_deg": 304.1,
+      "length_m": 57.5,
+      "width_m": 30.8
     },
     {
       "osm_id": 774750751,
@@ -1464,7 +1899,10 @@
       "lat": 29.676653,
       "lon": -95.40536,
       "distance_m": 1041,
-      "bearing_from_stadium_deg": 149.5
+      "bearing_from_stadium_deg": 149.5,
+      "lot_orientation_deg": 179.9,
+      "length_m": 377.9,
+      "width_m": 290.7
     },
     {
       "osm_id": 1267544171,
@@ -1474,7 +1912,10 @@
       "lat": 29.689731,
       "lon": -95.401518,
       "distance_m": 1058,
-      "bearing_from_stadium_deg": 58.2
+      "bearing_from_stadium_deg": 58.2,
+      "lot_orientation_deg": 90.2,
+      "length_m": 75.2,
+      "width_m": 39.3
     },
     {
       "osm_id": 51904006,
@@ -1484,7 +1925,10 @@
       "lat": 29.692177,
       "lon": -95.418195,
       "distance_m": 1093,
-      "bearing_from_stadium_deg": 319.4
+      "bearing_from_stadium_deg": 319.4,
+      "lot_orientation_deg": 304.8,
+      "length_m": 234.4,
+      "width_m": 169.9
     },
     {
       "osm_id": 1267544036,
@@ -1494,7 +1938,10 @@
       "lat": 29.694387,
       "lon": -95.41311,
       "distance_m": 1097,
-      "bearing_from_stadium_deg": 348.4
+      "bearing_from_stadium_deg": 348.4,
+      "lot_orientation_deg": 156.4,
+      "length_m": 49.4,
+      "width_m": 37.6
     },
     {
       "osm_id": 255758838,
@@ -1504,7 +1951,10 @@
       "lat": 29.675184,
       "lon": -95.407608,
       "distance_m": 1105,
-      "bearing_from_stadium_deg": 163.6
+      "bearing_from_stadium_deg": 163.6,
+      "lot_orientation_deg": 359.5,
+      "length_m": 842.0,
+      "width_m": 633.9
     },
     {
       "osm_id": 1267544051,
@@ -1514,7 +1964,10 @@
       "lat": 29.69363,
       "lon": -95.417002,
       "distance_m": 1156,
-      "bearing_from_stadium_deg": 329.0
+      "bearing_from_stadium_deg": 329.0,
+      "lot_orientation_deg": 139.5,
+      "length_m": 78.1,
+      "width_m": 38.4
     },
     {
       "osm_id": 775113527,
@@ -1524,7 +1977,10 @@
       "lat": 29.674229,
       "lon": -95.41088,
       "distance_m": 1167,
-      "bearing_from_stadium_deg": 180.2
+      "bearing_from_stadium_deg": 180.2,
+      "lot_orientation_deg": 358.9,
+      "length_m": 221.0,
+      "width_m": 184.7
     },
     {
       "osm_id": 1362627974,
@@ -1534,7 +1990,10 @@
       "lat": 29.685517,
       "lon": -95.423181,
       "distance_m": 1196,
-      "bearing_from_stadium_deg": 274.3
+      "bearing_from_stadium_deg": 274.3,
+      "lot_orientation_deg": 271.9,
+      "length_m": 36.4,
+      "width_m": 17.9
     },
     {
       "osm_id": 1495169459,
@@ -1544,7 +2003,10 @@
       "lat": 29.685074,
       "lon": -95.423237,
       "distance_m": 1199,
-      "bearing_from_stadium_deg": 271.9
+      "bearing_from_stadium_deg": 271.9,
+      "lot_orientation_deg": 271.9,
+      "length_m": 90.8,
+      "width_m": 53.6
     },
     {
       "osm_id": 1267544068,
@@ -1554,7 +2016,10 @@
       "lat": 29.694562,
       "lon": -95.416097,
       "distance_m": 1207,
-      "bearing_from_stadium_deg": 335.1
+      "bearing_from_stadium_deg": 335.1,
+      "lot_orientation_deg": 138.9,
+      "length_m": 75.5,
+      "width_m": 37.4
     },
     {
       "osm_id": 255758328,
@@ -1564,7 +2029,10 @@
       "lat": 29.676715,
       "lon": -95.402374,
       "distance_m": 1208,
-      "bearing_from_stadium_deg": 137.5
+      "bearing_from_stadium_deg": 137.5,
+      "lot_orientation_deg": 359.0,
+      "length_m": 266.9,
+      "width_m": 154.5
     },
     {
       "osm_id": 255737992,
@@ -1574,7 +2042,10 @@
       "lat": 29.693649,
       "lon": -95.418225,
       "distance_m": 1223,
-      "bearing_from_stadium_deg": 324.3
+      "bearing_from_stadium_deg": 324.3,
+      "lot_orientation_deg": 318.7,
+      "length_m": 58.6,
+      "width_m": 18.9
     },
     {
       "osm_id": 45850552,
@@ -1584,7 +2055,10 @@
       "lat": 29.695557,
       "lon": -95.407269,
       "distance_m": 1253,
-      "bearing_from_stadium_deg": 15.9
+      "bearing_from_stadium_deg": 15.9,
+      "lot_orientation_deg": 337.5,
+      "length_m": 352.0,
+      "width_m": 189.5
     },
     {
       "osm_id": 51901552,
@@ -1594,7 +2068,10 @@
       "lat": 29.695445,
       "lon": -95.414842,
       "distance_m": 1254,
-      "bearing_from_stadium_deg": 342.0
+      "bearing_from_stadium_deg": 342.0,
+      "lot_orientation_deg": 124.7,
+      "length_m": 120.7,
+      "width_m": 92.0
     },
     {
       "osm_id": 1362627973,
@@ -1604,7 +2081,10 @@
       "lat": 29.685634,
       "lon": -95.424052,
       "distance_m": 1281,
-      "bearing_from_stadium_deg": 274.6
+      "bearing_from_stadium_deg": 274.6,
+      "lot_orientation_deg": 91.4,
+      "length_m": 37.6,
+      "width_m": 31.7
     }
   ],
   "arrowhead-stadium": [
@@ -1616,7 +2096,10 @@
       "lat": 39.049295,
       "lon": -94.481863,
       "distance_m": 181,
-      "bearing_from_stadium_deg": 75.6
+      "bearing_from_stadium_deg": 75.6,
+      "lot_orientation_deg": 322.5,
+      "length_m": 47.5,
+      "width_m": 6.9
     },
     {
       "osm_id": 297682869,
@@ -1626,7 +2109,10 @@
       "lat": 39.049485,
       "lon": -94.481266,
       "distance_m": 236,
-      "bearing_from_stadium_deg": 73.7
+      "bearing_from_stadium_deg": 73.7,
+      "lot_orientation_deg": 46.7,
+      "length_m": 60.6,
+      "width_m": 38.7
     },
     {
       "osm_id": 65960018,
@@ -1636,7 +2122,10 @@
       "lat": 39.047393,
       "lon": -94.485842,
       "distance_m": 237,
-      "bearing_from_stadium_deg": 225.4
+      "bearing_from_stadium_deg": 225.4,
+      "lot_orientation_deg": 137.1,
+      "length_m": 360.0,
+      "width_m": 117.9
     },
     {
       "osm_id": 938618938,
@@ -1646,7 +2135,10 @@
       "lat": 39.048734,
       "lon": -94.48089,
       "distance_m": 260,
-      "bearing_from_stadium_deg": 93.8
+      "bearing_from_stadium_deg": 93.8,
+      "lot_orientation_deg": 136.8,
+      "length_m": 114.4,
+      "width_m": 83.8
     },
     {
       "osm_id": 65960010,
@@ -1656,7 +2148,10 @@
       "lat": 39.047474,
       "lon": -94.481127,
       "distance_m": 286,
-      "bearing_from_stadium_deg": 123.4
+      "bearing_from_stadium_deg": 123.4,
+      "lot_orientation_deg": 317.2,
+      "length_m": 330.4,
+      "width_m": 172.5
     },
     {
       "osm_id": 65960000,
@@ -1666,7 +2161,10 @@
       "lat": 39.051789,
       "lon": -94.484085,
       "distance_m": 323,
-      "bearing_from_stadium_deg": 357.0
+      "bearing_from_stadium_deg": 357.0,
+      "lot_orientation_deg": 317.2,
+      "length_m": 185.1,
+      "width_m": 89.6
     },
     {
       "osm_id": 65960002,
@@ -1676,7 +2174,10 @@
       "lat": 39.051341,
       "lon": -94.486239,
       "distance_m": 340,
-      "bearing_from_stadium_deg": 323.3
+      "bearing_from_stadium_deg": 323.3,
+      "lot_orientation_deg": 317.2,
+      "length_m": 306.6,
+      "width_m": 209.2
     },
     {
       "osm_id": 113297433,
@@ -1686,7 +2187,10 @@
       "lat": 39.045944,
       "lon": -94.482768,
       "distance_m": 342,
-      "bearing_from_stadium_deg": 163.5
+      "bearing_from_stadium_deg": 163.5,
+      "lot_orientation_deg": 137.2,
+      "length_m": 311.7,
+      "width_m": 170.4
     },
     {
       "osm_id": 297844248,
@@ -1696,7 +2200,10 @@
       "lat": 39.049766,
       "lon": -94.488167,
       "distance_m": 382,
-      "bearing_from_stadium_deg": 284.8
+      "bearing_from_stadium_deg": 284.8,
+      "lot_orientation_deg": 317.2,
+      "length_m": 295.7,
+      "width_m": 206.4
     },
     {
       "osm_id": 938618939,
@@ -1706,7 +2213,10 @@
       "lat": 39.04776,
       "lon": -94.479144,
       "distance_m": 429,
-      "bearing_from_stadium_deg": 107.1
+      "bearing_from_stadium_deg": 107.1,
+      "lot_orientation_deg": 137.3,
+      "length_m": 118.4,
+      "width_m": 77.8
     },
     {
       "osm_id": 938232415,
@@ -1716,7 +2226,10 @@
       "lat": 39.050353,
       "lon": -94.478997,
       "distance_m": 453,
-      "bearing_from_stadium_deg": 68.9
+      "bearing_from_stadium_deg": 68.9,
+      "lot_orientation_deg": 226.9,
+      "length_m": 281.8,
+      "width_m": 121.6
     },
     {
       "osm_id": 65960007,
@@ -1726,7 +2239,10 @@
       "lat": 39.052915,
       "lon": -94.482234,
       "distance_m": 470,
-      "bearing_from_stadium_deg": 17.7
+      "bearing_from_stadium_deg": 17.7,
+      "lot_orientation_deg": 317.5,
+      "length_m": 256.8,
+      "width_m": 131.1
     },
     {
       "osm_id": 938232416,
@@ -1736,7 +2252,10 @@
       "lat": 39.049064,
       "lon": -94.477748,
       "distance_m": 531,
-      "bearing_from_stadium_deg": 87.9
+      "bearing_from_stadium_deg": 87.9,
+      "lot_orientation_deg": 226.9,
+      "length_m": 246.7,
+      "width_m": 112.8
     },
     {
       "osm_id": 65960031,
@@ -1746,7 +2265,10 @@
       "lat": 39.051653,
       "lon": -94.488973,
       "distance_m": 536,
-      "bearing_from_stadium_deg": 305.0
+      "bearing_from_stadium_deg": 305.0,
+      "lot_orientation_deg": 8.2,
+      "length_m": 467.3,
+      "width_m": 244.7
     },
     {
       "osm_id": 938828422,
@@ -1756,7 +2278,10 @@
       "lat": 39.048938,
       "lon": -94.476196,
       "distance_m": 664,
-      "bearing_from_stadium_deg": 89.5
+      "bearing_from_stadium_deg": 89.5,
+      "lot_orientation_deg": 186.9,
+      "length_m": 64.2,
+      "width_m": 34.9
     },
     {
       "osm_id": 65960023,
@@ -1766,7 +2291,10 @@
       "lat": 39.044394,
       "lon": -94.477583,
       "distance_m": 739,
-      "bearing_from_stadium_deg": 132.5
+      "bearing_from_stadium_deg": 132.5,
+      "lot_orientation_deg": 135.1,
+      "length_m": 386.0,
+      "width_m": 304.4
     },
     {
       "osm_id": 1523416768,
@@ -1776,7 +2304,10 @@
       "lat": 39.053772,
       "lon": -94.491251,
       "distance_m": 836,
-      "bearing_from_stadium_deg": 310.5
+      "bearing_from_stadium_deg": 310.5,
+      "lot_orientation_deg": 124.3,
+      "length_m": 422.3,
+      "width_m": 334.7
     },
     {
       "osm_id": 554555827,
@@ -1786,7 +2317,10 @@
       "lat": 39.058591,
       "lon": -94.480474,
       "distance_m": 1118,
-      "bearing_from_stadium_deg": 15.3
+      "bearing_from_stadium_deg": 15.3,
+      "lot_orientation_deg": 177.2,
+      "length_m": 146.0,
+      "width_m": 92.2
     },
     {
       "osm_id": 554555826,
@@ -1796,7 +2330,10 @@
       "lat": 39.058768,
       "lon": -94.481378,
       "distance_m": 1120,
-      "bearing_from_stadium_deg": 11.2
+      "bearing_from_stadium_deg": 11.2,
+      "lot_orientation_deg": 1.9,
+      "length_m": 198.2,
+      "width_m": 164.4
     },
     {
       "osm_id": 554555828,
@@ -1806,7 +2343,10 @@
       "lat": 39.059637,
       "lon": -94.480646,
       "distance_m": 1227,
-      "bearing_from_stadium_deg": 13.2
+      "bearing_from_stadium_deg": 13.2,
+      "lot_orientation_deg": 62.5,
+      "length_m": 142.2,
+      "width_m": 115.9
     },
     {
       "osm_id": 554555829,
@@ -1816,7 +2356,10 @@
       "lat": 39.060543,
       "lon": -94.481378,
       "distance_m": 1314,
-      "bearing_from_stadium_deg": 9.5
+      "bearing_from_stadium_deg": 9.5,
+      "lot_orientation_deg": 62.5,
+      "length_m": 175.8,
+      "width_m": 144.0
     },
     {
       "osm_id": 1244228705,
@@ -1826,7 +2369,10 @@
       "lat": 39.039476,
       "lon": -94.497422,
       "distance_m": 1569,
-      "bearing_from_stadium_deg": 228.2
+      "bearing_from_stadium_deg": 228.2,
+      "lot_orientation_deg": 92.6,
+      "length_m": 186.6,
+      "width_m": 52.0
     }
   ],
   "sofi-stadium": [
@@ -1838,7 +2384,10 @@
       "lat": 33.951951,
       "lon": -118.341421,
       "distance_m": 252,
-      "bearing_from_stadium_deg": 242.4
+      "bearing_from_stadium_deg": 242.4,
+      "lot_orientation_deg": 91.0,
+      "length_m": 108.0,
+      "width_m": 76.3
     },
     {
       "osm_id": 893935392,
@@ -1848,7 +2397,10 @@
       "lat": 33.953043,
       "lon": -118.335638,
       "distance_m": 310,
-      "bearing_from_stadium_deg": 89.1
+      "bearing_from_stadium_deg": 89.1,
+      "lot_orientation_deg": 334.2,
+      "length_m": 255.5,
+      "width_m": 132.6
     },
     {
       "osm_id": 893935468,
@@ -1858,7 +2410,10 @@
       "lat": 33.955964,
       "lon": -118.338958,
       "distance_m": 330,
-      "bearing_from_stadium_deg": 0.7
+      "bearing_from_stadium_deg": 0.7,
+      "lot_orientation_deg": 270.4,
+      "length_m": 192.2,
+      "width_m": 86.7
     },
     {
       "osm_id": 893935452,
@@ -1868,7 +2423,10 @@
       "lat": 33.955275,
       "lon": -118.336456,
       "distance_m": 345,
-      "bearing_from_stadium_deg": 42.8
+      "bearing_from_stadium_deg": 42.8,
+      "lot_orientation_deg": 343.0,
+      "length_m": 267.3,
+      "width_m": 186.3
     },
     {
       "osm_id": 893935361,
@@ -1878,7 +2436,10 @@
       "lat": 33.950534,
       "lon": -118.341496,
       "distance_m": 358,
-      "bearing_from_stadium_deg": 220.0
+      "bearing_from_stadium_deg": 220.0,
+      "lot_orientation_deg": 269.9,
+      "length_m": 206.6,
+      "width_m": 178.6
     },
     {
       "osm_id": 893935345,
@@ -1888,7 +2449,10 @@
       "lat": 33.953676,
       "lon": -118.343082,
       "distance_m": 384,
-      "bearing_from_stadium_deg": 281.3
+      "bearing_from_stadium_deg": 281.3,
+      "lot_orientation_deg": 180.0,
+      "length_m": 134.7,
+      "width_m": 124.8
     },
     {
       "osm_id": 836160463,
@@ -1898,7 +2462,10 @@
       "lat": 33.95601,
       "lon": -118.341256,
       "distance_m": 394,
-      "bearing_from_stadium_deg": 328.1
+      "bearing_from_stadium_deg": 328.1,
+      "lot_orientation_deg": 146.6,
+      "length_m": 274.4,
+      "width_m": 236.6
     },
     {
       "osm_id": 1078358957,
@@ -1908,7 +2475,10 @@
       "lat": 33.950898,
       "lon": -118.335212,
       "distance_m": 420,
-      "bearing_from_stadium_deg": 123.8
+      "bearing_from_stadium_deg": 123.8,
+      "lot_orientation_deg": 173.7,
+      "length_m": 185.2,
+      "width_m": 105.0
     },
     {
       "osm_id": 1078397784,
@@ -1918,7 +2488,10 @@
       "lat": 33.952105,
       "lon": -118.343537,
       "distance_m": 430,
-      "bearing_from_stadium_deg": 256.6
+      "bearing_from_stadium_deg": 256.6,
+      "lot_orientation_deg": 179.3,
+      "length_m": 107.6,
+      "width_m": 64.8
     },
     {
       "osm_id": 893935434,
@@ -1928,7 +2501,10 @@
       "lat": 33.949278,
       "lon": -118.337487,
       "distance_m": 437,
-      "bearing_from_stadium_deg": 161.4
+      "bearing_from_stadium_deg": 161.4,
+      "lot_orientation_deg": 243.9,
+      "length_m": 137.6,
+      "width_m": 106.7
     },
     {
       "osm_id": 893935333,
@@ -1938,7 +2514,10 @@
       "lat": 33.955131,
       "lon": -118.343125,
       "distance_m": 448,
-      "bearing_from_stadium_deg": 301.9
+      "bearing_from_stadium_deg": 301.9,
+      "lot_orientation_deg": 146.6,
+      "length_m": 243.7,
+      "width_m": 110.4
     },
     {
       "osm_id": 1078397791,
@@ -1948,7 +2527,10 @@
       "lat": 33.949614,
       "lon": -118.33631,
       "distance_m": 451,
-      "bearing_from_stadium_deg": 146.6
+      "bearing_from_stadium_deg": 146.6,
+      "lot_orientation_deg": 334.0,
+      "length_m": 124.2,
+      "width_m": 118.7
     },
     {
       "osm_id": 1078397789,
@@ -1958,7 +2540,10 @@
       "lat": 33.949381,
       "lon": -118.341249,
       "distance_m": 453,
-      "bearing_from_stadium_deg": 207.3
+      "bearing_from_stadium_deg": 207.3,
+      "lot_orientation_deg": 270.0,
+      "length_m": 161.0,
+      "width_m": 69.1
     },
     {
       "osm_id": 1078397790,
@@ -1968,7 +2553,10 @@
       "lat": 33.94867,
       "lon": -118.338544,
       "distance_m": 483,
-      "bearing_from_stadium_deg": 175.0
+      "bearing_from_stadium_deg": 175.0,
+      "lot_orientation_deg": 318.7,
+      "length_m": 147.6,
+      "width_m": 143.3
     },
     {
       "osm_id": 1078358969,
@@ -1978,7 +2566,10 @@
       "lat": 33.949769,
       "lon": -118.335214,
       "distance_m": 501,
-      "bearing_from_stadium_deg": 135.8
+      "bearing_from_stadium_deg": 135.8,
+      "lot_orientation_deg": 353.8,
+      "length_m": 133.7,
+      "width_m": 128.5
     },
     {
       "osm_id": 1301392586,
@@ -1988,7 +2579,10 @@
       "lat": 33.947762,
       "lon": -118.339685,
       "distance_m": 586,
-      "bearing_from_stadium_deg": 186.2
+      "bearing_from_stadium_deg": 186.2,
+      "lot_orientation_deg": 48.8,
+      "length_m": 94.1,
+      "width_m": 71.3
     },
     {
       "osm_id": 1078358970,
@@ -1998,7 +2592,10 @@
       "lat": 33.948349,
       "lon": -118.335722,
       "distance_m": 599,
-      "bearing_from_stadium_deg": 149.7
+      "bearing_from_stadium_deg": 149.7,
+      "lot_orientation_deg": 347.6,
+      "length_m": 293.0,
+      "width_m": 129.4
     },
     {
       "osm_id": 1078040090,
@@ -2008,7 +2605,10 @@
       "lat": 33.950826,
       "lon": -118.332513,
       "distance_m": 645,
-      "bearing_from_stadium_deg": 112.0
+      "bearing_from_stadium_deg": 112.0,
+      "lot_orientation_deg": 269.9,
+      "length_m": 344.5,
+      "width_m": 301.8
     },
     {
       "osm_id": 1301392597,
@@ -2018,7 +2618,10 @@
       "lat": 33.947175,
       "lon": -118.33824,
       "distance_m": 652,
-      "bearing_from_stadium_deg": 173.8
+      "bearing_from_stadium_deg": 173.8,
+      "lot_orientation_deg": 89.8,
+      "length_m": 178.1,
+      "width_m": 42.6
     },
     {
       "osm_id": 1301392600,
@@ -2028,7 +2631,10 @@
       "lat": 33.948115,
       "lon": -118.343249,
       "distance_m": 670,
-      "bearing_from_stadium_deg": 215.8
+      "bearing_from_stadium_deg": 215.8,
+      "lot_orientation_deg": 89.8,
+      "length_m": 71.6,
+      "width_m": 32.9
     },
     {
       "osm_id": 893989472,
@@ -2038,7 +2644,10 @@
       "lat": 33.947702,
       "lon": -118.34268,
       "distance_m": 680,
-      "bearing_from_stadium_deg": 210.0
+      "bearing_from_stadium_deg": 210.0,
+      "lot_orientation_deg": 228.6,
+      "length_m": 105.7,
+      "width_m": 75.9
     },
     {
       "osm_id": 1301390340,
@@ -2048,7 +2657,10 @@
       "lat": 33.957375,
       "lon": -118.344488,
       "distance_m": 702,
-      "bearing_from_stadium_deg": 313.9
+      "bearing_from_stadium_deg": 313.9,
+      "lot_orientation_deg": 180.8,
+      "length_m": 132.8,
+      "width_m": 89.1
     },
     {
       "osm_id": 1388409000,
@@ -2058,7 +2670,10 @@
       "lat": 33.957436,
       "lon": -118.344581,
       "distance_m": 713,
-      "bearing_from_stadium_deg": 313.8
+      "bearing_from_stadium_deg": 313.8,
+      "lot_orientation_deg": 0.1,
+      "length_m": 138.0,
+      "width_m": 117.0
     },
     {
       "osm_id": 893989465,
@@ -2068,7 +2683,10 @@
       "lat": 33.946332,
       "lon": -118.338909,
       "distance_m": 742,
-      "bearing_from_stadium_deg": 179.4
+      "bearing_from_stadium_deg": 179.4,
+      "lot_orientation_deg": 270.0,
+      "length_m": 150.9,
+      "width_m": 131.5
     },
     {
       "osm_id": 662770747,
@@ -2078,7 +2696,10 @@
       "lat": 33.946268,
       "lon": -118.337192,
       "distance_m": 767,
-      "bearing_from_stadium_deg": 167.4
+      "bearing_from_stadium_deg": 167.4,
+      "lot_orientation_deg": 179.8,
+      "length_m": 116.1,
+      "width_m": 92.2
     },
     {
       "osm_id": 1078358973,
@@ -2088,7 +2709,10 @@
       "lat": 33.946502,
       "lon": -118.33565,
       "distance_m": 786,
-      "bearing_from_stadium_deg": 156.8
+      "bearing_from_stadium_deg": 156.8,
+      "lot_orientation_deg": 359.8,
+      "length_m": 158.7,
+      "width_m": 91.6
     },
     {
       "osm_id": 1301392598,
@@ -2098,7 +2722,10 @@
       "lat": 33.946017,
       "lon": -118.340844,
       "distance_m": 795,
-      "bearing_from_stadium_deg": 192.4
+      "bearing_from_stadium_deg": 192.4,
+      "lot_orientation_deg": 269.9,
+      "length_m": 112.8,
+      "width_m": 67.2
     },
     {
       "osm_id": 1078358959,
@@ -2108,7 +2735,10 @@
       "lat": 33.94606,
       "lon": -118.334388,
       "distance_m": 881,
-      "bearing_from_stadium_deg": 151.1
+      "bearing_from_stadium_deg": 151.1,
+      "lot_orientation_deg": 347.6,
+      "length_m": 149.9,
+      "width_m": 83.8
     },
     {
       "osm_id": 435997610,
@@ -2118,7 +2748,10 @@
       "lat": 33.944629,
       "lon": -118.337709,
       "distance_m": 938,
-      "bearing_from_stadium_deg": 172.7
+      "bearing_from_stadium_deg": 172.7,
+      "lot_orientation_deg": 269.8,
+      "length_m": 178.0,
+      "width_m": 101.5
     },
     {
       "osm_id": 1177128043,
@@ -2128,7 +2761,10 @@
       "lat": 33.955958,
       "lon": -118.329344,
       "distance_m": 949,
-      "bearing_from_stadium_deg": 69.7
+      "bearing_from_stadium_deg": 69.7,
+      "lot_orientation_deg": 0.2,
+      "length_m": 34.3,
+      "width_m": 21.5
     },
     {
       "osm_id": 592148034,
@@ -2138,7 +2774,10 @@
       "lat": 33.9488,
       "lon": -118.348145,
       "distance_m": 964,
-      "bearing_from_stadium_deg": 241.0
+      "bearing_from_stadium_deg": 241.0,
+      "lot_orientation_deg": 269.5,
+      "length_m": 210.9,
+      "width_m": 51.9
     },
     {
       "osm_id": 1434699574,
@@ -2148,7 +2787,10 @@
       "lat": 33.945191,
       "lon": -118.334394,
       "distance_m": 967,
-      "bearing_from_stadium_deg": 153.9
+      "bearing_from_stadium_deg": 153.9,
+      "lot_orientation_deg": 269.5,
+      "length_m": 37.1,
+      "width_m": 19.9
     },
     {
       "osm_id": 1301390652,
@@ -2158,7 +2800,10 @@
       "lat": 33.944295,
       "lon": -118.337875,
       "distance_m": 973,
-      "bearing_from_stadium_deg": 173.9
+      "bearing_from_stadium_deg": 173.9,
+      "lot_orientation_deg": 359.2,
+      "length_m": 98.5,
+      "width_m": 63.2
     },
     {
       "osm_id": 1434699576,
@@ -2168,7 +2813,10 @@
       "lat": 33.944911,
       "lon": -118.334488,
       "distance_m": 991,
-      "bearing_from_stadium_deg": 155.2
+      "bearing_from_stadium_deg": 155.2,
+      "lot_orientation_deg": 269.5,
+      "length_m": 60.9,
+      "width_m": 43.3
     },
     {
       "osm_id": 1434699579,
@@ -2178,7 +2826,10 @@
       "lat": 33.945086,
       "lon": -118.33343,
       "distance_m": 1019,
-      "bearing_from_stadium_deg": 149.7
+      "bearing_from_stadium_deg": 149.7,
+      "lot_orientation_deg": 90.0,
+      "length_m": 100.4,
+      "width_m": 53.0
     },
     {
       "osm_id": 1434699575,
@@ -2188,7 +2839,10 @@
       "lat": 33.944522,
       "lon": -118.333634,
       "distance_m": 1065,
-      "bearing_from_stadium_deg": 152.3
+      "bearing_from_stadium_deg": 152.3,
+      "lot_orientation_deg": 90.4,
+      "length_m": 109.3,
+      "width_m": 40.1
     },
     {
       "osm_id": 435997600,
@@ -2198,7 +2852,10 @@
       "lat": 33.944379,
       "lon": -118.34463,
       "distance_m": 1090,
-      "bearing_from_stadium_deg": 208.4
+      "bearing_from_stadium_deg": 208.4,
+      "lot_orientation_deg": 0.5,
+      "length_m": 176.6,
+      "width_m": 130.5
     },
     {
       "osm_id": 1434699581,
@@ -2208,7 +2865,10 @@
       "lat": 33.943995,
       "lon": -118.333303,
       "distance_m": 1131,
-      "bearing_from_stadium_deg": 152.3
+      "bearing_from_stadium_deg": 152.3,
+      "lot_orientation_deg": 269.9,
+      "length_m": 121.7,
+      "width_m": 75.5
     },
     {
       "osm_id": 1323019262,
@@ -2218,7 +2878,10 @@
       "lat": 33.9431,
       "lon": -118.342361,
       "distance_m": 1144,
-      "bearing_from_stadium_deg": 195.7
+      "bearing_from_stadium_deg": 195.7,
+      "lot_orientation_deg": 90.3,
+      "length_m": 202.1,
+      "width_m": 39.0
     },
     {
       "osm_id": 1434699580,
@@ -2228,7 +2891,10 @@
       "lat": 33.943268,
       "lon": -118.334512,
       "distance_m": 1159,
-      "bearing_from_stadium_deg": 159.1
+      "bearing_from_stadium_deg": 159.1,
+      "lot_orientation_deg": 180.1,
+      "length_m": 233.7,
+      "width_m": 76.6
     }
   ],
   "hard-rock-stadium": [
@@ -2240,7 +2906,10 @@
       "lat": 25.957205,
       "lon": -80.23693,
       "distance_m": 218,
-      "bearing_from_stadium_deg": 115.9
+      "bearing_from_stadium_deg": 115.9,
+      "lot_orientation_deg": 301.9,
+      "length_m": 73.4,
+      "width_m": 59.1
     },
     {
       "osm_id": 1471595440,
@@ -2250,7 +2919,10 @@
       "lat": 25.95672,
       "lon": -80.237271,
       "distance_m": 220,
-      "bearing_from_stadium_deg": 132.6
+      "bearing_from_stadium_deg": 132.6,
+      "lot_orientation_deg": 121.7,
+      "length_m": 70.3,
+      "width_m": 59.3
     },
     {
       "osm_id": 1471595438,
@@ -2260,7 +2932,10 @@
       "lat": 25.960028,
       "lon": -80.238002,
       "distance_m": 236,
-      "bearing_from_stadium_deg": 22.1
+      "bearing_from_stadium_deg": 22.1,
+      "lot_orientation_deg": 302.5,
+      "length_m": 343.2,
+      "width_m": 121.5
     },
     {
       "osm_id": 1471595449,
@@ -2270,7 +2945,10 @@
       "lat": 25.958017,
       "lon": -80.236199,
       "distance_m": 269,
-      "bearing_from_stadium_deg": 91.0
+      "bearing_from_stadium_deg": 91.0,
+      "lot_orientation_deg": 302.0,
+      "length_m": 97.7,
+      "width_m": 45.2
     },
     {
       "osm_id": 1471595441,
@@ -2280,7 +2958,10 @@
       "lat": 25.956104,
       "lon": -80.237128,
       "distance_m": 280,
-      "bearing_from_stadium_deg": 141.0
+      "bearing_from_stadium_deg": 141.0,
+      "lot_orientation_deg": 59.4,
+      "length_m": 94.5,
+      "width_m": 58.4
     },
     {
       "osm_id": 519119073,
@@ -2290,7 +2971,10 @@
       "lat": 25.960624,
       "lon": -80.238534,
       "distance_m": 287,
-      "bearing_from_stadium_deg": 7.1
+      "bearing_from_stadium_deg": 7.1,
+      "lot_orientation_deg": 273.0,
+      "length_m": 1575.5,
+      "width_m": 44.9
     },
     {
       "osm_id": 1471595447,
@@ -2300,7 +2984,10 @@
       "lat": 25.957007,
       "lon": -80.236192,
       "distance_m": 294,
-      "bearing_from_stadium_deg": 113.5
+      "bearing_from_stadium_deg": 113.5,
+      "lot_orientation_deg": 2.4,
+      "length_m": 201.9,
+      "width_m": 85.1
     },
     {
       "osm_id": 1471595436,
@@ -2310,7 +2997,10 @@
       "lat": 25.958435,
       "lon": -80.241957,
       "distance_m": 309,
-      "bearing_from_stadium_deg": 277.7
+      "bearing_from_stadium_deg": 277.7,
+      "lot_orientation_deg": 31.6,
+      "length_m": 416.4,
+      "width_m": 359.4
     },
     {
       "osm_id": 1471595443,
@@ -2320,7 +3010,10 @@
       "lat": 25.955139,
       "lon": -80.237879,
       "distance_m": 340,
-      "bearing_from_stadium_deg": 162.7
+      "bearing_from_stadium_deg": 162.7,
+      "lot_orientation_deg": 178.3,
+      "length_m": 87.0,
+      "width_m": 50.0
     },
     {
       "osm_id": 1471595435,
@@ -2330,7 +3023,10 @@
       "lat": 25.956608,
       "lon": -80.242176,
       "distance_m": 366,
-      "bearing_from_stadium_deg": 243.8
+      "bearing_from_stadium_deg": 243.8,
+      "lot_orientation_deg": 177.9,
+      "length_m": 159.0,
+      "width_m": 81.5
     },
     {
       "osm_id": 1471595444,
@@ -2340,7 +3036,10 @@
       "lat": 25.954936,
       "lon": -80.237256,
       "distance_m": 384,
-      "bearing_from_stadium_deg": 154.8
+      "bearing_from_stadium_deg": 154.8,
+      "lot_orientation_deg": 279.5,
+      "length_m": 93.5,
+      "width_m": 67.4
     },
     {
       "osm_id": 1471595450,
@@ -2350,7 +3049,10 @@
       "lat": 25.959614,
       "lon": -80.23515,
       "distance_m": 412,
-      "bearing_from_stadium_deg": 65.2
+      "bearing_from_stadium_deg": 65.2,
+      "lot_orientation_deg": 268.8,
+      "length_m": 239.7,
+      "width_m": 185.7
     },
     {
       "osm_id": 1471595434,
@@ -2360,7 +3062,10 @@
       "lat": 25.955365,
       "lon": -80.242068,
       "distance_m": 437,
-      "bearing_from_stadium_deg": 226.7
+      "bearing_from_stadium_deg": 226.7,
+      "lot_orientation_deg": 282.4,
+      "length_m": 153.9,
+      "width_m": 48.6
     },
     {
       "osm_id": 1471595445,
@@ -2370,7 +3075,10 @@
       "lat": 25.955171,
       "lon": -80.235268,
       "distance_m": 484,
-      "bearing_from_stadium_deg": 131.6
+      "bearing_from_stadium_deg": 131.6,
+      "lot_orientation_deg": 249.9,
+      "length_m": 279.3,
+      "width_m": 77.5
     },
     {
       "osm_id": 1471595433,
@@ -2380,7 +3088,10 @@
       "lat": 25.956745,
       "lon": -80.244107,
       "distance_m": 542,
-      "bearing_from_stadium_deg": 254.3
+      "bearing_from_stadium_deg": 254.3,
+      "lot_orientation_deg": 178.4,
+      "length_m": 129.1,
+      "width_m": 128.1
     },
     {
       "osm_id": 1471595432,
@@ -2390,7 +3101,10 @@
       "lat": 25.956905,
       "lon": -80.244523,
       "distance_m": 578,
-      "bearing_from_stadium_deg": 257.2
+      "bearing_from_stadium_deg": 257.2,
+      "lot_orientation_deg": 207.5,
+      "length_m": 227.5,
+      "width_m": 153.4
     },
     {
       "osm_id": 1471595431,
@@ -2400,7 +3114,10 @@
       "lat": 25.956805,
       "lon": -80.245515,
       "distance_m": 677,
-      "bearing_from_stadium_deg": 258.1
+      "bearing_from_stadium_deg": 258.1,
+      "lot_orientation_deg": 356.5,
+      "length_m": 135.5,
+      "width_m": 43.0
     },
     {
       "osm_id": 1471595453,
@@ -2410,7 +3127,10 @@
       "lat": 25.957929,
       "lon": -80.231461,
       "distance_m": 743,
-      "bearing_from_stadium_deg": 91.1
+      "bearing_from_stadium_deg": 91.1,
+      "lot_orientation_deg": 178.9,
+      "length_m": 328.9,
+      "width_m": 327.6
     },
     {
       "osm_id": 398993545,
@@ -2420,7 +3140,10 @@
       "lat": 25.954077,
       "lon": -80.244924,
       "distance_m": 748,
-      "bearing_from_stadium_deg": 233.7
+      "bearing_from_stadium_deg": 233.7,
+      "lot_orientation_deg": 0.2,
+      "length_m": 105.5,
+      "width_m": 94.8
     },
     {
       "osm_id": 1242711068,
@@ -2430,7 +3153,10 @@
       "lat": 25.955042,
       "lon": -80.231949,
       "distance_m": 771,
-      "bearing_from_stadium_deg": 115.8
+      "bearing_from_stadium_deg": 115.8,
+      "lot_orientation_deg": 88.7,
+      "length_m": 296.0,
+      "width_m": 224.0
     },
     {
       "osm_id": 1471595454,
@@ -2440,7 +3166,10 @@
       "lat": 25.957711,
       "lon": -80.230598,
       "distance_m": 830,
-      "bearing_from_stadium_deg": 92.7
+      "bearing_from_stadium_deg": 92.7,
+      "lot_orientation_deg": 359.7,
+      "length_m": 260.1,
+      "width_m": 187.5
     },
     {
       "osm_id": 398993547,
@@ -2450,7 +3179,10 @@
       "lat": 25.951781,
       "lon": -80.243878,
       "distance_m": 858,
-      "bearing_from_stadium_deg": 215.5
+      "bearing_from_stadium_deg": 215.5,
+      "lot_orientation_deg": 267.3,
+      "length_m": 121.7,
+      "width_m": 36.6
     },
     {
       "osm_id": 398993546,
@@ -2460,7 +3192,10 @@
       "lat": 25.952631,
       "lon": -80.245014,
       "distance_m": 860,
-      "bearing_from_stadium_deg": 225.4
+      "bearing_from_stadium_deg": 225.4,
+      "lot_orientation_deg": 176.5,
+      "length_m": 165.0,
+      "width_m": 89.3
     },
     {
       "osm_id": 463485938,
@@ -2470,7 +3205,10 @@
       "lat": 25.966712,
       "lon": -80.23989,
       "distance_m": 967,
-      "bearing_from_stadium_deg": 354.1
+      "bearing_from_stadium_deg": 354.1,
+      "lot_orientation_deg": 88.0,
+      "length_m": 235.9,
+      "width_m": 107.8
     },
     {
       "osm_id": 463485948,
@@ -2480,7 +3218,10 @@
       "lat": 25.966379,
       "lon": -80.2419,
       "distance_m": 973,
-      "bearing_from_stadium_deg": 342.0
+      "bearing_from_stadium_deg": 342.0,
+      "lot_orientation_deg": 87.5,
+      "length_m": 163.5,
+      "width_m": 53.3
     },
     {
       "osm_id": 463485945,
@@ -2490,7 +3231,10 @@
       "lat": 25.966487,
       "lon": -80.244553,
       "distance_m": 1095,
-      "bearing_from_stadium_deg": 328.9
+      "bearing_from_stadium_deg": 328.9,
+      "lot_orientation_deg": 268.6,
+      "length_m": 324.3,
+      "width_m": 111.2
     },
     {
       "osm_id": 463485939,
@@ -2500,7 +3244,10 @@
       "lat": 25.968368,
       "lon": -80.242222,
       "distance_m": 1194,
-      "bearing_from_stadium_deg": 343.8
+      "bearing_from_stadium_deg": 343.8,
+      "lot_orientation_deg": 268.6,
+      "length_m": 114.1,
+      "width_m": 74.0
     },
     {
       "osm_id": 463485943,
@@ -2510,7 +3257,10 @@
       "lat": 25.969628,
       "lon": -80.236598,
       "distance_m": 1307,
-      "bearing_from_stadium_deg": 10.1
+      "bearing_from_stadium_deg": 10.1,
+      "lot_orientation_deg": 267.9,
+      "length_m": 202.7,
+      "width_m": 159.1
     },
     {
       "osm_id": 463485937,
@@ -2520,7 +3270,10 @@
       "lat": 25.969314,
       "lon": -80.244859,
       "distance_m": 1386,
-      "bearing_from_stadium_deg": 334.5
+      "bearing_from_stadium_deg": 334.5,
+      "lot_orientation_deg": 269.0,
+      "length_m": 374.2,
+      "width_m": 331.1
     }
   ],
   "metlife-stadium": [
@@ -2532,7 +3285,10 @@
       "lat": 40.814419,
       "lon": -74.071971,
       "distance_m": 224,
-      "bearing_from_stadium_deg": 63.8
+      "bearing_from_stadium_deg": 63.8,
+      "lot_orientation_deg": 37.3,
+      "length_m": 142.2,
+      "width_m": 90.5
     },
     {
       "osm_id": 1500892807,
@@ -2542,7 +3298,10 @@
       "lat": 40.815686,
       "lon": -74.074144,
       "distance_m": 241,
-      "bearing_from_stadium_deg": 4.4
+      "bearing_from_stadium_deg": 4.4,
+      "lot_orientation_deg": 335.9,
+      "length_m": 168.9,
+      "width_m": 139.5
     },
     {
       "osm_id": 882187641,
@@ -2552,7 +3311,10 @@
       "lat": 40.811375,
       "lon": -74.073282,
       "distance_m": 256,
-      "bearing_from_stadium_deg": 159.2
+      "bearing_from_stadium_deg": 159.2,
+      "lot_orientation_deg": 126.3,
+      "length_m": 60.8,
+      "width_m": 34.7
     },
     {
       "osm_id": 287521202,
@@ -2562,7 +3324,10 @@
       "lat": 40.814583,
       "lon": -74.077143,
       "distance_m": 262,
-      "bearing_from_stadium_deg": 296.6
+      "bearing_from_stadium_deg": 296.6,
+      "lot_orientation_deg": 256.6,
+      "length_m": 392.7,
+      "width_m": 359.3
     },
     {
       "osm_id": 1501254697,
@@ -2572,7 +3337,10 @@
       "lat": 40.814409,
       "lon": -74.071265,
       "distance_m": 278,
-      "bearing_from_stadium_deg": 69.4
+      "bearing_from_stadium_deg": 69.4,
+      "lot_orientation_deg": 217.2,
+      "length_m": 78.3,
+      "width_m": 5.1
     },
     {
       "osm_id": 287607091,
@@ -2582,7 +3350,10 @@
       "lat": 40.813002,
       "lon": -74.071081,
       "distance_m": 282,
-      "bearing_from_stadium_deg": 102.0
+      "bearing_from_stadium_deg": 102.0,
+      "lot_orientation_deg": 213.3,
+      "length_m": 310.2,
+      "width_m": 68.2
     },
     {
       "osm_id": 1500892808,
@@ -2592,7 +3363,10 @@
       "lat": 40.816325,
       "lon": -74.075027,
       "distance_m": 316,
-      "bearing_from_stadium_deg": 349.8
+      "bearing_from_stadium_deg": 349.8,
+      "lot_orientation_deg": 53.2,
+      "length_m": 133.3,
+      "width_m": 122.5
     },
     {
       "osm_id": 287605663,
@@ -2602,7 +3376,10 @@
       "lat": 40.810403,
       "lon": -74.072922,
       "distance_m": 368,
-      "bearing_from_stadium_deg": 160.8
+      "bearing_from_stadium_deg": 160.8,
+      "lot_orientation_deg": 46.3,
+      "length_m": 400.6,
+      "width_m": 233.3
     },
     {
       "osm_id": 287521330,
@@ -2612,7 +3389,10 @@
       "lat": 40.811731,
       "lon": -74.078242,
       "distance_m": 383,
-      "bearing_from_stadium_deg": 238.5
+      "bearing_from_stadium_deg": 238.5,
+      "lot_orientation_deg": 76.6,
+      "length_m": 273.4,
+      "width_m": 267.9
     },
     {
       "osm_id": 287521959,
@@ -2622,7 +3402,10 @@
       "lat": 40.810176,
       "lon": -74.075488,
       "distance_m": 385,
-      "bearing_from_stadium_deg": 194.3
+      "bearing_from_stadium_deg": 194.3,
+      "lot_orientation_deg": 212.5,
+      "length_m": 362.6,
+      "width_m": 328.2
     },
     {
       "osm_id": 959819318,
@@ -2632,7 +3415,10 @@
       "lat": 40.810538,
       "lon": -74.070848,
       "distance_m": 445,
-      "bearing_from_stadium_deg": 138.4
+      "bearing_from_stadium_deg": 138.4,
+      "lot_orientation_deg": 200.7,
+      "length_m": 163.0,
+      "width_m": 69.2
     },
     {
       "osm_id": 287606580,
@@ -2642,7 +3428,10 @@
       "lat": 40.812956,
       "lon": -74.068843,
       "distance_m": 469,
-      "bearing_from_stadium_deg": 97.8
+      "bearing_from_stadium_deg": 97.8,
+      "lot_orientation_deg": 216.6,
+      "length_m": 252.5,
+      "width_m": 153.3
     },
     {
       "osm_id": 287521085,
@@ -2652,7 +3441,10 @@
       "lat": 40.816206,
       "lon": -74.079041,
       "distance_m": 494,
-      "bearing_from_stadium_deg": 307.1
+      "bearing_from_stadium_deg": 307.1,
+      "lot_orientation_deg": 202.9,
+      "length_m": 486.9,
+      "width_m": 238.7
     },
     {
       "osm_id": 235481761,
@@ -2662,7 +3454,10 @@
       "lat": 40.812377,
       "lon": -74.080953,
       "distance_m": 569,
-      "bearing_from_stadium_deg": 257.0
+      "bearing_from_stadium_deg": 257.0,
+      "lot_orientation_deg": 217.3,
+      "length_m": 450.1,
+      "width_m": 340.2
     },
     {
       "osm_id": 287609309,
@@ -2672,7 +3467,10 @@
       "lat": 40.818703,
       "lon": -74.077354,
       "distance_m": 628,
-      "bearing_from_stadium_deg": 336.4
+      "bearing_from_stadium_deg": 336.4,
+      "lot_orientation_deg": 325.2,
+      "length_m": 326.0,
+      "width_m": 143.1
     },
     {
       "osm_id": 1501238984,
@@ -2682,7 +3480,10 @@
       "lat": 40.816606,
       "lon": -74.068042,
       "distance_m": 632,
-      "bearing_from_stadium_deg": 57.2
+      "bearing_from_stadium_deg": 57.2,
+      "lot_orientation_deg": 15.2,
+      "length_m": 128.5,
+      "width_m": 76.2
     },
     {
       "osm_id": 287606227,
@@ -2692,7 +3493,10 @@
       "lat": 40.812944,
       "lon": -74.066448,
       "distance_m": 669,
-      "bearing_from_stadium_deg": 95.6
+      "bearing_from_stadium_deg": 95.6,
+      "lot_orientation_deg": 308.6,
+      "length_m": 179.5,
+      "width_m": 90.4
     },
     {
       "osm_id": 1501238988,
@@ -2702,7 +3506,10 @@
       "lat": 40.817065,
       "lon": -74.067802,
       "distance_m": 678,
-      "bearing_from_stadium_deg": 54.5
+      "bearing_from_stadium_deg": 54.5,
+      "lot_orientation_deg": 186.5,
+      "length_m": 38.8,
+      "width_m": 19.6
     },
     {
       "osm_id": 1479456866,
@@ -2712,7 +3519,10 @@
       "lat": 40.814414,
       "lon": -74.066309,
       "distance_m": 685,
-      "bearing_from_stadium_deg": 81.7
+      "bearing_from_stadium_deg": 81.7,
+      "lot_orientation_deg": 350.3,
+      "length_m": 154.6,
+      "width_m": 121.8
     },
     {
       "osm_id": 1500887476,
@@ -2722,7 +3532,10 @@
       "lat": 40.818406,
       "lon": -74.069284,
       "distance_m": 691,
-      "bearing_from_stadium_deg": 38.2
+      "bearing_from_stadium_deg": 38.2,
+      "lot_orientation_deg": 146.1,
+      "length_m": 166.8,
+      "width_m": 133.4
     },
     {
       "osm_id": 1501238989,
@@ -2732,7 +3545,10 @@
       "lat": 40.817514,
       "lon": -74.068014,
       "distance_m": 694,
-      "bearing_from_stadium_deg": 50.3
+      "bearing_from_stadium_deg": 50.3,
+      "lot_orientation_deg": 192.2,
+      "length_m": 73.8,
+      "width_m": 45.1
     },
     {
       "osm_id": 959819315,
@@ -2742,7 +3558,10 @@
       "lat": 40.810801,
       "lon": -74.066728,
       "distance_m": 710,
-      "bearing_from_stadium_deg": 115.3
+      "bearing_from_stadium_deg": 115.3,
+      "lot_orientation_deg": 37.4,
+      "length_m": 206.0,
+      "width_m": 55.9
     },
     {
       "osm_id": 1500887473,
@@ -2752,7 +3571,10 @@
       "lat": 40.819412,
       "lon": -74.070536,
       "distance_m": 729,
-      "bearing_from_stadium_deg": 26.2
+      "bearing_from_stadium_deg": 26.2,
+      "lot_orientation_deg": 144.7,
+      "length_m": 78.8,
+      "width_m": 37.4
     },
     {
       "osm_id": 235384684,
@@ -2762,7 +3584,10 @@
       "lat": 40.814129,
       "lon": -74.083363,
       "distance_m": 761,
-      "bearing_from_stadium_deg": 275.0
+      "bearing_from_stadium_deg": 275.0,
+      "lot_orientation_deg": 195.4,
+      "length_m": 330.4,
+      "width_m": 275.7
     },
     {
       "osm_id": 1500887474,
@@ -2772,7 +3597,10 @@
       "lat": 40.820035,
       "lon": -74.071016,
       "distance_m": 776,
-      "bearing_from_stadium_deg": 21.3
+      "bearing_from_stadium_deg": 21.3,
+      "lot_orientation_deg": 145.4,
+      "length_m": 64.1,
+      "width_m": 18.7
     },
     {
       "osm_id": 287606055,
@@ -2782,7 +3610,10 @@
       "lat": 40.812805,
       "lon": -74.065142,
       "distance_m": 780,
-      "bearing_from_stadium_deg": 95.9
+      "bearing_from_stadium_deg": 95.9,
+      "lot_orientation_deg": 338.8,
+      "length_m": 269.0,
+      "width_m": 118.5
     },
     {
       "osm_id": 1500887475,
@@ -2792,7 +3623,10 @@
       "lat": 40.820266,
       "lon": -74.070392,
       "distance_m": 820,
-      "bearing_from_stadium_deg": 24.0
+      "bearing_from_stadium_deg": 24.0,
+      "lot_orientation_deg": 325.3,
+      "length_m": 256.5,
+      "width_m": 48.6
     },
     {
       "osm_id": 1501238978,
@@ -2802,7 +3636,10 @@
       "lat": 40.820471,
       "lon": -74.077714,
       "distance_m": 822,
-      "bearing_from_stadium_deg": 339.9
+      "bearing_from_stadium_deg": 339.9,
+      "lot_orientation_deg": 234.9,
+      "length_m": 74.8,
+      "width_m": 48.0
     },
     {
       "osm_id": 475016957,
@@ -2812,7 +3649,10 @@
       "lat": 40.812052,
       "lon": -74.084241,
       "distance_m": 847,
-      "bearing_from_stadium_deg": 258.8
+      "bearing_from_stadium_deg": 258.8,
+      "lot_orientation_deg": 36.9,
+      "length_m": 119.5,
+      "width_m": 60.6
     },
     {
       "osm_id": 1523521658,
@@ -2822,7 +3662,10 @@
       "lat": 40.806038,
       "lon": -74.076708,
       "distance_m": 856,
-      "bearing_from_stadium_deg": 193.3
+      "bearing_from_stadium_deg": 193.3,
+      "lot_orientation_deg": 40.3,
+      "length_m": 106.5,
+      "width_m": 39.0
     },
     {
       "osm_id": 474995414,
@@ -2832,7 +3675,10 @@
       "lat": 40.821138,
       "lon": -74.076773,
       "distance_m": 870,
-      "bearing_from_stadium_deg": 346.5
+      "bearing_from_stadium_deg": 346.5,
+      "lot_orientation_deg": 324.8,
+      "length_m": 159.0,
+      "width_m": 144.8
     },
     {
       "osm_id": 1500887471,
@@ -2842,7 +3688,10 @@
       "lat": 40.821262,
       "lon": -74.072599,
       "distance_m": 873,
-      "bearing_from_stadium_deg": 9.8
+      "bearing_from_stadium_deg": 9.8,
+      "lot_orientation_deg": 325.2,
+      "length_m": 76.1,
+      "width_m": 73.5
     },
     {
       "osm_id": 959819316,
@@ -2852,7 +3701,10 @@
       "lat": 40.810091,
       "lon": -74.064932,
       "distance_m": 881,
-      "bearing_from_stadium_deg": 115.7
+      "bearing_from_stadium_deg": 115.7,
+      "lot_orientation_deg": 217.5,
+      "length_m": 112.6,
+      "width_m": 75.8
     },
     {
       "osm_id": 75665238,
@@ -2862,7 +3714,10 @@
       "lat": 40.806222,
       "lon": -74.078997,
       "distance_m": 901,
-      "bearing_from_stadium_deg": 205.7
+      "bearing_from_stadium_deg": 205.7,
+      "lot_orientation_deg": 84.4,
+      "length_m": 116.4,
+      "width_m": 78.6
     },
     {
       "osm_id": 1500887472,
@@ -2872,7 +3727,10 @@
       "lat": 40.821679,
       "lon": -74.071837,
       "distance_m": 931,
-      "bearing_from_stadium_deg": 13.2
+      "bearing_from_stadium_deg": 13.2,
+      "lot_orientation_deg": 325.6,
+      "length_m": 73.2,
+      "width_m": 50.2
     },
     {
       "osm_id": 475016958,
@@ -2882,7 +3740,10 @@
       "lat": 40.812402,
       "lon": -74.086174,
       "distance_m": 1002,
-      "bearing_from_stadium_deg": 262.8
+      "bearing_from_stadium_deg": 262.8,
+      "lot_orientation_deg": 105.5,
+      "length_m": 209.9,
+      "width_m": 112.2
     },
     {
       "osm_id": 1500926879,
@@ -2892,7 +3753,10 @@
       "lat": 40.822437,
       "lon": -74.072307,
       "distance_m": 1006,
-      "bearing_from_stadium_deg": 9.9
+      "bearing_from_stadium_deg": 9.9,
+      "lot_orientation_deg": 145.5,
+      "length_m": 75.0,
+      "width_m": 19.8
     },
     {
       "osm_id": 622831944,
@@ -2902,7 +3766,10 @@
       "lat": 40.804643,
       "lon": -74.077569,
       "distance_m": 1024,
-      "bearing_from_stadium_deg": 195.3
+      "bearing_from_stadium_deg": 195.3,
+      "lot_orientation_deg": 128.3,
+      "length_m": 148.4,
+      "width_m": 115.7
     },
     {
       "osm_id": 1500887469,
@@ -2912,7 +3779,10 @@
       "lat": 40.823088,
       "lon": -74.073267,
       "distance_m": 1067,
-      "bearing_from_stadium_deg": 5.0
+      "bearing_from_stadium_deg": 5.0,
+      "lot_orientation_deg": 145.3,
+      "length_m": 135.7,
+      "width_m": 52.8
     },
     {
       "osm_id": 1301620752,
@@ -2922,7 +3792,10 @@
       "lat": 40.811777,
       "lon": -74.060819,
       "distance_m": 1156,
-      "bearing_from_stadium_deg": 99.7
+      "bearing_from_stadium_deg": 99.7,
+      "lot_orientation_deg": 143.1,
+      "length_m": 25.3,
+      "width_m": 13.5
     }
   ],
   "lincoln-financial-field": [
@@ -2934,7 +3807,10 @@
       "lat": 39.900859,
       "lon": -75.165756,
       "distance_m": 149,
-      "bearing_from_stadium_deg": 88.7
+      "bearing_from_stadium_deg": 88.7,
+      "lot_orientation_deg": 189.2,
+      "length_m": 120.2,
+      "width_m": 37.5
     },
     {
       "osm_id": 101258140,
@@ -2944,7 +3820,10 @@
       "lat": 39.899424,
       "lon": -75.167804,
       "distance_m": 159,
-      "bearing_from_stadium_deg": 189.4
+      "bearing_from_stadium_deg": 189.4,
+      "lot_orientation_deg": 261.0,
+      "length_m": 60.3,
+      "width_m": 18.7
     },
     {
       "osm_id": 101258146,
@@ -2954,7 +3833,10 @@
       "lat": 39.899792,
       "lon": -75.166116,
       "distance_m": 165,
-      "bearing_from_stadium_deg": 134.4
+      "bearing_from_stadium_deg": 134.4,
+      "lot_orientation_deg": 81.2,
+      "length_m": 122.8,
+      "width_m": 58.5
     },
     {
       "osm_id": 101258116,
@@ -2964,7 +3846,10 @@
       "lat": 39.901891,
       "lon": -75.16584,
       "distance_m": 184,
-      "bearing_from_stadium_deg": 50.2
+      "bearing_from_stadium_deg": 50.2,
+      "lot_orientation_deg": 189.3,
+      "length_m": 82.4,
+      "width_m": 73.1
     },
     {
       "osm_id": 101258177,
@@ -2974,7 +3859,10 @@
       "lat": 39.899542,
       "lon": -75.168965,
       "distance_m": 190,
-      "bearing_from_stadium_deg": 221.1
+      "bearing_from_stadium_deg": 221.1,
+      "lot_orientation_deg": 9.2,
+      "length_m": 95.4,
+      "width_m": 79.5
     },
     {
       "osm_id": 101258159,
@@ -2984,7 +3872,10 @@
       "lat": 39.902661,
       "lon": -75.167494,
       "distance_m": 204,
-      "bearing_from_stadium_deg": 0.1
+      "bearing_from_stadium_deg": 0.1,
+      "lot_orientation_deg": 279.2,
+      "length_m": 114.1,
+      "width_m": 60.6
     },
     {
       "osm_id": 101258188,
@@ -2994,7 +3885,10 @@
       "lat": 39.901082,
       "lon": -75.170101,
       "distance_m": 224,
-      "bearing_from_stadium_deg": 277.2
+      "bearing_from_stadium_deg": 277.2,
+      "lot_orientation_deg": 189.3,
+      "length_m": 168.7,
+      "width_m": 106.7
     },
     {
       "osm_id": 101258154,
@@ -3004,7 +3898,10 @@
       "lat": 39.902753,
       "lon": -75.166016,
       "distance_m": 248,
-      "bearing_from_stadium_deg": 30.6
+      "bearing_from_stadium_deg": 30.6,
+      "lot_orientation_deg": 99.2,
+      "length_m": 129.8,
+      "width_m": 128.7
     },
     {
       "osm_id": 101258113,
@@ -3014,7 +3911,10 @@
       "lat": 39.902462,
       "lon": -75.169934,
       "distance_m": 276,
-      "bearing_from_stadium_deg": 311.2
+      "bearing_from_stadium_deg": 311.2,
+      "lot_orientation_deg": 9.6,
+      "length_m": 137.0,
+      "width_m": 106.2
     },
     {
       "osm_id": 101258134,
@@ -3024,7 +3924,10 @@
       "lat": 39.899412,
       "lon": -75.170355,
       "distance_m": 290,
-      "bearing_from_stadium_deg": 237.1
+      "bearing_from_stadium_deg": 237.1,
+      "lot_orientation_deg": 189.3,
+      "length_m": 130.5,
+      "width_m": 108.9
     },
     {
       "osm_id": 101258172,
@@ -3034,7 +3937,10 @@
       "lat": 39.903733,
       "lon": -75.167379,
       "distance_m": 323,
-      "bearing_from_stadium_deg": 1.8
+      "bearing_from_stadium_deg": 1.8,
+      "lot_orientation_deg": 189.2,
+      "length_m": 143.4,
+      "width_m": 122.3
     },
     {
       "osm_id": 338370043,
@@ -3044,7 +3950,10 @@
       "lat": 39.903568,
       "lon": -75.169382,
       "distance_m": 344,
-      "bearing_from_stadium_deg": 332.2
+      "bearing_from_stadium_deg": 332.2,
+      "lot_orientation_deg": 10.0,
+      "length_m": 63.2,
+      "width_m": 56.8
     },
     {
       "osm_id": 900991615,
@@ -3054,7 +3963,10 @@
       "lat": 39.902569,
       "lon": -75.164102,
       "distance_m": 348,
-      "bearing_from_stadium_deg": 56.3
+      "bearing_from_stadium_deg": 56.3,
+      "lot_orientation_deg": 100.0,
+      "length_m": 148.4,
+      "width_m": 99.1
     },
     {
       "osm_id": 293309839,
@@ -3064,7 +3976,10 @@
       "lat": 39.901337,
       "lon": -75.163368,
       "distance_m": 357,
-      "bearing_from_stadium_deg": 80.9
+      "bearing_from_stadium_deg": 80.9,
+      "lot_orientation_deg": 189.5,
+      "length_m": 411.7,
+      "width_m": 225.7
     },
     {
       "osm_id": 101258129,
@@ -3074,7 +3989,10 @@
       "lat": 39.903818,
       "lon": -75.165611,
       "distance_m": 369,
-      "bearing_from_stadium_deg": 25.9
+      "bearing_from_stadium_deg": 25.9,
+      "lot_orientation_deg": 99.4,
+      "length_m": 128.5,
+      "width_m": 60.5
     },
     {
       "osm_id": 101258143,
@@ -3084,7 +4002,10 @@
       "lat": 39.902801,
       "lon": -75.171512,
       "distance_m": 406,
-      "bearing_from_stadium_deg": 302.6
+      "bearing_from_stadium_deg": 302.6,
+      "lot_orientation_deg": 279.6,
+      "length_m": 163.0,
+      "width_m": 122.7
     },
     {
       "osm_id": 293309832,
@@ -3094,7 +4015,10 @@
       "lat": 39.903451,
       "lon": -75.163688,
       "distance_m": 437,
-      "bearing_from_stadium_deg": 48.1
+      "bearing_from_stadium_deg": 48.1,
+      "lot_orientation_deg": 99.0,
+      "length_m": 176.6,
+      "width_m": 95.4
     },
     {
       "osm_id": 101258110,
@@ -3104,7 +4028,10 @@
       "lat": 39.899665,
       "lon": -75.172436,
       "distance_m": 441,
-      "bearing_from_stadium_deg": 252.9
+      "bearing_from_stadium_deg": 252.9,
+      "lot_orientation_deg": 99.7,
+      "length_m": 175.1,
+      "width_m": 133.1
     },
     {
       "osm_id": 286151289,
@@ -3114,7 +4041,10 @@
       "lat": 39.904124,
       "lon": -75.171535,
       "distance_m": 503,
-      "bearing_from_stadium_deg": 316.8
+      "bearing_from_stadium_deg": 316.8,
+      "lot_orientation_deg": 99.7,
+      "length_m": 167.6,
+      "width_m": 96.1
     },
     {
       "osm_id": 101102918,
@@ -3124,7 +4054,10 @@
       "lat": 39.905004,
       "lon": -75.165023,
       "distance_m": 510,
-      "bearing_from_stadium_deg": 24.5
+      "bearing_from_stadium_deg": 24.5,
+      "lot_orientation_deg": 189.5,
+      "length_m": 74.3,
+      "width_m": 37.1
     },
     {
       "osm_id": 293309836,
@@ -3134,7 +4067,10 @@
       "lat": 39.901518,
       "lon": -75.161475,
       "distance_m": 520,
-      "bearing_from_stadium_deg": 81.5
+      "bearing_from_stadium_deg": 81.5,
+      "lot_orientation_deg": 9.7,
+      "length_m": 282.5,
+      "width_m": 117.8
     },
     {
       "osm_id": 101258127,
@@ -3144,7 +4080,10 @@
       "lat": 39.90159,
       "lon": -75.173522,
       "distance_m": 521,
-      "bearing_from_stadium_deg": 279.3
+      "bearing_from_stadium_deg": 279.3,
+      "lot_orientation_deg": 9.5,
+      "length_m": 228.5,
+      "width_m": 88.2
     },
     {
       "osm_id": 478331499,
@@ -3154,7 +4093,10 @@
       "lat": 39.896989,
       "lon": -75.171282,
       "distance_m": 535,
-      "bearing_from_stadium_deg": 217.1
+      "bearing_from_stadium_deg": 217.1,
+      "lot_orientation_deg": 292.0,
+      "length_m": 545.2,
+      "width_m": 90.0
     },
     {
       "osm_id": 101258165,
@@ -3164,7 +4106,10 @@
       "lat": 39.899788,
       "lon": -75.173984,
       "distance_m": 565,
-      "bearing_from_stadium_deg": 258.2
+      "bearing_from_stadium_deg": 258.2,
+      "lot_orientation_deg": 188.1,
+      "length_m": 121.8,
+      "width_m": 86.1
     },
     {
       "osm_id": 101258182,
@@ -3174,7 +4119,10 @@
       "lat": 39.903302,
       "lon": -75.173303,
       "distance_m": 566,
-      "bearing_from_stadium_deg": 299.0
+      "bearing_from_stadium_deg": 299.0,
+      "lot_orientation_deg": 99.6,
+      "length_m": 87.8,
+      "width_m": 72.2
     },
     {
       "osm_id": 101258151,
@@ -3184,7 +4132,10 @@
       "lat": 39.904082,
       "lon": -75.172838,
       "distance_m": 581,
-      "bearing_from_stadium_deg": 308.5
+      "bearing_from_stadium_deg": 308.5,
+      "lot_orientation_deg": 9.4,
+      "length_m": 130.0,
+      "width_m": 69.4
     },
     {
       "osm_id": 293309834,
@@ -3194,7 +4145,10 @@
       "lat": 39.903052,
       "lon": -75.161318,
       "distance_m": 582,
-      "bearing_from_stadium_deg": 64.9
+      "bearing_from_stadium_deg": 64.9,
+      "lot_orientation_deg": 99.5,
+      "length_m": 175.6,
+      "width_m": 107.4
     },
     {
       "osm_id": 48600285,
@@ -3204,7 +4158,10 @@
       "lat": 39.90525,
       "lon": -75.163433,
       "distance_m": 602,
-      "bearing_from_stadium_deg": 35.2
+      "bearing_from_stadium_deg": 35.2,
+      "lot_orientation_deg": 279.5,
+      "length_m": 229.3,
+      "width_m": 165.2
     },
     {
       "osm_id": 569685349,
@@ -3214,7 +4171,10 @@
       "lat": 39.895784,
       "lon": -75.170273,
       "distance_m": 609,
-      "bearing_from_stadium_deg": 202.9
+      "bearing_from_stadium_deg": 202.9,
+      "lot_orientation_deg": 38.2,
+      "length_m": 134.3,
+      "width_m": 112.2
     },
     {
       "osm_id": 707835623,
@@ -3224,7 +4184,10 @@
       "lat": 39.896378,
       "lon": -75.171874,
       "distance_m": 620,
-      "bearing_from_stadium_deg": 217.0
+      "bearing_from_stadium_deg": 217.0,
+      "lot_orientation_deg": 114.3,
+      "length_m": 149.4,
+      "width_m": 79.0
     },
     {
       "osm_id": 46699239,
@@ -3234,7 +4197,10 @@
       "lat": 39.906422,
       "lon": -75.169404,
       "distance_m": 643,
-      "bearing_from_stadium_deg": 345.4
+      "bearing_from_stadium_deg": 345.4,
+      "lot_orientation_deg": 99.6,
+      "length_m": 240.0,
+      "width_m": 113.5
     },
     {
       "osm_id": 707835631,
@@ -3244,7 +4210,10 @@
       "lat": 39.895769,
       "lon": -75.172163,
       "distance_m": 689,
-      "bearing_from_stadium_deg": 215.3
+      "bearing_from_stadium_deg": 215.3,
+      "lot_orientation_deg": 114.3,
+      "length_m": 151.7,
+      "width_m": 53.6
     },
     {
       "osm_id": 707835683,
@@ -3254,7 +4223,10 @@
       "lat": 39.894509,
       "lon": -75.166916,
       "distance_m": 705,
-      "bearing_from_stadium_deg": 175.9
+      "bearing_from_stadium_deg": 175.9,
+      "lot_orientation_deg": 163.7,
+      "length_m": 71.5,
+      "width_m": 22.0
     },
     {
       "osm_id": 46699246,
@@ -3264,7 +4236,10 @@
       "lat": 39.906594,
       "lon": -75.171433,
       "distance_m": 723,
-      "bearing_from_stadium_deg": 332.4
+      "bearing_from_stadium_deg": 332.4,
+      "lot_orientation_deg": 189.4,
+      "length_m": 255.6,
+      "width_m": 240.8
     },
     {
       "osm_id": 609287821,
@@ -3274,7 +4249,10 @@
       "lat": 39.894065,
       "lon": -75.168341,
       "distance_m": 756,
-      "bearing_from_stadium_deg": 185.4
+      "bearing_from_stadium_deg": 185.4,
+      "lot_orientation_deg": 330.4,
+      "length_m": 106.5,
+      "width_m": 56.4
     },
     {
       "osm_id": 59517943,
@@ -3284,7 +4262,10 @@
       "lat": 39.900998,
       "lon": -75.176555,
       "distance_m": 773,
-      "bearing_from_stadium_deg": 271.4
+      "bearing_from_stadium_deg": 271.4,
+      "lot_orientation_deg": 84.4,
+      "length_m": 67.3,
+      "width_m": 19.4
     },
     {
       "osm_id": 688788388,
@@ -3294,7 +4275,10 @@
       "lat": 39.895402,
       "lon": -75.173214,
       "distance_m": 776,
-      "bearing_from_stadium_deg": 218.9
+      "bearing_from_stadium_deg": 218.9,
+      "lot_orientation_deg": 128.8,
+      "length_m": 70.6,
+      "width_m": 17.8
     },
     {
       "osm_id": 707835614,
@@ -3304,7 +4288,10 @@
       "lat": 39.894019,
       "lon": -75.165382,
       "distance_m": 779,
-      "bearing_from_stadium_deg": 166.6
+      "bearing_from_stadium_deg": 166.6,
+      "lot_orientation_deg": 72.3,
+      "length_m": 156.5,
+      "width_m": 80.1
     },
     {
       "osm_id": 46699253,
@@ -3314,7 +4301,10 @@
       "lat": 39.908037,
       "lon": -75.167196,
       "distance_m": 802,
-      "bearing_from_stadium_deg": 1.9
+      "bearing_from_stadium_deg": 1.9,
+      "lot_orientation_deg": 8.5,
+      "length_m": 109.2,
+      "width_m": 92.1
     },
     {
       "osm_id": 102509786,
@@ -3324,7 +4314,10 @@
       "lat": 39.907407,
       "lon": -75.163455,
       "distance_m": 809,
-      "bearing_from_stadium_deg": 25.3
+      "bearing_from_stadium_deg": 25.3,
+      "lot_orientation_deg": 99.1,
+      "length_m": 66.4,
+      "width_m": 52.0
     }
   ],
   "levis-stadium": [
@@ -3336,7 +4329,10 @@
       "lat": 37.405049,
       "lon": -121.970945,
       "distance_m": 243,
-      "bearing_from_stadium_deg": 339.9
+      "bearing_from_stadium_deg": 339.9,
+      "lot_orientation_deg": 62.8,
+      "length_m": 140.4,
+      "width_m": 88.7
     },
     {
       "osm_id": 28501960,
@@ -3346,7 +4342,10 @@
       "lat": 37.404654,
       "lon": -121.971873,
       "distance_m": 247,
-      "bearing_from_stadium_deg": 318.0
+      "bearing_from_stadium_deg": 318.0,
+      "lot_orientation_deg": 328.7,
+      "length_m": 121.4,
+      "width_m": 84.3
     },
     {
       "osm_id": 85247797,
@@ -3356,7 +4355,10 @@
       "lat": 37.403816,
       "lon": -121.967263,
       "distance_m": 258,
-      "bearing_from_stadium_deg": 69.4
+      "bearing_from_stadium_deg": 69.4,
+      "lot_orientation_deg": 241.3,
+      "length_m": 245.8,
+      "width_m": 61.8
     },
     {
       "osm_id": 28501959,
@@ -3366,7 +4368,10 @@
       "lat": 37.404137,
       "lon": -121.967402,
       "distance_m": 262,
-      "bearing_from_stadium_deg": 61.1
+      "bearing_from_stadium_deg": 61.1,
+      "lot_orientation_deg": 241.3,
+      "length_m": 215.9,
+      "width_m": 30.4
     },
     {
       "osm_id": 41946504,
@@ -3376,7 +4381,10 @@
       "lat": 37.405826,
       "lon": -121.971398,
       "distance_m": 338,
-      "bearing_from_stadium_deg": 338.5
+      "bearing_from_stadium_deg": 338.5,
+      "lot_orientation_deg": 243.1,
+      "length_m": 116.5,
+      "width_m": 61.1
     },
     {
       "osm_id": 296375985,
@@ -3386,7 +4394,10 @@
       "lat": 37.406195,
       "lon": -121.96888,
       "distance_m": 369,
-      "bearing_from_stadium_deg": 15.6
+      "bearing_from_stadium_deg": 15.6,
+      "lot_orientation_deg": 242.3,
+      "length_m": 232.4,
+      "width_m": 69.4
     },
     {
       "osm_id": 296503405,
@@ -3396,7 +4407,10 @@
       "lat": 37.40285,
       "lon": -121.974607,
       "distance_m": 407,
-      "bearing_from_stadium_deg": 267.6
+      "bearing_from_stadium_deg": 267.6,
+      "lot_orientation_deg": 245.7,
+      "length_m": 293.1,
+      "width_m": 117.1
     },
     {
       "osm_id": 28501961,
@@ -3406,7 +4420,10 @@
       "lat": 37.406741,
       "lon": -121.969587,
       "distance_m": 418,
-      "bearing_from_stadium_deg": 5.0
+      "bearing_from_stadium_deg": 5.0,
+      "lot_orientation_deg": 63.0,
+      "length_m": 104.3,
+      "width_m": 35.7
     },
     {
       "osm_id": 28435387,
@@ -3416,7 +4433,10 @@
       "lat": 37.403506,
       "lon": -121.965023,
       "distance_m": 443,
-      "bearing_from_stadium_deg": 82.7
+      "bearing_from_stadium_deg": 82.7,
+      "lot_orientation_deg": 151.6,
+      "length_m": 311.6,
+      "width_m": 29.3
     },
     {
       "osm_id": 296503404,
@@ -3426,7 +4446,10 @@
       "lat": 37.399731,
       "lon": -121.973021,
       "distance_m": 451,
-      "bearing_from_stadium_deg": 216.3
+      "bearing_from_stadium_deg": 216.3,
+      "lot_orientation_deg": 65.8,
+      "length_m": 407.4,
+      "width_m": 399.3
     },
     {
       "osm_id": 26379837,
@@ -3436,7 +4459,10 @@
       "lat": 37.401399,
       "lon": -121.975967,
       "distance_m": 556,
-      "bearing_from_stadium_deg": 251.3
+      "bearing_from_stadium_deg": 251.3,
+      "lot_orientation_deg": 179.8,
+      "length_m": 329.9,
+      "width_m": 229.2
     },
     {
       "osm_id": 58708653,
@@ -3446,7 +4472,10 @@
       "lat": 37.405713,
       "lon": -121.97542,
       "distance_m": 566,
-      "bearing_from_stadium_deg": 302.2
+      "bearing_from_stadium_deg": 302.2,
+      "lot_orientation_deg": 0.1,
+      "length_m": 166.5,
+      "width_m": 147.6
     },
     {
       "osm_id": 736307814,
@@ -3456,7 +4485,10 @@
       "lat": 37.40555,
       "lon": -121.96428,
       "distance_m": 579,
-      "bearing_from_stadium_deg": 60.7
+      "bearing_from_stadium_deg": 60.7,
+      "lot_orientation_deg": 151.3,
+      "length_m": 65.3,
+      "width_m": 18.6
     },
     {
       "osm_id": 109297449,
@@ -3466,7 +4498,10 @@
       "lat": 37.403928,
       "lon": -121.976796,
       "distance_m": 609,
-      "bearing_from_stadium_deg": 279.8
+      "bearing_from_stadium_deg": 279.8,
+      "lot_orientation_deg": 269.7,
+      "length_m": 144.6,
+      "width_m": 61.3
     },
     {
       "osm_id": 736307811,
@@ -3476,7 +4511,10 @@
       "lat": 37.405949,
       "lon": -121.963796,
       "distance_m": 639,
-      "bearing_from_stadium_deg": 59.1
+      "bearing_from_stadium_deg": 59.1,
+      "lot_orientation_deg": 240.9,
+      "length_m": 55.2,
+      "width_m": 22.8
     },
     {
       "osm_id": 109297444,
@@ -3486,7 +4524,10 @@
       "lat": 37.405009,
       "lon": -121.977237,
       "distance_m": 677,
-      "bearing_from_stadium_deg": 289.3
+      "bearing_from_stadium_deg": 289.3,
+      "lot_orientation_deg": 359.7,
+      "length_m": 133.8,
+      "width_m": 41.2
     },
     {
       "osm_id": 25320427,
@@ -3496,7 +4537,10 @@
       "lat": 37.398333,
       "lon": -121.975483,
       "distance_m": 710,
-      "bearing_from_stadium_deg": 223.0
+      "bearing_from_stadium_deg": 223.0,
+      "lot_orientation_deg": 185.0,
+      "length_m": 320.0,
+      "width_m": 70.0
     },
     {
       "osm_id": 1336270009,
@@ -3506,7 +4550,10 @@
       "lat": 37.400494,
       "lon": -121.977396,
       "distance_m": 710,
-      "bearing_from_stadium_deg": 246.9
+      "bearing_from_stadium_deg": 246.9,
+      "lot_orientation_deg": 179.5,
+      "length_m": 90.4,
+      "width_m": 15.7
     },
     {
       "osm_id": 99815717,
@@ -3516,7 +4563,10 @@
       "lat": 37.398652,
       "lon": -121.976297,
       "distance_m": 737,
-      "bearing_from_stadium_deg": 229.0
+      "bearing_from_stadium_deg": 229.0,
+      "lot_orientation_deg": 5.6,
+      "length_m": 133.5,
+      "width_m": 59.0
     },
     {
       "osm_id": 700975606,
@@ -3526,7 +4576,10 @@
       "lat": 37.406344,
       "lon": -121.977312,
       "distance_m": 745,
-      "bearing_from_stadium_deg": 299.9
+      "bearing_from_stadium_deg": 299.9,
+      "lot_orientation_deg": 179.9,
+      "length_m": 103.0,
+      "width_m": 26.6
     },
     {
       "osm_id": 41946826,
@@ -3536,7 +4589,10 @@
       "lat": 37.407218,
       "lon": -121.977007,
       "distance_m": 777,
-      "bearing_from_stadium_deg": 307.2
+      "bearing_from_stadium_deg": 307.2,
+      "lot_orientation_deg": 122.5,
+      "length_m": 119.6,
+      "width_m": 66.9
     },
     {
       "osm_id": 54119627,
@@ -3546,7 +4602,10 @@
       "lat": 37.401189,
       "lon": -121.97869,
       "distance_m": 794,
-      "bearing_from_stadium_deg": 255.3
+      "bearing_from_stadium_deg": 255.3,
+      "lot_orientation_deg": 269.8,
+      "length_m": 83.8,
+      "width_m": 57.3
     },
     {
       "osm_id": 547139247,
@@ -3556,7 +4615,10 @@
       "lat": 37.402507,
       "lon": -121.979248,
       "distance_m": 819,
-      "bearing_from_stadium_deg": 266.2
+      "bearing_from_stadium_deg": 266.2,
+      "lot_orientation_deg": 0.3,
+      "length_m": 185.8,
+      "width_m": 119.2
     },
     {
       "osm_id": 1336270006,
@@ -3566,7 +4628,10 @@
       "lat": 37.400929,
       "lon": -121.978927,
       "distance_m": 822,
-      "bearing_from_stadium_deg": 253.7
+      "bearing_from_stadium_deg": 253.7,
+      "lot_orientation_deg": 89.9,
+      "length_m": 118.9,
+      "width_m": 118.2
     },
     {
       "osm_id": 841655827,
@@ -3576,7 +4641,10 @@
       "lat": 37.397794,
       "lon": -121.97737,
       "distance_m": 871,
-      "bearing_from_stadium_deg": 228.4
+      "bearing_from_stadium_deg": 228.4,
+      "lot_orientation_deg": 5.2,
+      "length_m": 106.7,
+      "width_m": 10.1
     },
     {
       "osm_id": 99815715,
@@ -3586,7 +4654,10 @@
       "lat": 37.396726,
       "lon": -121.9765,
       "distance_m": 904,
-      "bearing_from_stadium_deg": 219.5
+      "bearing_from_stadium_deg": 219.5,
+      "lot_orientation_deg": 4.1,
+      "length_m": 135.5,
+      "width_m": 58.1
     },
     {
       "osm_id": 679086539,
@@ -3596,7 +4667,10 @@
       "lat": 37.406514,
       "lon": -121.980328,
       "distance_m": 992,
-      "bearing_from_stadium_deg": 293.2
+      "bearing_from_stadium_deg": 293.2,
+      "lot_orientation_deg": 0.2,
+      "length_m": 128.8,
+      "width_m": 64.7
     },
     {
       "osm_id": 1335779549,
@@ -3606,7 +4680,10 @@
       "lat": 37.398949,
       "lon": -121.980073,
       "distance_m": 997,
-      "bearing_from_stadium_deg": 243.2
+      "bearing_from_stadium_deg": 243.2,
+      "lot_orientation_deg": 257.3,
+      "length_m": 118.0,
+      "width_m": 117.6
     },
     {
       "osm_id": 1335779551,
@@ -3616,7 +4693,10 @@
       "lat": 37.399366,
       "lon": -121.980476,
       "distance_m": 1010,
-      "bearing_from_stadium_deg": 246.4
+      "bearing_from_stadium_deg": 246.4,
+      "lot_orientation_deg": 77.4,
+      "length_m": 155.9,
+      "width_m": 31.8
     },
     {
       "osm_id": 609330427,
@@ -3626,7 +4706,10 @@
       "lat": 37.407255,
       "lon": -121.980496,
       "distance_m": 1041,
-      "bearing_from_stadium_deg": 297.0
+      "bearing_from_stadium_deg": 297.0,
+      "lot_orientation_deg": 360.0,
+      "length_m": 77.8,
+      "width_m": 60.5
     },
     {
       "osm_id": 319355775,
@@ -3636,7 +4719,10 @@
       "lat": 37.403319,
       "lon": -121.958164,
       "distance_m": 1046,
-      "bearing_from_stadium_deg": 88.1
+      "bearing_from_stadium_deg": 88.1,
+      "lot_orientation_deg": 330.9,
+      "length_m": 31.9,
+      "width_m": 12.4
     },
     {
       "osm_id": 1335771895,
@@ -3646,7 +4732,10 @@
       "lat": 37.402725,
       "lon": -121.981909,
       "distance_m": 1052,
-      "bearing_from_stadium_deg": 268.3
+      "bearing_from_stadium_deg": 268.3,
+      "lot_orientation_deg": 359.3,
+      "length_m": 100.9,
+      "width_m": 58.3
     },
     {
       "osm_id": 1335771889,
@@ -3656,7 +4745,10 @@
       "lat": 37.40381,
       "lon": -121.981997,
       "distance_m": 1064,
-      "bearing_from_stadium_deg": 274.9
+      "bearing_from_stadium_deg": 274.9,
+      "lot_orientation_deg": 359.9,
+      "length_m": 332.7,
+      "width_m": 108.1
     },
     {
       "osm_id": 296376707,
@@ -3666,7 +4758,10 @@
       "lat": 37.40068,
       "lon": -121.981697,
       "distance_m": 1065,
-      "bearing_from_stadium_deg": 256.0
+      "bearing_from_stadium_deg": 256.0,
+      "lot_orientation_deg": 0.1,
+      "length_m": 452.9,
+      "width_m": 377.9
     },
     {
       "osm_id": 326488489,
@@ -3676,7 +4771,10 @@
       "lat": 37.410897,
       "lon": -121.976959,
       "distance_m": 1072,
-      "bearing_from_stadium_deg": 325.0
+      "bearing_from_stadium_deg": 325.0,
+      "lot_orientation_deg": 90.7,
+      "length_m": 81.8,
+      "width_m": 59.3
     },
     {
       "osm_id": 679086534,
@@ -3686,7 +4784,10 @@
       "lat": 37.406524,
       "lon": -121.981292,
       "distance_m": 1072,
-      "bearing_from_stadium_deg": 291.4
+      "bearing_from_stadium_deg": 291.4,
+      "lot_orientation_deg": 180.0,
+      "length_m": 210.5,
+      "width_m": 96.5
     },
     {
       "osm_id": 52561203,
@@ -3696,7 +4797,10 @@
       "lat": 37.393218,
       "lon": -121.969243,
       "distance_m": 1090,
-      "bearing_from_stadium_deg": 176.5
+      "bearing_from_stadium_deg": 176.5,
+      "lot_orientation_deg": 188.9,
+      "length_m": 240.7,
+      "width_m": 175.5
     },
     {
       "osm_id": 784086717,
@@ -3706,7 +4810,10 @@
       "lat": 37.393662,
       "lon": -121.966024,
       "distance_m": 1096,
-      "bearing_from_stadium_deg": 161.3
+      "bearing_from_stadium_deg": 161.3,
+      "lot_orientation_deg": 241.1,
+      "length_m": 26.0,
+      "width_m": 19.9
     },
     {
       "osm_id": 52127354,
@@ -3716,7 +4823,10 @@
       "lat": 37.39423,
       "lon": -121.975852,
       "distance_m": 1104,
-      "bearing_from_stadium_deg": 207.9
+      "bearing_from_stadium_deg": 207.9,
+      "lot_orientation_deg": 89.9,
+      "length_m": 383.1,
+      "width_m": 337.7
     },
     {
       "osm_id": 330737995,
@@ -3726,7 +4836,10 @@
       "lat": 37.405342,
       "lon": -121.98231,
       "distance_m": 1118,
-      "bearing_from_stadium_deg": 283.5
+      "bearing_from_stadium_deg": 283.5,
+      "lot_orientation_deg": 89.6,
+      "length_m": 197.9,
+      "width_m": 39.7
     }
   ],
   "lumen-field": [
@@ -3738,7 +4851,10 @@
       "lat": 47.595114,
       "lon": -122.333477,
       "distance_m": 141,
-      "bearing_from_stadium_deg": 266.1
+      "bearing_from_stadium_deg": 266.1,
+      "lot_orientation_deg": 180.0,
+      "length_m": 26.5,
+      "width_m": 11.9
     },
     {
       "osm_id": 667342967,
@@ -3748,7 +4864,10 @@
       "lat": 47.595297,
       "lon": -122.333717,
       "distance_m": 159,
-      "bearing_from_stadium_deg": 273.9
+      "bearing_from_stadium_deg": 273.9,
+      "lot_orientation_deg": 90.1,
+      "length_m": 21.0,
+      "width_m": 17.4
     },
     {
       "osm_id": 667343177,
@@ -3758,7 +4877,10 @@
       "lat": 47.594273,
       "lon": -122.333744,
       "distance_m": 191,
-      "bearing_from_stadium_deg": 237.3
+      "bearing_from_stadium_deg": 237.3,
+      "lot_orientation_deg": 270.3,
+      "length_m": 45.8,
+      "width_m": 23.5
     },
     {
       "osm_id": 26320388,
@@ -3768,7 +4890,10 @@
       "lat": 47.593404,
       "lon": -122.331124,
       "distance_m": 203,
-      "bearing_from_stadium_deg": 169.9
+      "bearing_from_stadium_deg": 169.9,
+      "lot_orientation_deg": 10.5,
+      "length_m": 159.7,
+      "width_m": 68.9
     },
     {
       "osm_id": 26320390,
@@ -3778,7 +4903,10 @@
       "lat": 47.597253,
       "lon": -122.331343,
       "distance_m": 229,
-      "bearing_from_stadium_deg": 4.8
+      "bearing_from_stadium_deg": 4.8,
+      "lot_orientation_deg": 89.8,
+      "length_m": 195.2,
+      "width_m": 89.1
     },
     {
       "osm_id": 226306339,
@@ -3788,7 +4916,10 @@
       "lat": 47.595683,
       "lon": -122.328634,
       "distance_m": 229,
-      "bearing_from_stadium_deg": 76.4
+      "bearing_from_stadium_deg": 76.4,
+      "lot_orientation_deg": 179.8,
+      "length_m": 96.7,
+      "width_m": 32.6
     },
     {
       "osm_id": 526317372,
@@ -3798,7 +4929,10 @@
       "lat": 47.594005,
       "lon": -122.328784,
       "distance_m": 249,
-      "bearing_from_stadium_deg": 122.2
+      "bearing_from_stadium_deg": 122.2,
+      "lot_orientation_deg": 359.6,
+      "length_m": 28.3,
+      "width_m": 13.4
     },
     {
       "osm_id": 1523984152,
@@ -3808,7 +4942,10 @@
       "lat": 47.593085,
       "lon": -122.333756,
       "distance_m": 285,
-      "bearing_from_stadium_deg": 214.5
+      "bearing_from_stadium_deg": 214.5,
+      "lot_orientation_deg": 270.0,
+      "length_m": 46.7,
+      "width_m": 33.9
     },
     {
       "osm_id": 411436897,
@@ -3818,7 +4955,10 @@
       "lat": 47.59356,
       "lon": -122.328422,
       "distance_m": 300,
-      "bearing_from_stadium_deg": 127.4
+      "bearing_from_stadium_deg": 127.4,
+      "lot_orientation_deg": 90.0,
+      "length_m": 82.4,
+      "width_m": 9.3
     },
     {
       "osm_id": 411436898,
@@ -3828,7 +4968,10 @@
       "lat": 47.59333,
       "lon": -122.328422,
       "distance_m": 316,
-      "bearing_from_stadium_deg": 131.1
+      "bearing_from_stadium_deg": 131.1,
+      "lot_orientation_deg": 90.0,
+      "length_m": 82.4,
+      "width_m": 36.5
     },
     {
       "osm_id": 188978355,
@@ -3838,7 +4981,10 @@
       "lat": 47.594944,
       "lon": -122.327237,
       "distance_m": 328,
-      "bearing_from_stadium_deg": 95.0
+      "bearing_from_stadium_deg": 95.0,
+      "lot_orientation_deg": 126.9,
+      "length_m": 83.9,
+      "width_m": 15.2
     },
     {
       "osm_id": 411436899,
@@ -3848,7 +4994,10 @@
       "lat": 47.592936,
       "lon": -122.328396,
       "distance_m": 348,
-      "bearing_from_stadium_deg": 136.3
+      "bearing_from_stadium_deg": 136.3,
+      "lot_orientation_deg": 270.0,
+      "length_m": 82.4,
+      "width_m": 52.1
     },
     {
       "osm_id": 360439967,
@@ -3858,7 +5007,10 @@
       "lat": 47.596345,
       "lon": -122.327117,
       "distance_m": 359,
-      "bearing_from_stadium_deg": 69.3
+      "bearing_from_stadium_deg": 69.3,
+      "lot_orientation_deg": 270.6,
+      "length_m": 76.9,
+      "width_m": 68.2
     },
     {
       "osm_id": 526317366,
@@ -3868,7 +5020,10 @@
       "lat": 47.594507,
       "lon": -122.326777,
       "distance_m": 370,
-      "bearing_from_stadium_deg": 102.0
+      "bearing_from_stadium_deg": 102.0,
+      "lot_orientation_deg": 359.1,
+      "length_m": 98.6,
+      "width_m": 77.8
     },
     {
       "osm_id": 526317364,
@@ -3878,7 +5033,10 @@
       "lat": 47.594523,
       "lon": -122.326456,
       "distance_m": 393,
-      "bearing_from_stadium_deg": 101.0
+      "bearing_from_stadium_deg": 101.0,
+      "lot_orientation_deg": 91.0,
+      "length_m": 35.2,
+      "width_m": 8.2
     },
     {
       "osm_id": 374019506,
@@ -3888,7 +5046,10 @@
       "lat": 47.594725,
       "lon": -122.32639,
       "distance_m": 394,
-      "bearing_from_stadium_deg": 97.7
+      "bearing_from_stadium_deg": 97.7,
+      "lot_orientation_deg": 216.5,
+      "length_m": 33.8,
+      "width_m": 29.9
     },
     {
       "osm_id": 526317363,
@@ -3898,7 +5059,10 @@
       "lat": 47.594035,
       "lon": -122.326589,
       "distance_m": 397,
-      "bearing_from_stadium_deg": 109.0
+      "bearing_from_stadium_deg": 109.0,
+      "lot_orientation_deg": 270.1,
+      "length_m": 79.8,
+      "width_m": 24.7
     },
     {
       "osm_id": 1421059238,
@@ -3908,7 +5072,10 @@
       "lat": 47.592092,
       "lon": -122.334555,
       "distance_m": 410,
-      "bearing_from_stadium_deg": 212.7
+      "bearing_from_stadium_deg": 212.7,
+      "lot_orientation_deg": 0.0,
+      "length_m": 31.0,
+      "width_m": 21.0
     },
     {
       "osm_id": 27182910,
@@ -3918,7 +5085,10 @@
       "lat": 47.596424,
       "lon": -122.325912,
       "distance_m": 448,
-      "bearing_from_stadium_deg": 72.3
+      "bearing_from_stadium_deg": 72.3,
+      "lot_orientation_deg": 359.4,
+      "length_m": 45.5,
+      "width_m": 38.0
     },
     {
       "osm_id": 27183172,
@@ -3928,7 +5098,10 @@
       "lat": 47.596863,
       "lon": -122.326061,
       "distance_m": 455,
-      "bearing_from_stadium_deg": 66.0
+      "bearing_from_stadium_deg": 66.0,
+      "lot_orientation_deg": 270.2,
+      "length_m": 37.8,
+      "width_m": 16.7
     },
     {
       "osm_id": 374019505,
@@ -3938,7 +5111,10 @@
       "lat": 47.594396,
       "lon": -122.325611,
       "distance_m": 458,
-      "bearing_from_stadium_deg": 101.3
+      "bearing_from_stadium_deg": 101.3,
+      "lot_orientation_deg": 0.3,
+      "length_m": 49.8,
+      "width_m": 37.8
     },
     {
       "osm_id": 374019504,
@@ -3948,7 +5124,10 @@
       "lat": 47.59411,
       "lon": -122.32557,
       "distance_m": 468,
-      "bearing_from_stadium_deg": 105.0
+      "bearing_from_stadium_deg": 105.0,
+      "lot_orientation_deg": 269.0,
+      "length_m": 44.7,
+      "width_m": 20.6
     },
     {
       "osm_id": 941759579,
@@ -3958,7 +5137,10 @@
       "lat": 47.59722,
       "lon": -122.326107,
       "distance_m": 469,
-      "bearing_from_stadium_deg": 61.4
+      "bearing_from_stadium_deg": 61.4,
+      "lot_orientation_deg": 90.2,
+      "length_m": 29.5,
+      "width_m": 11.2
     },
     {
       "osm_id": 1421059246,
@@ -3968,7 +5150,10 @@
       "lat": 47.591757,
       "lon": -122.335302,
       "distance_m": 473,
-      "bearing_from_stadium_deg": 215.9
+      "bearing_from_stadium_deg": 215.9,
+      "lot_orientation_deg": 16.3,
+      "length_m": 122.0,
+      "width_m": 45.7
     },
     {
       "osm_id": 27182884,
@@ -3978,7 +5163,10 @@
       "lat": 47.59811,
       "lon": -122.326978,
       "distance_m": 474,
-      "bearing_from_stadium_deg": 47.0
+      "bearing_from_stadium_deg": 47.0,
+      "lot_orientation_deg": 180.0,
+      "length_m": 55.8,
+      "width_m": 45.2
     },
     {
       "osm_id": 374019502,
@@ -3988,7 +5176,10 @@
       "lat": 47.593832,
       "lon": -122.325543,
       "distance_m": 479,
-      "bearing_from_stadium_deg": 108.5
+      "bearing_from_stadium_deg": 108.5,
+      "lot_orientation_deg": 89.9,
+      "length_m": 44.3,
+      "width_m": 20.8
     },
     {
       "osm_id": 27182913,
@@ -3998,7 +5189,10 @@
       "lat": 47.596509,
       "lon": -122.325347,
       "distance_m": 491,
-      "bearing_from_stadium_deg": 72.8
+      "bearing_from_stadium_deg": 72.8,
+      "lot_orientation_deg": 180.0,
+      "length_m": 21.3,
+      "width_m": 17.6
     },
     {
       "osm_id": 27182902,
@@ -4008,7 +5202,10 @@
       "lat": 47.596963,
       "lon": -122.325473,
       "distance_m": 499,
-      "bearing_from_stadium_deg": 66.9
+      "bearing_from_stadium_deg": 66.9,
+      "lot_orientation_deg": 269.5,
+      "length_m": 37.4,
+      "width_m": 35.4
     },
     {
       "osm_id": 400068343,
@@ -4018,7 +5215,10 @@
       "lat": 47.599517,
       "lon": -122.329715,
       "distance_m": 500,
-      "bearing_from_stadium_deg": 16.4
+      "bearing_from_stadium_deg": 16.4,
+      "lot_orientation_deg": 330.1,
+      "length_m": 27.9,
+      "width_m": 14.3
     },
     {
       "osm_id": 1421059255,
@@ -4028,7 +5228,10 @@
       "lat": 47.591159,
       "lon": -122.334546,
       "distance_m": 501,
-      "bearing_from_stadium_deg": 206.2
+      "bearing_from_stadium_deg": 206.2,
+      "lot_orientation_deg": 180.1,
+      "length_m": 30.1,
+      "width_m": 19.9
     },
     {
       "osm_id": 27183355,
@@ -4038,7 +5241,10 @@
       "lat": 47.599816,
       "lon": -122.331265,
       "distance_m": 514,
-      "bearing_from_stadium_deg": 2.8
+      "bearing_from_stadium_deg": 2.8,
+      "lot_orientation_deg": 180.6,
+      "length_m": 35.8,
+      "width_m": 30.6
     },
     {
       "osm_id": 226306332,
@@ -4048,7 +5254,10 @@
       "lat": 47.594694,
       "lon": -122.324737,
       "distance_m": 518,
-      "bearing_from_stadium_deg": 96.2
+      "bearing_from_stadium_deg": 96.2,
+      "lot_orientation_deg": 180.4,
+      "length_m": 78.5,
+      "width_m": 72.6
     },
     {
       "osm_id": 27182916,
@@ -4058,7 +5267,10 @@
       "lat": 47.596458,
       "lon": -122.324743,
       "distance_m": 533,
-      "bearing_from_stadium_deg": 74.8
+      "bearing_from_stadium_deg": 74.8,
+      "lot_orientation_deg": 179.7,
+      "length_m": 36.0,
+      "width_m": 34.4
     },
     {
       "osm_id": 448225984,
@@ -4068,7 +5280,10 @@
       "lat": 47.598839,
       "lon": -122.326819,
       "distance_m": 541,
-      "bearing_from_stadium_deg": 41.5
+      "bearing_from_stadium_deg": 41.5,
+      "lot_orientation_deg": 0.8,
+      "length_m": 47.9,
+      "width_m": 35.5
     },
     {
       "osm_id": 27182999,
@@ -4078,7 +5293,10 @@
       "lat": 47.595281,
       "lon": -122.324305,
       "distance_m": 547,
-      "bearing_from_stadium_deg": 89.0
+      "bearing_from_stadium_deg": 89.0,
+      "lot_orientation_deg": 90.4,
+      "length_m": 79.1,
+      "width_m": 50.9
     },
     {
       "osm_id": 245265272,
@@ -4088,7 +5306,10 @@
       "lat": 47.595641,
       "lon": -122.324206,
       "distance_m": 557,
-      "bearing_from_stadium_deg": 84.9
+      "bearing_from_stadium_deg": 84.9,
+      "lot_orientation_deg": 90.0,
+      "length_m": 37.5,
+      "width_m": 13.4
     },
     {
       "osm_id": 1421059253,
@@ -4098,7 +5319,10 @@
       "lat": 47.59091,
       "lon": -122.33546,
       "distance_m": 558,
-      "bearing_from_stadium_deg": 211.2
+      "bearing_from_stadium_deg": 211.2,
+      "lot_orientation_deg": 179.8,
+      "length_m": 91.2,
+      "width_m": 26.3
     },
     {
       "osm_id": 859960532,
@@ -4108,7 +5332,10 @@
       "lat": 47.59979,
       "lon": -122.334627,
       "distance_m": 559,
-      "bearing_from_stadium_deg": 336.0
+      "bearing_from_stadium_deg": 336.0,
+      "lot_orientation_deg": 90.5,
+      "length_m": 33.8,
+      "width_m": 15.1
     },
     {
       "osm_id": 27182934,
@@ -4118,7 +5345,10 @@
       "lat": 47.5961,
       "lon": -122.324165,
       "distance_m": 566,
-      "bearing_from_stadium_deg": 79.8
+      "bearing_from_stadium_deg": 79.8,
+      "lot_orientation_deg": 0.6,
+      "length_m": 27.3,
+      "width_m": 27.3
     },
     {
       "osm_id": 23780967,
@@ -4128,7 +5358,10 @@
       "lat": 47.591451,
       "lon": -122.326467,
       "distance_m": 567,
-      "bearing_from_stadium_deg": 137.3
+      "bearing_from_stadium_deg": 137.3,
+      "lot_orientation_deg": 180.0,
+      "length_m": 105.5,
+      "width_m": 55.3
     }
   ]
 }

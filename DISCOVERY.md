@@ -104,15 +104,25 @@ from the climatology's REAL and the scenario simulator's MOCK).
 ## 5. Parking is where Track 1 (Transportation) and Track 3 (Public Health) meet
 
 `scripts/fetch_parking_lots.py` pulled real OpenStreetMap parking-lot
-geometry around all 11 stadiums (area, distance, compass bearing --
-same Overpass technique proven for field orientation). Combined with
-the real match kickoff times above, `lib/parkingData.ts` estimates
-walk-in heat exposure (real distance + real WBGT + a modeled pavement-
-sun surcharge from published heat-island field studies) and match-day
-parking fill (real capacity-implied space counts + a modeled,
-literature-shaped fill curve keyed to real kickoff time). See the
-running app's Map+3D tab -- select a real match and watch the real
-parking lots fill with cars as kickoff approaches.
+geometry around all 11 stadiums -- area, distance, compass bearing,
+AND each lot's real oriented length/width (rotate its real node
+coordinates into the frame of its longest edge, take the extents).
+`lib/parkingLayout.ts` then fits real parking-design standards (9ft x
+18ft stalls, a 24ft two-way drive aisle -- ITE/ULI's published minimums
+for 90-degree parking) into that real rectangle as double-loaded rows,
+producing a genuine per-lot capacity: not area divided by a constant,
+but an actual row-and-aisle layout computed from the lot's real shape.
+Every one of the 411 real lots across all 11 stadiums now resolves
+this way (`capacity_method: "real-layout"`, verified via `/api/parking`).
+
+Combined with the real match kickoff times above, `lib/parkingData.ts`
+estimates walk-in heat exposure (real distance + real WBGT + a modeled
+pavement-sun surcharge from published heat-island field studies) and
+match-day parking fill (real per-lot capacity + a modeled, literature-
+shaped fill curve keyed to real kickoff time). See the running app's
+Map+3D tab -- select a real match and watch the real parking lots,
+drawn at their real proportions and real compass orientation, fill
+with cars arranged in real double-loaded rows as kickoff approaches.
 
 ## 6. What's still open (say plainly)
 

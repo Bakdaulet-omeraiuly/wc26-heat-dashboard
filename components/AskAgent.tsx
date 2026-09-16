@@ -9,7 +9,8 @@ const SAMPLE_QUESTIONS = [
   "Which stadium is the highest heat risk in July at 3pm?",
   "Is MetLife Stadium getting hotter over the last 20 years?",
   "How much would 50% shade and 2 misting stations help at Hard Rock Stadium in July at 3pm?",
-  "Which stadiums are safest for a June afternoon kickoff?",
+  "What's the real weather forecast for AT&T Stadium the next 2 days?",
+  "If the warming trend continues, what will Hard Rock Stadium's July WBGT be around 2035?",
 ];
 
 /** The "Ask" agent -- see app/api/ask/route.ts for the retrieval-then-

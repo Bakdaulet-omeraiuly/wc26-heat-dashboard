@@ -196,6 +196,64 @@ export function getAllTrends(): TrendResult[] {
     .sort((a, b) => b.trend_c_per_decade - a.trend_c_per_decade);
 }
 
+export type ProjectionResult = {
+  stadium_id: string;
+  stadium_name: string;
+  target_year: number;
+  based_on: { first_year: number; last_year: number; last_year_july_wbgt_c: number; trend_c_per_decade: number };
+  projected_july_wbgt_c: number;
+  years_beyond_data: number;
+  data_status: "EXTRAPOLATION";
+  caveat: string;
+};
+
+const MAX_YEARS_BEYOND_DATA = 15;
+
+/** A NAIVE linear extrapolation of the real 20-year July-WBGT trend --
+ * NOT a validated climate forecast. It answers "if the observed
+ * 2006-2025 trend continued in a straight line, what would July WBGT
+ * be in year X" -- nothing more. Real future heat depends on things
+ * this can't see: El Nino/La Nina cycles, urban heat island growth,
+ * emissions scenarios, station relocations. Deliberately refuses
+ * (returns null) beyond MAX_YEARS_BEYOND_DATA out, because a straight
+ * line stops being a remotely reasonable approximation of climate
+ * further out than that, and this tool should fail honestly rather
+ * than hand back an authoritative-looking number for 2060. */
+export function projectFutureWBGT(stadiumId: string, targetYear: number): ProjectionResult | { error: string } | null {
+  const stadium = loadStadiums().find((s) => s.id === stadiumId);
+  if (!stadium) return null;
+  const trend = getStadiumTrend(stadium.id);
+  if (!trend) return null;
+
+  const yearsBeyond = targetYear - trend.last_year;
+  if (yearsBeyond <= 0) {
+    return { error: `target_year must be after ${trend.last_year} (the last year with real data) -- use get_stadium_trend or get_stadium_snapshot for years already observed.` };
+  }
+  if (yearsBeyond > MAX_YEARS_BEYOND_DATA) {
+    return {
+      error: `Refusing to extrapolate ${yearsBeyond} years beyond the real data (last observed: ${trend.last_year}). A straight-line projection of a 20-year trend is not a credible climate forecast that far out -- capped at ${MAX_YEARS_BEYOND_DATA} years beyond ${trend.last_year} (i.e. up to ${trend.last_year + MAX_YEARS_BEYOND_DATA}).`,
+    };
+  }
+
+  const projected = trend.last_year_july_wbgt_c + (trend.trend_c_per_decade / 10) * yearsBeyond;
+  return {
+    stadium_id: stadium.id,
+    stadium_name: stadium.name,
+    target_year: targetYear,
+    based_on: {
+      first_year: trend.first_year,
+      last_year: trend.last_year,
+      last_year_july_wbgt_c: trend.last_year_july_wbgt_c,
+      trend_c_per_decade: trend.trend_c_per_decade,
+    },
+    projected_july_wbgt_c: Math.round(projected * 100) / 100,
+    years_beyond_data: yearsBeyond,
+    data_status: "EXTRAPOLATION",
+    caveat:
+      "Naive straight-line extrapolation of the real 2006-2025 trend -- NOT a validated climate model. Does not account for El Nino/La Nina cycles, urban heat island growth, emissions scenarios, or station changes. Present as 'if the past trend continues' framing, never as a confident prediction.",
+  };
+}
+
 // Scenario-simulator constants -- MODELED assumptions, not measured at
 // these venues. Kept numerically identical to
 // components/ScenarioSimulator.tsx and components/PriorityList.tsx on

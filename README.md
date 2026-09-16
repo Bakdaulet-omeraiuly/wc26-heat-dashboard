@@ -64,18 +64,33 @@ right now.)
 
 `components/AskAgent.tsx` + `app/api/ask/route.ts`. A real LLM (Claude,
 via function-calling) answers free-text questions, but it is only
-allowed to state a number that came back from one of six tool calls
-into `lib/agentData.ts` -- each a thin wrapper around the exact same
-`climatology.json` / `discovery_trend.json` / scenario formula the rest
-of the dashboard uses. The system prompt requires every claim to carry
-its data_status (REAL/MOCK/MISSING), and requires an honest "not yet
-verified" answer instead of a guess when a tool returns null (e.g.
-asking which section of Mercedes-Benz Stadium gets the most sun --
-its field orientation is still TODO-SEMI, and the agent says so rather
-than inventing a section name). Every answer's "data used" panel
-expands to show the exact tool calls and raw REAL/MOCK-tagged JSON
-that produced it -- for this audience (researchers, not casual users),
-seeing the underlying number matters more than a smooth chat UI.
+allowed to state a number that came back from one of eight tool calls
+into `lib/agentData.ts` / `lib/nwsForecast.ts` -- each a thin wrapper
+around either the dashboard's own real data files
+(`climatology.json` / `discovery_trend.json` / scenario formula) or a
+live real external source. The system prompt requires every claim to
+carry its data_status, and requires an honest "not yet verified"
+answer instead of a guess when a tool returns null (e.g. asking which
+section of Mercedes-Benz Stadium gets the most sun -- its field
+orientation is still TODO-SEMI, and the agent says so rather than
+inventing a section name). Every answer's "data used" panel expands to
+show the exact tool calls and raw tagged JSON that produced it -- for
+this audience (researchers, not casual users), seeing the underlying
+number matters more than a smooth chat UI.
+
+Two data_status values are specific to "future" questions, and the
+agent is instructed never to conflate them:
+- **EXTRAPOLATION** (`project_future_wbgt`) -- a naive straight-line
+  projection of the real 2006-2025 trend, capped at 15 years past 2025
+  and refusing (with an explanation) beyond that. No forecast skill,
+  explicitly framed as "if the past trend continues," not a
+  prediction.
+- **REAL-FORECAST** (`get_weather_forecast`) -- an actual NOAA
+  National Weather Service prediction (`api.weather.gov`, free, no
+  key) for the next ~7 days, with WBGT computed from the real
+  forecast temp/dewpoint the same way the rest of the app computes it
+  from historical readings.
+
 Needs `ANTHROPIC_API_KEY` set (`.env.local` locally, a Vercel env var
 in production); without it, `/api/ask` returns a clear 503 instead of
 failing silently.

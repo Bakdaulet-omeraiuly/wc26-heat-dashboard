@@ -8,7 +8,9 @@ import {
   getStadiumTrend,
   getAllTrends,
   simulateScenario,
+  projectFutureWBGT,
 } from "@/lib/agentData";
+import { getStadiumForecast } from "@/lib/nwsForecast";
 
 /**
  * POST /api/ask -- the research-question agent.
@@ -37,8 +39,9 @@ Hard rules, no exceptions:
 5. Keep answers tight: 2-5 sentences for a simple question, a short list for a comparison. Cite units (°C) and sample size (n=... real hourly readings) when giving a WBGT figure.
 6. Scenario/mitigation numbers (shade, misting, roof) are always MOCK -- say "modeled effect, not measured at this venue" every time you give one.
 7. WBGT (Wet-Bulb Globe Temperature) is the real metric US sports medicine uses for outdoor heat-safety decisions; explain it in one clause only if the user seems unfamiliar with it, don't over-explain to a repeat user.
+8. There are TWO different kinds of "future" number, never confuse them: get_weather_forecast returns data_status REAL-FORECAST -- a real NOAA National Weather Service prediction, only available for the next ~7 days from today, genuinely uncertain the further out it goes. project_future_wbgt returns data_status EXTRAPOLATION -- a naive straight-line projection of the real 2006-2025 historical trend, with NO forecast skill and NO knowledge of actual future weather; frame it explicitly as "if the past 20-year trend continued" and never as a prediction of what will actually happen. If a user asks about a specific date within the next week, prefer get_weather_forecast. If they ask about a year like 2030 or 2035, use project_future_wbgt and lead with the "if the trend continues" framing.
 
-You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
+You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, extrapolate that trend, fetch a real short-term NWS forecast, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
 
 const TOOLS: Anthropic.Tool[] = [
   {
@@ -110,9 +113,34 @@ const TOOLS: Anthropic.Tool[] = [
       required: ["stadium_id", "month", "hour"],
     },
   },
+  {
+    name: "project_future_wbgt",
+    description: "Naive linear extrapolation of the real 20-year (2006-2025) July WBGT trend to a future year. data_status: EXTRAPOLATION, not a validated climate forecast -- refuses (returns an error) more than 15 years past the last real data year. Use only for 'if this trend continues' framing, e.g. year 2030-2040 questions.",
+    input_schema: {
+      type: "object",
+      properties: {
+        stadium_id: { type: "string" },
+        target_year: { type: "integer", description: "e.g. 2030 -- must be after 2025" },
+      },
+      required: ["stadium_id", "target_year"],
+    },
+  },
+  {
+    name: "get_weather_forecast",
+    description: "Real short-term weather forecast (NOAA National Weather Service, api.weather.gov) for the next ~7 days at a stadium's location, with WBGT computed from the forecast temp/dewpoint. data_status: REAL-FORECAST -- a genuine prediction, not historical climatology, only available a few days out from today. Use for 'what will it be like this week / this weekend / tomorrow' questions.",
+    input_schema: {
+      type: "object",
+      properties: {
+        stadium_id: { type: "string" },
+        target_date: { type: "string", description: "optional, YYYY-MM-DD, must be within ~7 days of today; omit to get the next 48 hours" },
+        hours_ahead: { type: "integer", description: "optional, used only if target_date is omitted; default 48, max ~168" },
+      },
+      required: ["stadium_id"],
+    },
+  },
 ];
 
-function runTool(name: string, input: Record<string, unknown>): unknown {
+async function runTool(name: string, input: Record<string, unknown>): Promise<unknown> {
   switch (name) {
     case "list_stadiums":
       return listStadiums();
@@ -138,6 +166,16 @@ function runTool(name: string, input: Record<string, unknown>): unknown {
           roofClosed: Boolean(input.roof_closed),
         }) ?? { error: "unknown stadium_id or no baseline data for that month/hour" }
       );
+    case "project_future_wbgt":
+      return projectFutureWBGT(String(input.stadium_id), Number(input.target_year)) ?? { error: "unknown stadium_id or no trend data" };
+    case "get_weather_forecast": {
+      const stadium = findStadium(String(input.stadium_id));
+      if (!stadium) return { error: "unknown stadium_id -- call find_stadium or list_stadiums first" };
+      return getStadiumForecast(stadium, {
+        targetDate: typeof input.target_date === "string" ? input.target_date : undefined,
+        hoursAhead: input.hours_ahead !== undefined ? Number(input.hours_ahead) : undefined,
+      });
+    }
     default:
       return { error: `unknown tool ${name}` };
   }
@@ -186,11 +224,13 @@ export async function POST(request: NextRequest) {
     }
 
     messages.push({ role: "assistant", content: response.content });
-    const toolResults: Anthropic.ToolResultBlockParam[] = toolUses.map((tu) => {
-      const result = runTool(tu.name, (tu.input as Record<string, unknown>) ?? {});
-      toolCallLog.push({ tool: tu.name, input: tu.input, result });
-      return { type: "tool_result", tool_use_id: tu.id, content: JSON.stringify(result) };
-    });
+    const toolResults: Anthropic.ToolResultBlockParam[] = await Promise.all(
+      toolUses.map(async (tu) => {
+        const result = await runTool(tu.name, (tu.input as Record<string, unknown>) ?? {});
+        toolCallLog.push({ tool: tu.name, input: tu.input, result });
+        return { type: "tool_result" as const, tool_use_id: tu.id, content: JSON.stringify(result) };
+      })
+    );
     messages.push({ role: "user", content: toolResults });
   }
 

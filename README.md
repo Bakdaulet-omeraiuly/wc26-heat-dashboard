@@ -53,19 +53,53 @@ right now.)
 
 | View | What it shows |
 |---|---|
-| **A -- Map + 3D** (homepage) | All 11 stadiums on a real US map, colored by heat risk; a month/hour scrubber recolors everything live; click a stadium for a 3D model showing real sun/shade (SunCalc-computed) |
+| **A -- Map + 3D** (homepage) | All 11 stadiums on a real US map, colored by heat risk; a month/hour scrubber recolors everything live; click a stadium for a 3D model showing real sun/shade (SunCalc-computed) plus its real parking lots, placed by real compass bearing/distance and colored by estimated walk-in heat exposure |
 | **B -- 20-Year Explorer** | Any stadium + exact date/hour, 2006-2025 -- the real recorded temp/dewpoint/WBGT curve for that day, CSV export |
 | **C -- Ranked Comparison** | All 11 cities ranked by WBGT for the selected month/hour |
 | **D -- Scenario Simulator** | Shade/misting/roof-closed sliders, live-recomputed WBGT (modeled effect sizes, stated plainly as such) |
 | **E -- Priority List** | Ranked "invest here first," current vs. projected-after-mitigation |
 | **F -- Ask** | Natural-language Q&A over the real data, e.g. "which stadium is safest for a June kickoff?" -- see below |
 
+### Parking lots, in 3D and in the Discovery -- solving two tracks at once
+
+City planners asking "is our stadium heat-safe" and "is our parking
+heat-safe" are really asking one question: what does the walk from a
+parked car to the gate feel like. Real field studies (EPA's heat-island
+program, a USDA Forest Service Davis, CA shading study) show open
+asphalt running 40-60°F hotter than shaded air at midday, and this
+session's research turned that into a real, geometry-backed feature
+rather than a hand-wavy add-on:
+
+- `scripts/fetch_parking_lots.py` pulls REAL parking-lot polygons from
+  OpenStreetMap around each stadium (the same Overpass technique
+  proven for field orientation) -- real area, real centroid, real
+  distance and compass bearing from the stadium. 40 lots kept per
+  venue (nearest first), e.g. AT&T Stadium: 40 real named lots
+  ("Lot 11", "Lot 13", ...), 527,000 m² total.
+- `lib/parkingData.ts` turns that into a walk-in heat estimate: real
+  distance -> a SEMI walk time (~3mph assumption), plus the real
+  climatology WBGT for the selected month/hour, plus one clearly-MOCK
+  surcharge (+3°C) for crossing open sunlit pavement -- never
+  presented as a rigorous globe-temperature WBGT.
+- The 3D view (`components/Stadium3D.tsx`) places each real lot at its
+  real bearing/distance around the stadium bowl (distance compressed
+  for visualization, not to scale) and colors it by that estimate --
+  hover a lot for its name, distance, walk time, and heat flag.
+- The Ask agent has a matching `get_parking_exposure` tool, so "which
+  lot is safest to park in" gets the same real-data-grounded treatment
+  as every other question.
+
+This deliberately overlaps Track 1 (Transportation & Access) from
+inside a Track 3 submission -- the walk from a parking lot is exactly
+where "built environment" and "access" meet.
+
 ### The Ask agent -- retrieval, not invention
 
 `components/AskAgent.tsx` + `app/api/ask/route.ts`. A real LLM (Claude,
 via function-calling) answers free-text questions, but it is only
-allowed to state a number that came back from one of eight tool calls
-into `lib/agentData.ts` / `lib/nwsForecast.ts` -- each a thin wrapper
+allowed to state a number that came back from one of nine tool calls
+into `lib/agentData.ts` / `lib/nwsForecast.ts` / `lib/parkingData.ts`
+-- each a thin wrapper
 around either the dashboard's own real data files
 (`climatology.json` / `discovery_trend.json` / scenario formula) or a
 live real external source. The system prompt requires every claim to
@@ -137,6 +171,7 @@ reference-value check.
 python3 scripts/fetch_noaa_data.py       # pulls 2.46M real NOAA rows -> data/heat.db
 python3 scripts/aggregate_summaries.py   # -> data/climatology.json, data/yearly_trend.json
 python3 scripts/compute_discovery.py     # -> data/discovery_trend.json, prints the trend findings
+python3 scripts/fetch_parking_lots.py    # -> data/parking.json, real OSM parking-lot geometry
 ```
 
 ## Honest limitations
@@ -168,6 +203,18 @@ Caspian Watch documentation:
    computed stand on their own regardless.
 5. **Docker + the 20-year explorer**: see Quick Start above -- a real,
    reproduced virtiofs issue on macOS, not a hypothetical one.
+6. **Parking walk-in heat exposure is SEMI, not REAL.** The lot
+   geometry (distance, area, bearing) is real OpenStreetMap data, and
+   the baseline WBGT is real climatology -- but the +3°C sun surcharge
+   for crossing open pavement is a modeled figure from published
+   heat-island field studies at OTHER locations, not measured at these
+   specific stadiums, and it isn't a full globe-temperature WBGT
+   calculation (no pavement thermometer, no wind). Walk time assumes a
+   flat ~3mph pace, not accounting for crowd density on event day. A
+   few stadiums' Overpass queries were rate-limited on the first pass
+   and needed a retry (`scripts/retry_parking_lots.py`) -- same
+   real, reproduced Overpass rate-limiting already documented for
+   field orientation above.
 
 ## Project docs
 

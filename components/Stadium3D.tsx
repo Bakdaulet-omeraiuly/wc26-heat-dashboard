@@ -1,10 +1,83 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
+
+type LotExposure = {
+  lot: {
+    osm_id: number;
+    name: string;
+    name_status: "REAL" | "UNNAMED";
+    area_m2: number;
+    distance_m: number;
+    bearing_from_stadium_deg: number;
+  };
+  walk_minutes: number;
+  adjusted_wbgt_c: number | null;
+  sports_flag: "white" | "green" | "yellow" | "red" | "black" | null;
+};
+
+const FLAG_HEX: Record<string, string> = {
+  white: "#e8e8e8",
+  green: "#228b54",
+  yellow: "#d4af28",
+  red: "#c43c30",
+  black: "#1a1a1a",
+};
+
+/** Ground-plane compass-bearing placement -- the SAME formula used for
+ * the sun direction below (with altitude fixed at 0), so a parking
+ * lot's marker sits at its real compass direction from the stadium.
+ * Distance is compressed into a fixed visual range (15-35 scene
+ * units); this is schematic, not to scale -- same honesty convention
+ * as the stand bowl itself (see the file's top comment). */
+function bearingToXZ(bearingDeg: number, radius: number): [number, number] {
+  const rad = (bearingDeg * Math.PI) / 180;
+  return [Math.sin(rad) * radius, -Math.cos(rad) * radius];
+}
+
+function ParkingLots({ lots, onHover }: { lots: LotExposure[]; onHover: (l: LotExposure | null) => void }) {
+  return (
+    <group>
+      {lots.map((le) => {
+        const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+        const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
+        const size = Math.min(3.2, Math.max(0.6, Math.sqrt(le.lot.area_m2) / 15));
+        const color = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#555555";
+        // "Black" flag (#1a1a1a) is real-but-invisible against this
+        // scene's dark background -- same problem hit in
+        // ForecastSidebar's bar chart. Give it an emissive red glow
+        // instead of relying on the literal near-black fill, so the
+        // highest-risk lots read as alarming rather than disappearing.
+        const isBlackFlag = le.sports_flag === "black";
+        return (
+          <mesh
+            key={le.lot.osm_id}
+            position={[x, 0.05, z]}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              onHover(le);
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              onHover(null);
+            }}
+          >
+            <boxGeometry args={[size, isBlackFlag ? 0.4 : 0.15, size]} />
+            <meshStandardMaterial
+              color={isBlackFlag ? "#3a0a0a" : color}
+              emissive={isBlackFlag ? "#ff2222" : "#000000"}
+              emissiveIntensity={isBlackFlag ? 0.7 : 0}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
 
 type StadiumInfo = {
   id: string;
@@ -87,6 +160,20 @@ function SunMarker({ direction, altitude }: { direction: [number, number, number
 
 export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
   const { month, hour } = useHeatDashboardStore();
+  const [lots, setLots] = useState<LotExposure[]>([]);
+  const [hoveredLot, setHoveredLot] = useState<LotExposure | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setHoveredLot(null);
+    fetch(`/api/parking?stadium=${stadium.id}&month=${month}&hour=${hour}`)
+      .then((r) => r.json())
+      .then((d) => !cancelled && setLots(d.lots ?? []))
+      .catch(() => !cancelled && setLots([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [stadium.id, month, hour]);
 
   const { sunDirection, altitudeDeg, azimuthDeg } = useMemo(() => {
     // A representative date for the selected month -- the 15th, noon
@@ -119,7 +206,7 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
 
   return (
     <div className="w-full h-full relative">
-      <Canvas shadows camera={{ position: [20, 18, 20], fov: 45 }}>
+      <Canvas shadows camera={{ position: [27, 23, 27], fov: 45 }}>
         <ambientLight intensity={altitudeDeg > 0 ? 0.45 : 0.15} />
         <directionalLight
           position={[sunDirection[0] * 20, Math.max(sunDirection[1] * 20, 2), sunDirection[2] * 20]}
@@ -128,6 +215,7 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
         />
         <StadiumBowl stadium={stadium} sunDirection={sunDirection} />
         <SunMarker direction={sunDirection} altitude={altitudeDeg} />
+        <ParkingLots lots={lots} onHover={setHoveredLot} />
         <OrbitControls />
       </Canvas>
 
@@ -138,6 +226,37 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
           Field orientation: {stadium.field_orientation_deg !== null ? `${stadium.field_orientation_deg}°` : "not yet verified (SEMI, see spec.md)"}
         </div>
       </div>
+
+      {lots.length > 0 && (
+        <div className="absolute top-2 left-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700 max-w-[180px]">
+          <div className="text-zinc-400 mb-1">
+            REAL PARKING LOTS ({lots.length}) &mdash; hover a square
+          </div>
+          {hoveredLot ? (
+            <>
+              <div className="font-bold">{hoveredLot.lot.name}</div>
+              <div>{hoveredLot.lot.distance_m}m away &middot; {hoveredLot.walk_minutes} min walk</div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span
+                  className="w-2 h-2 rounded-full border border-zinc-600"
+                  style={{ background: hoveredLot.sports_flag ? FLAG_HEX[hoveredLot.sports_flag] : "#666" }}
+                />
+                <span>
+                  {hoveredLot.adjusted_wbgt_c !== null ? `${hoveredLot.adjusted_wbgt_c}°C walk-in WBGT` : "no data"}
+                </span>
+              </div>
+              <div className="text-zinc-600 mt-1 leading-snug">
+                SEMI: real distance + real WBGT + modeled pavement-sun surcharge
+              </div>
+            </>
+          ) : (
+            <div className="text-zinc-600 leading-snug">
+              Real OSM lot geometry, placed by real compass bearing &amp; distance (compressed for
+              visualization, not to scale).
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

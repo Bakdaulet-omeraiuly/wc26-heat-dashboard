@@ -52,7 +52,7 @@ export default function StadiumPanel() {
         </button>
       </div>
 
-      <div className="h-72 border-b border-zinc-700">
+      <div className="h-96 border-b border-zinc-700">
         <Stadium3D stadium={stadium} />
       </div>
 

@@ -11,6 +11,7 @@ import {
   projectFutureWBGT,
 } from "@/lib/agentData";
 import { getStadiumForecast } from "@/lib/nwsForecast";
+import { rankLotsBySafety } from "@/lib/parkingData";
 
 /**
  * POST /api/ask -- the research-question agent.
@@ -40,8 +41,9 @@ Hard rules, no exceptions:
 6. Scenario/mitigation numbers (shade, misting, roof) are always MOCK -- say "modeled effect, not measured at this venue" every time you give one.
 7. WBGT (Wet-Bulb Globe Temperature) is the real metric US sports medicine uses for outdoor heat-safety decisions; explain it in one clause only if the user seems unfamiliar with it, don't over-explain to a repeat user.
 8. There are TWO different kinds of "future" number, never confuse them: get_weather_forecast returns data_status REAL-FORECAST -- a real NOAA National Weather Service prediction, only available for the next ~7 days from today, genuinely uncertain the further out it goes. project_future_wbgt returns data_status EXTRAPOLATION -- a naive straight-line projection of the real 2006-2025 historical trend, with NO forecast skill and NO knowledge of actual future weather; frame it explicitly as "if the past 20-year trend continued" and never as a prediction of what will actually happen. If a user asks about a specific date within the next week, prefer get_weather_forecast. If they ask about a year like 2030 or 2035, use project_future_wbgt and lead with the "if the trend continues" framing.
+9. get_parking_exposure returns data_status SEMI: real OpenStreetMap lot distance/area and real climatology WBGT, but the "walk-in" heat number adds a MODELED +3C pavement-sun surcharge from published heat-island field studies (not measured at this venue, not a full globe-temperature WBGT calculation). Always mention that surcharge is modeled when citing an adjusted_wbgt_c figure.
 
-You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, extrapolate that trend, fetch a real short-term NWS forecast, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
+You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, extrapolate that trend, fetch a real short-term NWS forecast, estimate parking-lot walk-in heat exposure, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
 
 const TOOLS: Anthropic.Tool[] = [
   {
@@ -138,6 +140,19 @@ const TOOLS: Anthropic.Tool[] = [
       required: ["stadium_id"],
     },
   },
+  {
+    name: "get_parking_exposure",
+    description: "Real parking-lot geometry (OpenStreetMap: distance, area) at a stadium, ranked by estimated walk-in heat exposure for a given month/hour. data_status: SEMI (real distance + real climatology WBGT, plus a modeled +3C sun-exposure surcharge for crossing open pavement -- not a rigorous globe-temperature calculation). Use for 'which parking lot is safest/hottest' or 'how bad is the walk from parking' questions.",
+    input_schema: {
+      type: "object",
+      properties: {
+        stadium_id: { type: "string" },
+        month: { type: "integer", minimum: 1, maximum: 12 },
+        hour: { type: "integer", minimum: 0, maximum: 23 },
+      },
+      required: ["stadium_id", "month", "hour"],
+    },
+  },
 ];
 
 async function runTool(name: string, input: Record<string, unknown>): Promise<unknown> {
@@ -175,6 +190,26 @@ async function runTool(name: string, input: Record<string, unknown>): Promise<un
         targetDate: typeof input.target_date === "string" ? input.target_date : undefined,
         hoursAhead: input.hours_ahead !== undefined ? Number(input.hours_ahead) : undefined,
       });
+    }
+    case "get_parking_exposure": {
+      const ranked = rankLotsBySafety(String(input.stadium_id), Number(input.month), Number(input.hour));
+      if (ranked.length === 0) return { error: "no parking-lot data for this stadium (not yet fetched, or unknown stadium_id)" };
+      const slim = (le: (typeof ranked)[number]) => ({
+        name: le.lot.name,
+        name_status: le.lot.name_status,
+        distance_m: le.lot.distance_m,
+        area_m2: le.lot.area_m2,
+        walk_minutes: le.walk_minutes,
+        adjusted_wbgt_c: le.adjusted_wbgt_c,
+        sports_flag: le.sports_flag,
+      });
+      return {
+        total_lots_found: ranked.length,
+        data_status: "SEMI",
+        caveat: ranked[0].caveat,
+        safest_5: ranked.slice(0, 5).map(slim),
+        most_exposed_5: ranked.slice(-5).reverse().map(slim),
+      };
     }
     default:
       return { error: `unknown tool ${name}` };

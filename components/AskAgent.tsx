@@ -11,6 +11,7 @@ const SAMPLE_QUESTIONS = [
   "How much would 50% shade and 2 misting stations help at Hard Rock Stadium in July at 3pm?",
   "What's the real weather forecast for AT&T Stadium the next 2 days?",
   "If the warming trend continues, what will Hard Rock Stadium's July WBGT be around 2035?",
+  "Which parking lot at Hard Rock Stadium has the safest walk-in heat exposure in July at 3pm?",
 ];
 
 /** The "Ask" agent -- see app/api/ask/route.ts for the retrieval-then-

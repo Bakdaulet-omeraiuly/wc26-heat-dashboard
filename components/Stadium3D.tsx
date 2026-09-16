@@ -74,10 +74,14 @@ type Match = {
   local_kickoff: string;
   utc_offset: number;
   round: string;
+  stage?: "group" | "knockout" | "nfl";
+  is_future?: boolean;
   matchup_raw: string;
   real_kickoff_wbgt_c?: number | null;
   real_peak_wbgt_c?: number | null;
 };
+
+type LiveForecast = { wbgt_c: number; sports_flag: string; forecast_time_local: string } | { error: string } | null;
 
 // Meters-per-scene-unit for every real-world lot/stall measurement
 // drawn in this scene -- one constant so the footprint rectangle, the
@@ -428,6 +432,27 @@ export default function Stadium3D({
   const selectedMatch = matches[matchIndex] ?? null;
   const hasMatches = matches.length > 0;
 
+  // "Live mode": a selected event that's real and hasn't happened yet
+  // (an upcoming NFL game, data/stadium_events.json) gets its weather
+  // fetched live from NWS on demand, not baked into a static file --
+  // see app/api/event-forecast. Past/played events keep using their
+  // baked real_kickoff_wbgt_c/real_peak_wbgt_c instead.
+  const [liveForecast, setLiveForecast] = useState<LiveForecast>(null);
+  useEffect(() => {
+    if (!selectedMatch?.is_future) {
+      setLiveForecast(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/event-forecast?stadium=${stadium.id}&kickoff_utc_iso=${encodeURIComponent(selectedMatch.kickoff_utc_iso)}`)
+      .then((r) => r.json())
+      .then((d) => !cancelled && setLiveForecast(d))
+      .catch((e) => !cancelled && setLiveForecast({ error: String(e) }));
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedMatch, stadium.id]);
+
   // Cars can be driven two ways, both kept: (1) the SAME hour scrubber
   // that drives the heat map/3D sun -- hoursFromKickoff is the signed
   // distance (shortest way around the 24h clock) between the
@@ -596,6 +621,7 @@ export default function Stadium3D({
             >
               {matches.map((m, i) => (
                 <option key={i} value={i}>
+                  {m.is_future ? "● UPCOMING · " : m.stage === "nfl" ? "NFL · " : "WC26 · "}
                   {m.kickoff_utc_iso.slice(0, 10)} &middot; {m.matchup_raw.replace(/\s+/g, " ").slice(0, 24)}
                   {m.real_peak_wbgt_c != null ? ` (${m.real_peak_wbgt_c}°C)` : ""}
                 </option>
@@ -635,6 +661,19 @@ export default function Stadium3D({
               REAL weather that day: {selectedMatch.real_kickoff_wbgt_c}&deg;C at kickoff, peaked{" "}
               <span className="text-zinc-100 font-bold">{selectedMatch.real_peak_wbgt_c}&deg;C</span> during play
               &mdash; not climatology, what actually happened (Mesonet ASOS, same station).
+            </div>
+          )}
+          {selectedMatch?.is_future && (
+            <div className="text-zinc-400">
+              {liveForecast === null && "loading live forecast…"}
+              {liveForecast && "error" in liveForecast && <span className="text-zinc-600">{liveForecast.error}</span>}
+              {liveForecast && "wbgt_c" in liveForecast && (
+                <>
+                  LIVE forecast for this real upcoming game:{" "}
+                  <span className="text-zinc-100 font-bold">{liveForecast.wbgt_c}&deg;C</span> WBGT ({liveForecast.sports_flag}{" "}
+                  flag) &mdash; fetched live from api.weather.gov, not a stored value.
+                </>
+              )}
             </div>
           )}
         </div>

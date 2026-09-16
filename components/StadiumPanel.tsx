@@ -35,10 +35,13 @@ type Match = {
   local_kickoff: string;
   utc_offset: number;
   round: string;
+  is_future?: boolean;
   matchup_raw: string;
   real_kickoff_wbgt_c?: number | null;
   real_peak_wbgt_c?: number | null;
 };
+
+type LiveForecast = { wbgt_c: number; sports_flag: string } | { error: string } | null;
 
 const FLAG_HEX: Record<string, string> = {
   white: "#e8e8e8",
@@ -73,8 +76,24 @@ export default function StadiumPanel() {
   const [parkingLots, setParkingLots] = useState<ParkingLotRow[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [focusLotOsmId, setFocusLotOsmId] = useState<number | null>(null);
+  const [liveForecast, setLiveForecast] = useState<LiveForecast>(null);
 
   const selectedMatch = matches[matchIndex] ?? null;
+
+  useEffect(() => {
+    if (!selectedMatch?.is_future || !selectedStadiumId) {
+      setLiveForecast(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/event-forecast?stadium=${selectedStadiumId}&kickoff_utc_iso=${encodeURIComponent(selectedMatch.kickoff_utc_iso)}`)
+      .then((r) => r.json())
+      .then((d) => !cancelled && setLiveForecast(d))
+      .catch((e) => !cancelled && setLiveForecast({ error: String(e) }));
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedMatch, selectedStadiumId]);
   // Must match Stadium3D's own computation exactly (same formula, same
   // shared store fields) -- see lib/store.ts's comment on
   // hoursFromKickoffOverride for why this can't just derive from the
@@ -223,8 +242,11 @@ export default function StadiumPanel() {
         {/* Real match card */}
         {selectedMatch && (
           <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3">
-            <div className="text-zinc-500 uppercase tracking-wide text-[10px] mb-1.5">
-              Real Match &middot; {selectedMatch.round}
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-zinc-500 uppercase tracking-wide text-[10px]">
+                {selectedMatch.is_future ? "Upcoming Event" : "Real Match"} &middot; {selectedMatch.round}
+              </span>
+              {selectedMatch.is_future && <Pill color="#228b54">live</Pill>}
             </div>
             <div className="text-zinc-100">{selectedMatch.matchup_raw.replace(/\s+/g, " ")}</div>
             <div className="text-zinc-600 mt-0.5">
@@ -235,6 +257,18 @@ export default function StadiumPanel() {
               <div className="mt-1.5 pt-1.5 border-t border-zinc-800">
                 REAL weather that day: {selectedMatch.real_kickoff_wbgt_c}&deg;C at kickoff, peaked{" "}
                 <span className="text-zinc-100 font-bold">{selectedMatch.real_peak_wbgt_c}&deg;C</span>
+              </div>
+            )}
+            {selectedMatch.is_future && (
+              <div className="mt-1.5 pt-1.5 border-t border-zinc-800">
+                {liveForecast === null && <span className="text-zinc-600">loading live forecast&hellip;</span>}
+                {liveForecast && "error" in liveForecast && <span className="text-zinc-600">{liveForecast.error}</span>}
+                {liveForecast && "wbgt_c" in liveForecast && (
+                  <>
+                    LIVE forecast: <span className="text-zinc-100 font-bold">{liveForecast.wbgt_c}&deg;C</span> WBGT (
+                    {liveForecast.sports_flag} flag) &mdash; fetched live, not stored
+                  </>
+                )}
               </div>
             )}
           </div>

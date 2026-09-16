@@ -1,25 +1,35 @@
 import { NextRequest } from "next/server";
-import path from "node:path";
-import Database from "better-sqlite3";
+import { createClient, type Client } from "@libsql/client";
 import { approximateWBGT } from "@/lib/wbgt";
 
-const DB_PATH = path.join(process.cwd(), "data", "heat.db");
-
-let db: Database.Database | null = null;
-function getDb() {
-  if (!db) db = new Database(DB_PATH, { readonly: true, fileMustExist: true });
-  return db;
+// The 172MB, 2.46M-row real hourly table used to live only as a local
+// SQLite file (data/heat.db) -- too big for a normal git push (GitHub
+// rejects files over 100MB) and so never present in Vercel's build,
+// which meant the 20-Year Explorer (View B) only worked on someone's
+// own machine. Migrated to Turso (libSQL: a real hosted SQLite-
+// compatible database) via `turso db create --from-file data/heat.db`
+// -- verified live: 2,466,251 rows, matching the local file exactly.
+// Same schema, same query, just queried over the network instead of a
+// local file handle.
+let client: Client | null = null;
+function getClient(): Client {
+  if (!client) {
+    const url = process.env.TURSO_DATABASE_URL;
+    const authToken = process.env.TURSO_AUTH_TOKEN;
+    if (!url || !authToken) throw new Error("TURSO_DATABASE_URL / TURSO_AUTH_TOKEN not configured");
+    client = createClient({ url, authToken });
+  }
+  return client;
 }
 
 /**
  * GET /api/history?stadium=att-stadium&year=2019&month=7&day=15
  *
- * Returns the full day's real hourly readings for that stadium (from
- * the 172MB local heat.db -- see scripts/fetch_noaa_data.py; this is
- * the ONE endpoint that reads the raw table directly instead of the
- * small committed climatology.json, because "any exact historical
- * date/hour" is a real per-reading lookup, not something a monthly/
- * hourly aggregate can answer).
+ * Returns the full day's real hourly readings for that stadium --
+ * this is the ONE endpoint that reads the raw 2.46M-row table
+ * directly instead of the small committed climatology.json, because
+ * "any exact historical date/hour" is a real per-reading lookup, not
+ * something a monthly/hourly aggregate can answer.
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,16 +42,12 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "stadium, year, month, day are all required" }, { status: 400 });
   }
 
-  let database: Database.Database;
+  let db: Client;
   try {
-    database = getDb();
+    db = getClient();
   } catch {
     return Response.json(
-      {
-        error:
-          "heat.db not found locally. This 172MB file is a build-time artifact, not committed to git " +
-          "(see scripts/fetch_noaa_data.py's docstring) -- run: python3 scripts/fetch_noaa_data.py",
-      },
+      { error: "TURSO_DATABASE_URL / TURSO_AUTH_TOKEN not configured on the server -- see README's 20-Year Explorer setup." },
       { status: 503 }
     );
   }
@@ -49,12 +55,22 @@ export async function GET(request: NextRequest) {
   const dayStart = Math.floor(Date.UTC(year, month - 1, day, 0, 0, 0) / 1000);
   const dayEnd = dayStart + 24 * 3600;
 
-  const rows = database
-    .prepare(
-      "SELECT observed_at, temp_c, dewpoint_c FROM hourly_readings " +
-        "WHERE stadium_id = ? AND observed_at >= ? AND observed_at < ? ORDER BY observed_at"
-    )
-    .all(stadiumId, dayStart, dayEnd) as { observed_at: number; temp_c: number | null; dewpoint_c: number | null }[];
+  let rows: { observed_at: number; temp_c: number | null; dewpoint_c: number | null }[];
+  try {
+    const result = await db.execute({
+      sql:
+        "SELECT observed_at, temp_c, dewpoint_c FROM hourly_readings " +
+        "WHERE stadium_id = ? AND observed_at >= ? AND observed_at < ? ORDER BY observed_at",
+      args: [stadiumId, dayStart, dayEnd],
+    });
+    rows = result.rows.map((r) => ({
+      observed_at: Number(r.observed_at),
+      temp_c: r.temp_c === null ? null : Number(r.temp_c),
+      dewpoint_c: r.dewpoint_c === null ? null : Number(r.dewpoint_c),
+    }));
+  } catch (e) {
+    return Response.json({ error: `Turso query failed: ${e instanceof Error ? e.message : String(e)}` }, { status: 502 });
+  }
 
   const readings = rows
     .filter((r) => r.temp_c !== null && r.dewpoint_c !== null)

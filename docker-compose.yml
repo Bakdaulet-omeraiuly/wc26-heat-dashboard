@@ -5,30 +5,13 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    # data/heat.db (172MB, real NOAA hourly readings) is NOT committed
-    # to git (see scripts/fetch_noaa_data.py's docstring -- GitHub's
-    # 100MB/file limit) and is NOT bind-mounted here by default.
-    #
-    # Views A/C/D/E (map, 3D, ranked comparison, scenario simulator,
-    # priority list) work immediately with NO setup beyond `docker
-    # compose up` -- they read the small, committed climatology.json/
-    # yearly_trend.json. Only View B (the 20-year historical explorer)
-    # needs heat.db.
-    #
-    # Tried bind-mounting it (uncommenting the volumes block below) and
-    # hit a REAL, reproduced problem, not a hypothetical one: on this
-    # machine's Docker Desktop (macOS, virtiofs), `docker compose up`
-    # with that mount left the container stuck in "Created" (never
-    # reaching "Up"), and a direct `docker start` on it hung past 30s
-    # with no error -- consistent with known virtiofs performance
-    # issues around large single-file bind mounts on macOS. Reverted to
-    # NOT mounting it by default rather than shipping something that
-    # might hang for other judges too.
-    #
-    # To use View B locally instead: skip Docker for this one view --
-    # run `python3 scripts/fetch_noaa_data.py` once (needs internet,
-    # ~10-15 min) then `npm run dev` / `npm run build && npm start`
-    # directly on the host, where heat.db is just a normal local file,
-    # not a container bind mount.
-    # volumes:
-    #   - ./data/heat.db:/app/data/heat.db:ro
+    # All 6 views work immediately with just `docker compose up` --
+    # including View B (the 20-year historical explorer), which used
+    # to need a local 172MB heat.db bind-mounted into the container
+    # (and hit a real virtiofs hang on macOS Docker Desktop doing so).
+    # That table now lives in Turso (a hosted, SQLite-compatible
+    # database -- see app/api/history/route.ts) and is reached over
+    # the network via TURSO_DATABASE_URL / TURSO_AUTH_TOKEN, so no
+    # local file or bind mount is needed at all anymore. Pass those
+    # two through from your .env.local, e.g. via an env_file directive
+    # or --env-file on `docker compose up`.

@@ -33,26 +33,24 @@ hotter over 20 years).
 docker compose up
 ```
 
-Open http://localhost:3000. Views A/C/D/E (map, 3D model, ranked
-comparison, scenario simulator, priority list) work immediately, no
-setup, fully offline -- they read the small committed
-`data/climatology.json`/`data/yearly_trend.json`.
-
+Open http://localhost:3000. All 6 views work immediately, including
 View B (the 20-year historical explorer, "pick any exact real date and
-see what actually happened") needs the full 172MB raw NOAA dataset,
-which isn't committed to git (GitHub's 100MB/file limit -- see
-`scripts/fetch_noaa_data.py`'s docstring). To enable it:
+see what actually happened") -- its full 2.46M-row real table now
+lives in Turso (a hosted, SQLite-compatible database), not a local
+172MB file, specifically because that file was too big for a normal
+git push (GitHub rejects files over 100MB) and so never made it into
+the Vercel build. Migrated with `turso db create --from-file
+data/heat.db` -- verified live, same 2,466,251 real rows as the
+original local file. See `app/api/history/route.ts`.
+
+To run the data pipeline yourself from scratch (only needed if you
+want to regenerate the dataset, not to run the app):
 
 ```bash
-python3 scripts/fetch_noaa_data.py      # ~10-15 min, needs internet
-npm install && npm run dev              # or: npm run build && npm start
+python3 scripts/fetch_noaa_data.py       # ~10-15 min, needs internet -> data/heat.db
+turso db create hchis-heat-data --from-file data/heat.db --wait
+# then set TURSO_DATABASE_URL / TURSO_AUTH_TOKEN in .env.local (see turso db show/tokens create)
 ```
-
-(Running View B specifically through Docker hit a real, reproduced
-virtiofs bind-mount issue on macOS -- see `docker-compose.yml`'s
-comments. Views A/C/D/E work fine in Docker regardless; View B is the
-one case where running directly on the host is the more reliable path
-right now.)
 
 ## The 6 views
 
@@ -220,8 +218,12 @@ Caspian Watch documentation:
    remaining gap is the *per-section* sun-exposure ranking
    (`spec.md` Discovery 2.2), which still needs real field orientation
    for the 2 stadiums (Mercedes-Benz, SoFi) still marked SEMI below.
-5. **Docker + the 20-year explorer**: see Quick Start above -- a real,
-   reproduced virtiofs issue on macOS, not a hypothetical one.
+5. **(Resolved) Docker + the 20-year explorer**: an earlier version of
+   this file documented a real virtiofs bind-mount hang trying to give
+   Docker access to a local 172MB `heat.db`. That whole class of
+   problem is gone now that the table lives in Turso and is reached
+   over the network -- `docker-compose.yml` no longer needs (or offers)
+   a `heat.db` volume mount at all.
 6. **Parking walk-in heat exposure is SEMI, not REAL.** The lot
    geometry (distance, area, bearing) is real OpenStreetMap data, and
    the baseline WBGT is real climatology -- but the +3°C sun surcharge

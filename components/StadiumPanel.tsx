@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useHeatDashboardStore } from "@/lib/store";
 import Stadium3D from "./Stadium3D";
+import ScenarioSimulator from "./ScenarioSimulator";
 
 type StadiumDetail = {
   id: string;
@@ -92,6 +93,8 @@ export default function StadiumPanel() {
           <div className="text-zinc-500 mb-1">Roof</div>
           <div className="capitalize">{stadium.roof_type}</div>
         </div>
+
+        {stadium.wbgt && <ScenarioSimulator baselineWbgt={stadium.wbgt.mean} roofType={stadium.roof_type} />}
 
         <div className="text-zinc-600 pt-2 border-t border-zinc-800">
           Sample size n={stadium.wbgt?.sample_size ?? 0} hourly readings, 2006-2025, from the nearest NOAA

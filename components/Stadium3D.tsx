@@ -383,19 +383,27 @@ function SunMarker({ direction, altitude }: { direction: [number, number, number
   );
 }
 
-export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
-  const { month, hour } = useHeatDashboardStore();
+export default function Stadium3D({
+  stadium,
+  focusLotOsmId,
+}: {
+  stadium: StadiumInfo;
+  /** Set from outside (StadiumPanel's stat rows) to fly the camera to
+   * a specific real lot by its real OSM id -- the same mechanism a
+   * direct click on a lot in this scene uses internally. */
+  focusLotOsmId?: number | null;
+}) {
+  const { month, hour, matchIndex, setMatchIndex } = useHeatDashboardStore();
   const [lots, setLots] = useState<LotExposure[]>([]);
   const [hoveredLot, setHoveredLot] = useState<LotExposure | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
-  const [matchIdx, setMatchIdx] = useState(0);
   const [matchMode, setMatchMode] = useState(true);
   const controlsRef = useRef<any>(null);
   const [focusTarget, setFocusTarget] = useState<[number, number, number] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setMatchIdx(0);
+    setMatchIndex(0);
     fetch(`/api/matches?stadium=${stadium.id}`)
       .then((r) => r.json())
       .then((d) => !cancelled && setMatches(d.matches ?? []))
@@ -403,9 +411,21 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
     return () => {
       cancelled = true;
     };
-  }, [stadium.id]);
+  }, [stadium.id, setMatchIndex]);
 
-  const selectedMatch = matches[matchIdx] ?? null;
+  // Focus a lot by real OSM id when asked from outside this component
+  // (e.g. clicking "Safest: Lot 1" in StadiumPanel below) -- reuses
+  // the exact same scene-position math as a direct in-canvas click.
+  useEffect(() => {
+    if (focusLotOsmId == null) return;
+    const le = lots.find((l) => l.lot.osm_id === focusLotOsmId);
+    if (!le) return;
+    const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+    const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
+    setFocusTarget([x, 0.15, z]);
+  }, [focusLotOsmId, lots]);
+
+  const selectedMatch = matches[matchIndex] ?? null;
   const hasMatches = matches.length > 0;
 
   // Cars can be driven two ways, both kept: (1) the SAME hour scrubber
@@ -567,8 +587,8 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
         <div className="shrink-0 border-t border-zinc-800 bg-black font-mono text-[10px] px-2.5 py-1.5 flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <select
-              value={matchIdx}
-              onChange={(e) => setMatchIdx(Number(e.target.value))}
+              value={matchIndex}
+              onChange={(e) => setMatchIndex(Number(e.target.value))}
               className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700 rounded px-1.5 py-1 text-zinc-100"
             >
               {matches.map((m, i) => (

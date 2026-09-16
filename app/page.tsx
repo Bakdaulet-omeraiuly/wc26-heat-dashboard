@@ -5,9 +5,10 @@ import HeatMap from "@/components/HeatMap";
 import StadiumPanel from "@/components/StadiumPanel";
 import RankedComparison from "@/components/RankedComparison";
 import HistoricalExplorer from "@/components/HistoricalExplorer";
+import PriorityList from "@/components/PriorityList";
 
 export default function Home() {
-  const [tab, setTab] = useState<"map" | "history">("map");
+  const [tab, setTab] = useState<"map" | "history" | "priority">("map");
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
@@ -29,6 +30,12 @@ export default function Home() {
           >
             20-YEAR EXPLORER
           </button>
+          <button
+            onClick={() => setTab("priority")}
+            className={`px-3 py-1 rounded border ${tab === "priority" ? "bg-zinc-100 text-zinc-900 border-zinc-100" : "border-zinc-700 text-zinc-400 hover:text-zinc-100"}`}
+          >
+            PRIORITY LIST
+          </button>
         </nav>
       </header>
       <main className="flex-1 relative overflow-auto">
@@ -44,6 +51,11 @@ export default function Home() {
         {tab === "history" && (
           <div className="p-6">
             <HistoricalExplorer />
+          </div>
+        )}
+        {tab === "priority" && (
+          <div className="p-6">
+            <PriorityList />
           </div>
         )}
       </main>

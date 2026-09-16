@@ -6,9 +6,10 @@ import StadiumPanel from "@/components/StadiumPanel";
 import RankedComparison from "@/components/RankedComparison";
 import HistoricalExplorer from "@/components/HistoricalExplorer";
 import PriorityList from "@/components/PriorityList";
+import AskAgent from "@/components/AskAgent";
 
 export default function Home() {
-  const [tab, setTab] = useState<"map" | "history" | "priority">("map");
+  const [tab, setTab] = useState<"map" | "history" | "priority" | "ask">("map");
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
@@ -36,6 +37,12 @@ export default function Home() {
           >
             PRIORITY LIST
           </button>
+          <button
+            onClick={() => setTab("ask")}
+            className={`px-3 py-1 rounded border ${tab === "ask" ? "bg-zinc-100 text-zinc-900 border-zinc-100" : "border-zinc-700 text-zinc-400 hover:text-zinc-100"}`}
+          >
+            ASK
+          </button>
         </nav>
       </header>
       <main className="flex-1 relative overflow-auto">
@@ -56,6 +63,11 @@ export default function Home() {
         {tab === "priority" && (
           <div className="p-6">
             <PriorityList />
+          </div>
+        )}
+        {tab === "ask" && (
+          <div className="absolute inset-0">
+            <AskAgent />
           </div>
         )}
       </main>

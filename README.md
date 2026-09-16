@@ -49,7 +49,7 @@ comments. Views A/C/D/E work fine in Docker regardless; View B is the
 one case where running directly on the host is the more reliable path
 right now.)
 
-## The 5 views
+## The 6 views
 
 | View | What it shows |
 |---|---|
@@ -58,6 +58,27 @@ right now.)
 | **C -- Ranked Comparison** | All 11 cities ranked by WBGT for the selected month/hour |
 | **D -- Scenario Simulator** | Shade/misting/roof-closed sliders, live-recomputed WBGT (modeled effect sizes, stated plainly as such) |
 | **E -- Priority List** | Ranked "invest here first," current vs. projected-after-mitigation |
+| **F -- Ask** | Natural-language Q&A over the real data, e.g. "which stadium is safest for a June kickoff?" -- see below |
+
+### The Ask agent -- retrieval, not invention
+
+`components/AskAgent.tsx` + `app/api/ask/route.ts`. A real LLM (Claude,
+via function-calling) answers free-text questions, but it is only
+allowed to state a number that came back from one of six tool calls
+into `lib/agentData.ts` -- each a thin wrapper around the exact same
+`climatology.json` / `discovery_trend.json` / scenario formula the rest
+of the dashboard uses. The system prompt requires every claim to carry
+its data_status (REAL/MOCK/MISSING), and requires an honest "not yet
+verified" answer instead of a guess when a tool returns null (e.g.
+asking which section of Mercedes-Benz Stadium gets the most sun --
+its field orientation is still TODO-SEMI, and the agent says so rather
+than inventing a section name). Every answer's "data used" panel
+expands to show the exact tool calls and raw REAL/MOCK-tagged JSON
+that produced it -- for this audience (researchers, not casual users),
+seeing the underlying number matters more than a smooth chat UI.
+Needs `ANTHROPIC_API_KEY` set (`.env.local` locally, a Vercel env var
+in production); without it, `/api/ask` returns a clear 503 instead of
+failing silently.
 
 ## How it's built
 

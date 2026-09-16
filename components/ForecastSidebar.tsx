@@ -22,11 +22,27 @@ type Trend = {
 type ForecastHour = { time_local: string; wbgt_c: number; sports_flag: string; temp_c: number };
 type ForecastData = { hours: ForecastHour[]; data_status: string } | { error: string };
 
+type ParkingLotSummary = {
+  name: string;
+  distance_m: number;
+  walk_minutes: number;
+  adjusted_wbgt_c: number | null;
+  sports_flag: string | null;
+};
+type Parking = {
+  total_lots: number;
+  total_capacity: number;
+  safest: ParkingLotSummary;
+  most_exposed: ParkingLotSummary;
+  data_status: string;
+};
+
 type Payload = {
   stadium: Stadium;
   current: Snapshot | null;
   trend: Trend | null;
   forecast: ForecastData;
+  parking: Parking | null;
 };
 
 const FLAG_HEX: Record<string, string> = {
@@ -187,6 +203,44 @@ export default function ForecastSidebar() {
               </>
             ) : (
               <div className="text-zinc-600">no trend data</div>
+            )}
+          </div>
+
+          <div className="px-3 py-3 border-b border-zinc-800">
+            <div className="text-zinc-600 uppercase tracking-wide mb-1.5">Parking &middot; Real Lots</div>
+            {data.parking ? (
+              <>
+                <div className="text-zinc-100">
+                  <span className="text-lg font-bold">{data.parking.total_capacity.toLocaleString()}</span>{" "}
+                  <span className="text-zinc-500">spaces across {data.parking.total_lots} real lots</span>
+                </div>
+                <div className="mt-2 flex items-center gap-1.5">
+                  <span
+                    className="w-2 h-2 rounded-full border border-zinc-600 shrink-0"
+                    style={{ background: FLAG_HEX[data.parking.safest.sports_flag ?? "white"] }}
+                  />
+                  <span className="text-zinc-300">Safest: {data.parking.safest.name}</span>
+                  <span className="text-zinc-600 ml-auto">
+                    {data.parking.safest.distance_m}m &middot; {data.parking.safest.adjusted_wbgt_c}&deg;C
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span
+                    className="w-2 h-2 rounded-full border border-zinc-600 shrink-0"
+                    style={{ background: FLAG_HEX[data.parking.most_exposed.sports_flag ?? "white"] }}
+                  />
+                  <span className="text-zinc-300">Hottest: {data.parking.most_exposed.name}</span>
+                  <span className="text-zinc-600 ml-auto">
+                    {data.parking.most_exposed.distance_m}m &middot; {data.parking.most_exposed.adjusted_wbgt_c}&deg;C
+                  </span>
+                </div>
+                <div className="text-zinc-600 mt-2 leading-snug">
+                  SEMI &middot; real OSM lot geometry + real 9ft&times;18ft stall layout for capacity; walk-in
+                  WBGT adds a modeled pavement-sun surcharge
+                </div>
+              </>
+            ) : (
+              <div className="text-zinc-600">no parking data</div>
             )}
           </div>
 

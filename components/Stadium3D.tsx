@@ -1,11 +1,46 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Instances, Instance } from "@react-three/drei";
+import * as THREE from "three";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
 import { stallPositions, STALL_WIDTH_M, STALL_DEPTH_M, type RealParkingLayout } from "@/lib/parkingLayout";
+
+/** Flies the camera to a clicked parking lot -- click a lot and orbit
+ * smoothly re-centers on it and zooms in, instead of the user having
+ * to manually pan/zoom to find it. Stops forcing the camera once it
+ * arrives (or the instant the user grabs the controls mid-flight) so
+ * normal orbiting resumes immediately -- it's a one-shot "fly to", not
+ * a permanent camera lock. */
+function CameraFocus({
+  controlsRef,
+  focusTarget,
+  onArrived,
+}: {
+  controlsRef: React.RefObject<any>;
+  focusTarget: [number, number, number] | null;
+  onArrived: () => void;
+}) {
+  const desired = useRef(new THREE.Vector3());
+  useFrame(() => {
+    if (!focusTarget || !controlsRef.current) return;
+    const controls = controlsRef.current;
+    const target = controls.target as THREE.Vector3;
+    const [tx, ty, tz] = focusTarget;
+    desired.current.set(tx, ty, tz);
+    target.lerp(desired.current, 0.1);
+
+    const camPos = controls.object.position as THREE.Vector3;
+    const desiredCamPos = new THREE.Vector3(tx + 4.5, ty + 4, tz + 4.5);
+    camPos.lerp(desiredCamPos, 0.1);
+    controls.update();
+
+    if (target.distanceTo(desired.current) < 0.03) onArrived();
+  });
+  return null;
+}
 
 type Occupancy = {
   estimated_spaces: number;
@@ -176,10 +211,12 @@ function realCarsForLot(le: LotExposure, cx: number, cz: number): CarInstance[] 
 function ParkingLots({
   lots,
   onHover,
+  onFocus,
   showCars,
 }: {
   lots: LotExposure[];
   onHover: (l: LotExposure | null) => void;
+  onFocus: (position: [number, number, number]) => void;
   showCars: boolean;
 }) {
   const allCars = useMemo(() => {
@@ -218,6 +255,10 @@ function ParkingLots({
             onPointerOut={(e) => {
               e.stopPropagation();
               onHover(null);
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFocus([x, 0.15, z]);
             }}
           >
             <boxGeometry args={[lengthScene, isBlackFlag ? 0.35 : 0.1, widthScene]} />
@@ -349,6 +390,8 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
   const [matches, setMatches] = useState<Match[]>([]);
   const [matchIdx, setMatchIdx] = useState(0);
   const [matchMode, setMatchMode] = useState(true);
+  const controlsRef = useRef<any>(null);
+  const [focusTarget, setFocusTarget] = useState<[number, number, number] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -459,8 +502,17 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
           />
           <StadiumBowl stadium={stadium} sunDirection={sunDirection} />
           <SunMarker direction={sunDirection} altitude={altitudeDeg} />
-          <ParkingLots lots={lots} onHover={setHoveredLot} showCars={matchMode && hasMatches} />
-          <OrbitControls enableZoom enablePan={false} minDistance={2.5} maxDistance={70} zoomSpeed={0.9} />
+          <ParkingLots lots={lots} onHover={setHoveredLot} onFocus={setFocusTarget} showCars={matchMode && hasMatches} />
+          <CameraFocus controlsRef={controlsRef} focusTarget={focusTarget} onArrived={() => setFocusTarget(null)} />
+          <OrbitControls
+            ref={controlsRef}
+            enableZoom
+            enablePan={false}
+            minDistance={2.5}
+            maxDistance={70}
+            zoomSpeed={0.9}
+            onStart={() => setFocusTarget(null)}
+          />
         </Canvas>
 
         <div className="absolute bottom-2 left-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700">

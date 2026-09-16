@@ -18,9 +18,26 @@ type StadiumDetail = {
   percentile_within_year: number;
 };
 
+type ParkingLotRow = {
+  lot: { name: string; distance_m: number };
+  walk_minutes: number;
+  adjusted_wbgt_c: number | null;
+  sports_flag: "white" | "green" | "yellow" | "red" | "black" | null;
+  occupancy: { estimated_spaces: number } | null;
+};
+
+const FLAG_HEX: Record<string, string> = {
+  white: "#e8e8e8",
+  green: "#228b54",
+  yellow: "#d4af28",
+  red: "#c43c30",
+  black: "#1a1a1a",
+};
+
 export default function StadiumPanel() {
   const { selectedStadiumId, setSelectedStadium, month, hour } = useHeatDashboardStore();
   const [stadium, setStadium] = useState<StadiumDetail | null>(null);
+  const [parkingLots, setParkingLots] = useState<ParkingLotRow[]>([]);
 
   useEffect(() => {
     if (!selectedStadiumId) {
@@ -33,7 +50,24 @@ export default function StadiumPanel() {
         const found = data.stadiums.find((s: StadiumDetail) => s.id === selectedStadiumId);
         setStadium(found ?? null);
       });
+    fetch(`/api/parking?stadium=${selectedStadiumId}&month=${month}&hour=${hour}&hours_from_kickoff=0`)
+      .then((r) => r.json())
+      .then((data) => setParkingLots(data.lots ?? []))
+      .catch(() => setParkingLots([]));
   }, [selectedStadiumId, month, hour]);
+
+  const parkingSummary = (() => {
+    if (parkingLots.length === 0) return null;
+    const withWbgt = parkingLots.filter((l) => l.adjusted_wbgt_c !== null);
+    const totalSpaces = parkingLots.reduce((sum, l) => sum + (l.occupancy?.estimated_spaces ?? 0), 0);
+    const sorted = [...withWbgt].sort((a, b) => (a.adjusted_wbgt_c ?? 0) - (b.adjusted_wbgt_c ?? 0));
+    return {
+      totalLots: parkingLots.length,
+      totalSpaces,
+      safest: sorted[0] ?? null,
+      hottest: sorted[sorted.length - 1] ?? null,
+    };
+  })();
 
   if (!selectedStadiumId || !stadium) return null;
 
@@ -95,6 +129,48 @@ export default function StadiumPanel() {
         </div>
 
         {stadium.wbgt && <ScenarioSimulator baselineWbgt={stadium.wbgt.mean} roofType={stadium.roof_type} />}
+
+        <div className="pt-2 border-t border-zinc-800">
+          <div className="text-zinc-500 mb-1">Parking (real lots, this bucket)</div>
+          {parkingSummary ? (
+            <>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-zinc-100 font-bold text-sm">{parkingSummary.totalSpaces.toLocaleString()}</span>
+                <span className="text-zinc-500">spaces across {parkingSummary.totalLots} real lots</span>
+              </div>
+              {parkingSummary.safest && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span
+                    className="w-2 h-2 rounded-full border border-zinc-600 shrink-0"
+                    style={{ background: parkingSummary.safest.sports_flag ? FLAG_HEX[parkingSummary.safest.sports_flag] : "#666" }}
+                  />
+                  <span>Safest: {parkingSummary.safest.lot.name}</span>
+                  <span className="text-zinc-600 ml-auto">
+                    {parkingSummary.safest.lot.distance_m}m &middot; {parkingSummary.safest.adjusted_wbgt_c}&deg;C
+                  </span>
+                </div>
+              )}
+              {parkingSummary.hottest && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span
+                    className="w-2 h-2 rounded-full border border-zinc-600 shrink-0"
+                    style={{ background: parkingSummary.hottest.sports_flag ? FLAG_HEX[parkingSummary.hottest.sports_flag] : "#666" }}
+                  />
+                  <span>Hottest: {parkingSummary.hottest.lot.name}</span>
+                  <span className="text-zinc-600 ml-auto">
+                    {parkingSummary.hottest.lot.distance_m}m &middot; {parkingSummary.hottest.adjusted_wbgt_c}&deg;C
+                  </span>
+                </div>
+              )}
+              <div className="text-zinc-600 mt-1.5">
+                Capacity: real OSM geometry + real 9ft&times;18ft stall layout. Walk-in WBGT: real distance/WBGT +
+                modeled pavement-sun surcharge (SEMI).
+              </div>
+            </>
+          ) : (
+            <div className="text-zinc-600">no parking data</div>
+          )}
+        </div>
 
         <div className="text-zinc-600 pt-2 border-t border-zinc-800">
           Sample size n={stadium.wbgt?.sample_size ?? 0} hourly readings, 2006-2025, from the nearest NOAA

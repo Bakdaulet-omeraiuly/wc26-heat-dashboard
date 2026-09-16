@@ -1,12 +1,17 @@
-# WC26 Heat Risk Dashboard
+# HCHIS — Host-City Stadium Heat Intelligence System
 
 Rice University Urban Sustainability Hackathon 2026 · Track 3 (Public
 Health & the Built Environment)
 
-A research-grade interactive dashboard answering one question with real
+(Formerly "WC26 Heat Risk Dashboard" — renamed once the scope grew
+past a single tournament: this is a standing decision-support system
+for all 11 host-city stadiums, not a one-event dashboard.)
+
+A research-grade interactive system answering one question with real
 numbers: **which of the 11 FIFA World Cup 2026 US host stadiums carry
-the highest heat risk, when, and how much would a given intervention
-actually help?**
+the highest heat risk, when, how much would a given intervention
+actually help, and — now that the tournament itself is over — what's
+the real heat risk for these same venues' next real event?**
 
 ## What it does -- in three sentences
 

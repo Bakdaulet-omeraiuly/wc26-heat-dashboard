@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WC26 Heat Risk Dashboard",
-  description: "Real NOAA-data heat risk across the 11 US FIFA World Cup 2026 host stadiums.",
+  title: "HCHIS — Host-City Stadium Heat Intelligence System",
+  description:
+    "Real NOAA-data heat risk, real parking-lot capacity, and live event forecasts across the 11 US FIFA World Cup 2026 host stadiums.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

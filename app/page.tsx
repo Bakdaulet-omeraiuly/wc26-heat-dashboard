@@ -7,6 +7,7 @@ import RankedComparison from "@/components/RankedComparison";
 import HistoricalExplorer from "@/components/HistoricalExplorer";
 import PriorityList from "@/components/PriorityList";
 import AskAgent from "@/components/AskAgent";
+import ForecastSidebar from "@/components/ForecastSidebar";
 
 export default function Home() {
   const [tab, setTab] = useState<"map" | "history" | "priority" | "ask">("map");
@@ -66,8 +67,11 @@ export default function Home() {
           </div>
         )}
         {tab === "ask" && (
-          <div className="absolute inset-0">
-            <AskAgent />
+          <div className="absolute inset-0 flex">
+            <div className="flex-1 min-w-0 h-full">
+              <AskAgent />
+            </div>
+            <ForecastSidebar />
           </div>
         )}
       </main>

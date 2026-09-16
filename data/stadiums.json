@@ -9,8 +9,8 @@
     "noaa_station_distance_km": 17.9,
     "roof_type": "retractable",
     "roof_type_status": "REAL",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 249.1,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "mercedes-benz-stadium",
@@ -35,8 +35,8 @@
     "noaa_station_distance_km": 13.4,
     "roof_type": "open",
     "roof_type_status": "TODO-verify",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 162.4,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "nrg-stadium",
@@ -48,8 +48,8 @@
     "noaa_station_distance_km": 13.2,
     "roof_type": "retractable",
     "roof_type_status": "REAL",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 88.7,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "arrowhead-stadium",
@@ -61,8 +61,8 @@
     "noaa_station_distance_km": 12.6,
     "roof_type": "open",
     "roof_type_status": "TODO-verify",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 137.0,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "sofi-stadium",
@@ -87,8 +87,8 @@
     "noaa_station_distance_km": 15.5,
     "roof_type": "open-canopy",
     "roof_type_status": "REAL",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 121.6,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "metlife-stadium",
@@ -100,8 +100,8 @@
     "noaa_station_distance_km": 16.6,
     "roof_type": "open",
     "roof_type_status": "TODO-verify",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 166.5,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "lincoln-financial-field",
@@ -113,8 +113,8 @@
     "noaa_station_distance_km": 5.9,
     "roof_type": "open",
     "roof_type_status": "TODO-verify",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 260.9,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "levis-stadium",
@@ -126,8 +126,8 @@
     "noaa_station_distance_km": 6.3,
     "roof_type": "open",
     "roof_type_status": "TODO-verify",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 152.0,
+    "field_orientation_status": "REAL"
   },
   {
     "id": "lumen-field",
@@ -139,7 +139,7 @@
     "noaa_station_distance_km": 7.6,
     "roof_type": "open-canopy",
     "roof_type_status": "REAL",
-    "field_orientation_deg": null,
-    "field_orientation_status": "TODO-SEMI"
+    "field_orientation_deg": 180.0,
+    "field_orientation_status": "REAL"
   }
 ]

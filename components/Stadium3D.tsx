@@ -300,15 +300,17 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
   const selectedMatch = matches[matchIdx] ?? null;
   const hasMatches = matches.length > 0;
 
-  // Cars are driven by the SAME hour scrubber that drives the heat
-  // map/3D sun -- not a separate control. hoursFromKickoff is the
-  // signed distance (shortest way around the 24h clock, so 23:00 vs
-  // 01:00 reads as "2h", not "22h") between the scrubber's current
-  // hour and this match's REAL kickoff hour (in UTC, matching how the
-  // scrubber's hour is already defined everywhere else in the app --
-  // see app/api/stadiums's climatology bucket keys). Dragging the
-  // hour slider now fills/drains the lot in real time.
-  const hoursFromKickoff = useMemo(() => {
+  // Cars can be driven two ways, both kept: (1) the SAME hour scrubber
+  // that drives the heat map/3D sun -- hoursFromKickoff is the signed
+  // distance (shortest way around the 24h clock) between the
+  // scrubber's current hour and this match's REAL kickoff hour (UTC,
+  // matching how the scrubber's hour is defined everywhere else in the
+  // app); or (2) the standalone slider below, for a quick before/after
+  // preview without disturbing the heat map's hour. The slider always
+  // starts synced to the scrubber and re-syncs whenever the scrubber
+  // or the selected match changes; dragging it manually overrides that
+  // sync until the next scrubber/match change.
+  const scrubberHoursFromKickoff = useMemo(() => {
     if (!selectedMatch) return 0;
     const kickoffHour = new Date(selectedMatch.kickoff_utc_iso).getUTCHours();
     let diff = hour - kickoffHour;
@@ -316,6 +318,11 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
     if (diff < -12) diff += 24;
     return diff;
   }, [hour, selectedMatch]);
+
+  const [hoursFromKickoff, setHoursFromKickoff] = useState(0);
+  useEffect(() => {
+    setHoursFromKickoff(scrubberHoursFromKickoff);
+  }, [scrubberHoursFromKickoff]);
 
   useEffect(() => {
     let cancelled = false;
@@ -459,23 +466,29 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
               cars
             </label>
           </div>
-          {selectedMatch && matchMode && (
-            <div className="flex items-center gap-2 text-zinc-500">
-              <span className="shrink-0">
-                scrubber hour {String(hour).padStart(2, "0")}:00 UTC is{" "}
-                <span className="text-zinc-200 font-bold">
-                  {hoursFromKickoff === 0 ? "at" : `${Math.abs(hoursFromKickoff)}h ${hoursFromKickoff < 0 ? "before" : "after"}`}
-                </span>{" "}
-                kickoff
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 shrink-0 w-28">
+              {hoursFromKickoff === 0 ? "at kickoff" : `${Math.abs(hoursFromKickoff)}h ${hoursFromKickoff < 0 ? "before" : "after"}`}
+            </span>
+            <input
+              type="range"
+              min={-12}
+              max={12}
+              step={0.5}
+              value={hoursFromKickoff}
+              onChange={(e) => setHoursFromKickoff(Number(e.target.value))}
+              disabled={!matchMode}
+              className="flex-1"
+            />
+            {selectedMatch && (
+              <span className="text-zinc-600 shrink-0">
+                real kickoff {String(new Date(selectedMatch.kickoff_utc_iso).getUTCHours()).padStart(2, "0")}:00 UTC
               </span>
-              <span className="text-zinc-600 shrink-0 ml-auto">
-                real kickoff {selectedMatch.local_kickoff} UTC{selectedMatch.utc_offset} ({String((new Date(selectedMatch.kickoff_utc_iso)).getUTCHours()).padStart(2, "0")}:00 UTC)
-              </span>
-            </div>
-          )}
+            )}
+          </div>
           <div className="text-zinc-600 leading-snug">
-            Drag the HOUR scrubber (Map+3D view, bottom) to fill/drain this lot &mdash; cars track the same
-            hour control as the heat map.
+            Drag this slider for a quick preview, or the HOUR scrubber (Map+3D view, bottom) to move the
+            whole scene's sun/heat too &mdash; the scrubber re-syncs this slider each time it moves.
           </div>
           {selectedMatch && selectedMatch.real_kickoff_wbgt_c != null && (
             <div className="text-zinc-400">

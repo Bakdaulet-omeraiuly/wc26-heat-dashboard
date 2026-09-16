@@ -179,8 +179,16 @@ function realCarsForLot(le: LotExposure, cx: number, cz: number): CarInstance[] 
   const items: CarInstance[] = [];
   for (let i = 0; i < filledRendered; i++) {
     const p = positions[i];
-    const localX = (p.along_m - lengthM / 2) / SCENE_SCALE_M;
-    const localZ = (p.across_m - widthM / 2) / SCENE_SCALE_M;
+    // Normalize to a -0.5..0.5 FRACTION of the lot's real length/width,
+    // then scale by the footprint's CLAMPED scene size -- not a flat
+    // /SCENE_SCALE_M conversion of the raw real meters. A real bug this
+    // exact mismatch caused: footprintFor() clamps a very long real lot
+    // to lengthScene<=4.5 for legibility, but cars placed via the raw
+    // conversion ignored that clamp and spread across the lot's real
+    // (unclamped) span instead -- for a long enough lot, that put cars
+    // visibly drifting through the stadium bowl and neighboring lots.
+    const localX = (p.along_m / lengthM - 0.5) * lengthScene;
+    const localZ = (p.across_m / widthM - 0.5) * widthScene;
     const [offsetX, offsetZ] = rotateXZ(localX, localZ, rotationRad);
     // cars in a row all face the same way, aligned to the lot's real
     // orientation, alternating 180deg per aisle-facing row pair --

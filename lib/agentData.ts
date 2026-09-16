@@ -314,3 +314,64 @@ export function simulateScenario(
       "Effect sizes (shade, misting, roof) are modeled plausible assumptions from published heat-mitigation literature, not measured at this specific venue.",
   };
 }
+
+// --- Real match schedule + real match-day heat ----------------------
+//
+// The tournament (June 11 - July 19, 2026) already happened as of
+// this session (today is September 2026). scripts/fetch_match_schedule.py
+// pulled the real 78-match US-venue schedule; scripts/fetch_match_weather.py
+// matched each real kickoff to a real weather reading (Iowa State
+// Mesonet ASOS -- the same physical station as this stadium's 20-year
+// climatology; used because NOAA's own bulk archive hasn't published
+// 2026 yet). See DISCOVERY.md Section 4 for the full writeup.
+
+export type RealMatch = {
+  match_number: number | null;
+  stadium_id: string;
+  city: string;
+  round: string;
+  stage: "group" | "knockout";
+  local_kickoff: string;
+  utc_offset: number;
+  kickoff_utc_iso: string;
+  matchup_raw: string;
+  real_kickoff_temp_c: number | null;
+  real_kickoff_dewpoint_c: number | null;
+  real_kickoff_wbgt_c: number | null;
+  real_peak_wbgt_c: number | null;
+  weather_data_status: "REAL" | "MISSING";
+};
+
+let matchesCache: RealMatch[] | null = null;
+function loadMatches(): RealMatch[] {
+  if (!matchesCache) {
+    for (const file of ["match_weather.json", "matches.json"]) {
+      try {
+        matchesCache = JSON.parse(fs.readFileSync(path.join(DATA_DIR, file), "utf-8"));
+        break;
+      } catch {
+        continue;
+      }
+    }
+    if (!matchesCache) matchesCache = [];
+  }
+  return matchesCache!;
+}
+
+/** Every real match played at one stadium, with real match-day WBGT
+ * where available (data_status REAL, from the actual observed weather
+ * that day -- NOT the 20-year climatology average). */
+export function getStadiumMatches(stadiumId: string): RealMatch[] {
+  return loadMatches()
+    .filter((m) => m.stadium_id === stadiumId)
+    .sort((a, b) => a.kickoff_utc_iso.localeCompare(b.kickoff_utc_iso));
+}
+
+/** The hottest real moments of the real tournament, across all 11 US
+ * venues, ranked by real peak WBGT during play. */
+export function getHottestRealMatches(limit = 10): RealMatch[] {
+  return loadMatches()
+    .filter((m) => m.real_peak_wbgt_c !== null)
+    .sort((a, b) => (b.real_peak_wbgt_c ?? 0) - (a.real_peak_wbgt_c ?? 0))
+    .slice(0, limit);
+}

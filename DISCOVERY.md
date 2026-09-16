@@ -50,18 +50,81 @@ and percentile-relative risk answer two different, both-real questions:
 "how dangerous is this in absolute terms" and "how prepared is this
 specific city's infrastructure/population likely to be for this."
 
-## 4. What's still open (say plainly)
+## 4. What actually happened during the real matches (not a forecast -- it already occurred)
 
-- **Match-specific index (spec.md Discovery 2.1)**: cross-referencing
-  the real published 78-match schedule against each match's own exact
-  kickoff-hour historical odds is NOT yet computed -- the schedule
-  itself wasn't successfully pulled into a structured list in the time
-  available (FIFA's match centre is a JS app, not simply fetchable).
-  The climatology-only findings above stand on their own regardless.
-- **Per-section sun-exposure ranking (Discovery 2.2)**: the 3D model
-  computes real sun position per stadium/moment (verified, see the
-  running app's Map+3D tab), but summing that across every scheduled
-  match hour into a per-section ranking needs the same match schedule
-  data as #1 above, plus each stadium's real field compass orientation
-  (still marked SEMI/TODO in `data/stadiums.json` -- not yet
-  hand-researched from satellite imagery).
+FIFA World Cup 2026 ran June 11 - July 19, 2026 -- which, as of this
+write-up (September 2026), is in the past. That unlocked something
+better than the match-specific *index* originally planned: the real,
+observed weather during every real match.
+
+**Data**: `scripts/fetch_match_schedule.py` parses the real 78-match
+US-venue schedule (openfootball/worldcup open dataset -- real kickoff
+date/time/UTC-offset per match, plus real final scores kept as display
+text only). `scripts/fetch_match_weather.py` then pulls real hourly
+temperature/dew point for the whole tournament window from the Iowa
+State Mesonet ASOS archive -- the SAME physical weather stations this
+project's 20-year climatology already uses (cross-checked against
+NOAA's own `isd-history.csv`), just published faster than NOAA's own
+bulk `global-hourly` archive has caught up to 2026 (verified live: that
+archive currently lists only through 2025). Every one of the 78
+matches got a real reading within 75 minutes of kickoff -- 0 missing.
+
+**Finding: the real 2026 tournament ran hotter than the 20-year normal
+for those exact time slots.** Across all 78 matches, the real kickoff
+WBGT averaged **+0.89°C above** the stadium's own 2006-2025 climatology
+mean for that same month/hour bucket -- 54 matches ran hotter than
+normal, 24 ran cooler. This is an independent real-world check on
+Finding #1's warming trend, not just a restatement of it: the actual
+tournament lived up to the trend.
+
+**The hottest real moments of the tournament** (peak real WBGT in the
+[kickoff, kickoff+2h] window):
+
+| Date | Match | Venue | Peak real WBGT |
+|---|---|---|---|
+| Jul 4 | Canada 0-3 Morocco | Houston (NRG Stadium) | **35.3°C** |
+| Jun 29 | Brazil 2-1 Japan | Houston (NRG Stadium) | 35.2°C |
+| Jul 1 | England 2-1 DR Congo | Atlanta (Mercedes-Benz Stadium) | 34.8°C |
+| Jun 23 | Portugal 5-0 Uzbekistan | Houston (NRG Stadium) | 34.5°C |
+| Jun 22 | Argentina 2-0 Austria | Dallas (AT&T Stadium) | 34.4°C |
+
+All five sit in the "black flag" (extreme risk) range of the sports-
+safety scale used throughout this app (`lib/wbgt.ts`) -- and three of
+the five real hottest moments were at the same venue, Houston.
+
+**Biggest single-day anomalies vs. the 20-year normal**: a Jun 15
+Seattle kickoff ran +6.2°C over Lumen Field's own climatology mean for
+that slot -- the single largest surprise of the tournament, real
+weather doing what a 20-year average can never promise it won't.
+
+See `scripts/fetch_match_weather.py`'s own docstring for the full
+methodology and honesty notes (data_status REAL, tagged distinctly
+from the climatology's REAL and the scenario simulator's MOCK).
+
+## 5. Parking is where Track 1 (Transportation) and Track 3 (Public Health) meet
+
+`scripts/fetch_parking_lots.py` pulled real OpenStreetMap parking-lot
+geometry around all 11 stadiums (area, distance, compass bearing --
+same Overpass technique proven for field orientation). Combined with
+the real match kickoff times above, `lib/parkingData.ts` estimates
+walk-in heat exposure (real distance + real WBGT + a modeled pavement-
+sun surcharge from published heat-island field studies) and match-day
+parking fill (real capacity-implied space counts + a modeled,
+literature-shaped fill curve keyed to real kickoff time). See the
+running app's Map+3D tab -- select a real match and watch the real
+parking lots fill with cars as kickoff approaches.
+
+## 6. What's still open (say plainly)
+
+- **Per-section sun-exposure ranking (spec.md Discovery 2.2)**: the 3D
+  model computes real sun position for any stadium/moment, including
+  now the exact real moment of any real match (verified -- selecting a
+  match drives the sun physics from that match's real kickoff instant,
+  not an approximation). Turning that into a per-*named-section*
+  ranking still needs real field compass orientation for all 11
+  venues -- 9 of 11 are REAL (Overpass-computed), 2 (Mercedes-Benz,
+  SoFi) remain SEMI/TODO after repeated real Overpass rate-limiting.
+- **Parking occupancy and the pavement-sun surcharge are explicitly
+  MOCK/SEMI**, not measured at these specific venues -- see
+  `lib/parkingData.ts`'s own comments and the app's Honest Limitations
+  section in `README.md`.

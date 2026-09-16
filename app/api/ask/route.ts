@@ -9,6 +9,8 @@ import {
   getAllTrends,
   simulateScenario,
   projectFutureWBGT,
+  getStadiumMatches,
+  getHottestRealMatches,
 } from "@/lib/agentData";
 import { getStadiumForecast } from "@/lib/nwsForecast";
 import { rankLotsBySafety } from "@/lib/parkingData";
@@ -42,8 +44,9 @@ Hard rules, no exceptions:
 7. WBGT (Wet-Bulb Globe Temperature) is the real metric US sports medicine uses for outdoor heat-safety decisions; explain it in one clause only if the user seems unfamiliar with it, don't over-explain to a repeat user.
 8. There are TWO different kinds of "future" number, never confuse them: get_weather_forecast returns data_status REAL-FORECAST -- a real NOAA National Weather Service prediction, only available for the next ~7 days from today, genuinely uncertain the further out it goes. project_future_wbgt returns data_status EXTRAPOLATION -- a naive straight-line projection of the real 2006-2025 historical trend, with NO forecast skill and NO knowledge of actual future weather; frame it explicitly as "if the past 20-year trend continued" and never as a prediction of what will actually happen. If a user asks about a specific date within the next week, prefer get_weather_forecast. If they ask about a year like 2030 or 2035, use project_future_wbgt and lead with the "if the trend continues" framing.
 9. get_parking_exposure returns data_status SEMI: real OpenStreetMap lot distance/area and real climatology WBGT, but the "walk-in" heat number adds a MODELED +3C pavement-sun surcharge from published heat-island field studies (not measured at this venue, not a full globe-temperature WBGT calculation). Always mention that surcharge is modeled when citing an adjusted_wbgt_c figure.
+10. get_stadium_matches and get_hottest_real_matches return data_status REAL -- this is neither climatology, forecast, nor extrapolation, but the actual observed weather during the actual 2026 World Cup (already played, per today's date), matched to each match's real kickoff. This is the most authoritative kind of number this app has (a real historical fact, not a model of any kind) -- when a user asks about a specific real match or "the hottest match of the tournament," prefer these tools over climatology.
 
-You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, extrapolate that trend, fetch a real short-term NWS forecast, estimate parking-lot walk-in heat exposure, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
+You have tools to look up real per-stadium climatology, rank all 11 venues, fetch the real 20-year warming trend, extrapolate that trend, fetch a real short-term NWS forecast, estimate parking-lot walk-in heat exposure, look up real weather during real 2026 matches, and run the modeled mitigation scenario. Use them; do not answer from memory.`;
 
 const TOOLS: Anthropic.Tool[] = [
   {
@@ -153,6 +156,24 @@ const TOOLS: Anthropic.Tool[] = [
       required: ["stadium_id", "month", "hour"],
     },
   },
+  {
+    name: "get_stadium_matches",
+    description: "Every REAL FIFA World Cup 2026 match played at this stadium (the tournament already happened, per today's date), each with the REAL weather observed at kickoff and the REAL peak WBGT during play (data_status REAL, from Iowa State Mesonet ASOS -- the same physical station as this stadium's 20-year climatology, used because NOAA's own bulk archive hasn't published 2026 yet). This is NOT climatology or a forecast -- it's what actually happened on that real day. Use for 'what was the weather like during [team]'s match' or 'how hot did it get during real matches here' questions.",
+    input_schema: {
+      type: "object",
+      properties: { stadium_id: { type: "string" } },
+      required: ["stadium_id"],
+    },
+  },
+  {
+    name: "get_hottest_real_matches",
+    description: "The hottest real moments of the real 2026 tournament across all 11 US venues, ranked by real peak WBGT during play. data_status REAL. Use for 'what was the hottest match of the tournament' or 'which real matches were most dangerous' questions.",
+    input_schema: {
+      type: "object",
+      properties: { limit: { type: "integer", description: "default 10" } },
+      required: [],
+    },
+  },
 ];
 
 async function runTool(name: string, input: Record<string, unknown>): Promise<unknown> {
@@ -211,6 +232,13 @@ async function runTool(name: string, input: Record<string, unknown>): Promise<un
         most_exposed_5: ranked.slice(-5).reverse().map(slim),
       };
     }
+    case "get_stadium_matches": {
+      const matches = getStadiumMatches(String(input.stadium_id));
+      if (matches.length === 0) return { error: "no match data for this stadium (not yet fetched, or unknown stadium_id)" };
+      return { count: matches.length, matches };
+    }
+    case "get_hottest_real_matches":
+      return { matches: getHottestRealMatches(input.limit !== undefined ? Number(input.limit) : 10) };
     default:
       return { error: `unknown tool ${name}` };
   }

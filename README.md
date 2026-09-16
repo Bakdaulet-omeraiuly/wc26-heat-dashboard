@@ -97,7 +97,7 @@ where "built environment" and "access" meet.
 
 `components/AskAgent.tsx` + `app/api/ask/route.ts`. A real LLM (Claude,
 via function-calling) answers free-text questions, but it is only
-allowed to state a number that came back from one of nine tool calls
+allowed to state a number that came back from one of eleven tool calls
 into `lib/agentData.ts` / `lib/nwsForecast.ts` / `lib/parkingData.ts`
 -- each a thin wrapper
 around either the dashboard's own real data files
@@ -124,6 +124,15 @@ agent is instructed never to conflate them:
   key) for the next ~7 days, with WBGT computed from the real
   forecast temp/dewpoint the same way the rest of the app computes it
   from historical readings.
+
+A THIRD kind, plain **REAL** (not REAL-FORECAST, not EXTRAPOLATION):
+`get_stadium_matches` / `get_hottest_real_matches` return the actual
+observed weather during the actual 2026 World Cup, which already
+happened (see DISCOVERY.md Section 4) -- a real historical fact, not a
+model of any kind, matched to each real match's real kickoff via the
+Iowa State Mesonet ASOS archive (used because NOAA's own bulk
+`global-hourly` archive hasn't published 2026 yet -- verified live,
+not assumed).
 
 Needs `ANTHROPIC_API_KEY` set (`.env.local` locally, a Vercel env var
 in production); without it, `/api/ask` returns a clear 503 instead of
@@ -172,6 +181,8 @@ python3 scripts/fetch_noaa_data.py       # pulls 2.46M real NOAA rows -> data/he
 python3 scripts/aggregate_summaries.py   # -> data/climatology.json, data/yearly_trend.json
 python3 scripts/compute_discovery.py     # -> data/discovery_trend.json, prints the trend findings
 python3 scripts/fetch_parking_lots.py    # -> data/parking.json, real OSM parking-lot geometry
+python3 scripts/fetch_match_schedule.py  # -> data/matches.json, real 78-match US-venue schedule
+python3 scripts/fetch_match_weather.py   # -> data/match_weather.json, real weather during real matches
 ```
 
 ## Honest limitations
@@ -195,12 +206,15 @@ Caspian Watch documentation:
    imagery wasn't finished in the time available. The 3D model's sun
    position is real astronomy regardless; it just can't yet label a
    specific named stand section for every venue.
-4. **The real 78-match schedule isn't wired in yet.** The exact
-   kickoff dates/times per US venue were published (Dec 6, 2025) but
-   FIFA's match centre is a JS app, not simply fetchable in the time
-   available -- so the match-specific heat index (`DISCOVERY.md`
-   Section 4) isn't computed. The climatology-based findings that ARE
-   computed stand on their own regardless.
+4. **The real 78-match schedule and real match-day weather ARE now
+   wired in** (`scripts/fetch_match_schedule.py`, `fetch_match_weather.py`
+   -- see `DISCOVERY.md` Section 4) -- an earlier draft of this doc said
+   this wasn't feasible because FIFA's own match centre is a JS app;
+   the openfootball/worldcup open dataset turned out to have the same
+   real schedule in a plain, parseable text format instead. The one
+   remaining gap is the *per-section* sun-exposure ranking
+   (`spec.md` Discovery 2.2), which still needs real field orientation
+   for the 2 stadiums (Mercedes-Benz, SoFi) still marked SEMI below.
 5. **Docker + the 20-year explorer**: see Quick Start above -- a real,
    reproduced virtiofs issue on macOS, not a hypothetical one.
 6. **Parking walk-in heat exposure is SEMI, not REAL.** The lot
@@ -215,6 +229,24 @@ Caspian Watch documentation:
    and needed a retry (`scripts/retry_parking_lots.py`) -- same
    real, reproduced Overpass rate-limiting already documented for
    field orientation above.
+7. **Match-day weather comes from a different real source than the
+   20-year climatology, for a documented reason.** NOAA's own bulk
+   `global-hourly` archive (used for 2006-2025) has not yet published
+   a 2026 file as of this writing -- verified live, not assumed. Real
+   2026 weather instead comes from the Iowa State Mesonet ASOS
+   archive, which is the SAME underlying real automated-surface-station
+   network (cross-checked station-by-station against NOAA's own
+   `isd-history.csv` to get the matching ICAO code), just published
+   with less lag. Not a different or lower-quality measurement, but
+   worth stating plainly rather than silently switching sources.
+8. **Parking match-day occupancy is MOCK on top of REAL inputs.** Real
+   kickoff time and real lot area feed a modeled fill curve (see
+   `lib/parkingData.ts`) shaped like a real, documented stadium-egress
+   pattern (ingress accelerates into kickoff, egress drains slower --
+   a known bottleneck effect) but with illustrative, not measured,
+   percentages. The 3D view's rendered car count is additionally capped
+   for performance/legibility (9 per lot); the real estimated count is
+   always shown as text alongside it.
 
 ## Project docs
 

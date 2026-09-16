@@ -34,6 +34,8 @@ type Match = {
   utc_offset: number;
   round: string;
   matchup_raw: string;
+  real_kickoff_wbgt_c?: number | null;
+  real_peak_wbgt_c?: number | null;
 };
 
 const MAX_RENDERED_CARS_PER_LOT = 9; // rendering cap for perf/legibility -- the real estimated_cars_now count is shown as text regardless
@@ -276,13 +278,26 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
     };
   }, [stadium.id, month, hour, matchMode, hasMatches, hoursFromKickoff]);
 
-  const { sunDirection, altitudeDeg, azimuthDeg } = useMemo(() => {
+  // When a real match is selected (and "cars"/match-mode is on), drive
+  // the sun physics from that match's REAL kickoff instant (offset by
+  // the hours-from-kickoff slider) instead of the generic month/hour
+  // scrubber's representative day-15 date -- so picking a match shows
+  // the sun exactly as it really was during that real game, not an
+  // approximation. Falls back to the generic scrubber date otherwise.
+  const effectiveDate = useMemo(() => {
+    if (matchMode && selectedMatch) {
+      return new Date(new Date(selectedMatch.kickoff_utc_iso).getTime() + hoursFromKickoff * 3600 * 1000);
+    }
     // A representative date for the selected month -- the 15th, noon
     // UTC baseline then overridden to the scrubber's hour. Year choice
     // doesn't matter much for sun position (it repeats annually to
     // within fractions of a degree), 2026 chosen since that's the
     // tournament year.
-    const date = new Date(Date.UTC(2026, month - 1, 15, hour, 0, 0));
+    return new Date(Date.UTC(2026, month - 1, 15, hour, 0, 0));
+  }, [matchMode, selectedMatch, hoursFromKickoff, month, hour]);
+
+  const { sunDirection, altitudeDeg, azimuthDeg } = useMemo(() => {
+    const date = effectiveDate;
     const pos = SunCalc.getPosition(date, stadium.lat, stadium.lon);
     // IMPORTANT, verified directly against this installed version's
     // source (node_modules/suncalc/index.js) rather than assumed from
@@ -303,7 +318,7 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
       -Math.cos(azRad) * Math.cos(altRad),
     ];
     return { sunDirection: dir, altitudeDeg, azimuthDeg };
-  }, [stadium.lat, stadium.lon, month, hour]);
+  }, [stadium.lat, stadium.lon, effectiveDate]);
 
   const totalCarsNow = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_cars_now ?? 0), 0);
   const totalSpaces = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_spaces ?? 0), 0);
@@ -379,6 +394,7 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
               {matches.map((m, i) => (
                 <option key={i} value={i}>
                   {m.kickoff_utc_iso.slice(0, 10)} &middot; {m.matchup_raw.replace(/\s+/g, " ").slice(0, 24)}
+                  {m.real_peak_wbgt_c != null ? ` (${m.real_peak_wbgt_c}°C)` : ""}
                 </option>
               ))}
             </select>
@@ -403,10 +419,17 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
             />
             {selectedMatch && (
               <span className="text-zinc-600 shrink-0">
-                real kickoff {selectedMatch.local_kickoff} UTC{selectedMatch.utc_offset}
+                kickoff {selectedMatch.local_kickoff} UTC{selectedMatch.utc_offset}
               </span>
             )}
           </div>
+          {selectedMatch && selectedMatch.real_kickoff_wbgt_c != null && (
+            <div className="text-zinc-400">
+              REAL weather that day: {selectedMatch.real_kickoff_wbgt_c}&deg;C at kickoff, peaked{" "}
+              <span className="text-zinc-100 font-bold">{selectedMatch.real_peak_wbgt_c}&deg;C</span> during play
+              &mdash; not climatology, what actually happened (Mesonet ASOS, same station).
+            </div>
+          )}
         </div>
       )}
     </div>

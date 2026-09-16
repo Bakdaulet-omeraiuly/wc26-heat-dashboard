@@ -283,13 +283,11 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
   const [hoveredLot, setHoveredLot] = useState<LotExposure | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
   const [matchIdx, setMatchIdx] = useState(0);
-  const [hoursFromKickoff, setHoursFromKickoff] = useState(0);
   const [matchMode, setMatchMode] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     setMatchIdx(0);
-    setHoursFromKickoff(0);
     fetch(`/api/matches?stadium=${stadium.id}`)
       .then((r) => r.json())
       .then((d) => !cancelled && setMatches(d.matches ?? []))
@@ -301,6 +299,23 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
 
   const selectedMatch = matches[matchIdx] ?? null;
   const hasMatches = matches.length > 0;
+
+  // Cars are driven by the SAME hour scrubber that drives the heat
+  // map/3D sun -- not a separate control. hoursFromKickoff is the
+  // signed distance (shortest way around the 24h clock, so 23:00 vs
+  // 01:00 reads as "2h", not "22h") between the scrubber's current
+  // hour and this match's REAL kickoff hour (in UTC, matching how the
+  // scrubber's hour is already defined everywhere else in the app --
+  // see app/api/stadiums's climatology bucket keys). Dragging the
+  // hour slider now fills/drains the lot in real time.
+  const hoursFromKickoff = useMemo(() => {
+    if (!selectedMatch) return 0;
+    const kickoffHour = new Date(selectedMatch.kickoff_utc_iso).getUTCHours();
+    let diff = hour - kickoffHour;
+    if (diff > 12) diff -= 24;
+    if (diff < -12) diff += 24;
+    return diff;
+  }, [hour, selectedMatch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -316,11 +331,11 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
   }, [stadium.id, month, hour, matchMode, hasMatches, hoursFromKickoff]);
 
   // When a real match is selected (and "cars"/match-mode is on), drive
-  // the sun physics from that match's REAL kickoff instant (offset by
-  // the hours-from-kickoff slider) instead of the generic month/hour
-  // scrubber's representative day-15 date -- so picking a match shows
-  // the sun exactly as it really was during that real game, not an
-  // approximation. Falls back to the generic scrubber date otherwise.
+  // the sun physics from that match's REAL kickoff date, offset by the
+  // hour scrubber's distance from the real kickoff hour -- so dragging
+  // the SAME scrubber that fills the parking lot also moves the sun
+  // realistically around that real day, instead of an approximation.
+  // Falls back to the generic scrubber date otherwise.
   const effectiveDate = useMemo(() => {
     if (matchMode && selectedMatch) {
       return new Date(new Date(selectedMatch.kickoff_utc_iso).getTime() + hoursFromKickoff * 3600 * 1000);
@@ -444,25 +459,23 @@ export default function Stadium3D({ stadium }: { stadium: StadiumInfo }) {
               cars
             </label>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-500 shrink-0 w-28">
-              {hoursFromKickoff <= 0 ? `${-hoursFromKickoff}h before` : `${hoursFromKickoff}h after`} kickoff
-            </span>
-            <input
-              type="range"
-              min={-3}
-              max={4}
-              step={0.5}
-              value={hoursFromKickoff}
-              onChange={(e) => setHoursFromKickoff(Number(e.target.value))}
-              disabled={!matchMode}
-              className="flex-1"
-            />
-            {selectedMatch && (
-              <span className="text-zinc-600 shrink-0">
-                kickoff {selectedMatch.local_kickoff} UTC{selectedMatch.utc_offset}
+          {selectedMatch && matchMode && (
+            <div className="flex items-center gap-2 text-zinc-500">
+              <span className="shrink-0">
+                scrubber hour {String(hour).padStart(2, "0")}:00 UTC is{" "}
+                <span className="text-zinc-200 font-bold">
+                  {hoursFromKickoff === 0 ? "at" : `${Math.abs(hoursFromKickoff)}h ${hoursFromKickoff < 0 ? "before" : "after"}`}
+                </span>{" "}
+                kickoff
               </span>
-            )}
+              <span className="text-zinc-600 shrink-0 ml-auto">
+                real kickoff {selectedMatch.local_kickoff} UTC{selectedMatch.utc_offset} ({String((new Date(selectedMatch.kickoff_utc_iso)).getUTCHours()).padStart(2, "0")}:00 UTC)
+              </span>
+            </div>
+          )}
+          <div className="text-zinc-600 leading-snug">
+            Drag the HOUR scrubber (Map+3D view, bottom) to fill/drain this lot &mdash; cars track the same
+            hour control as the heat map.
           </div>
           {selectedMatch && selectedMatch.real_kickoff_wbgt_c != null && (
             <div className="text-zinc-400">

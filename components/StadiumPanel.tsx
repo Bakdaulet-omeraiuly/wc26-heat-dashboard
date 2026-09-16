@@ -68,14 +68,19 @@ function Pill({ children, color }: { children: React.ReactNode; color?: string }
 }
 
 export default function StadiumPanel() {
-  const { selectedStadiumId, setSelectedStadium, month, hour, matchIndex } = useHeatDashboardStore();
+  const { selectedStadiumId, setSelectedStadium, month, hour, matchIndex, hoursFromKickoffOverride } = useHeatDashboardStore();
   const [stadium, setStadium] = useState<StadiumDetail | null>(null);
   const [parkingLots, setParkingLots] = useState<ParkingLotRow[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [focusLotOsmId, setFocusLotOsmId] = useState<number | null>(null);
 
   const selectedMatch = matches[matchIndex] ?? null;
-  const hoursFromKickoff = (() => {
+  // Must match Stadium3D's own computation exactly (same formula, same
+  // shared store fields) -- see lib/store.ts's comment on
+  // hoursFromKickoffOverride for why this can't just derive from the
+  // hour scrubber alone: Stadium3D's standalone preview slider can
+  // override it independently of the scrubber.
+  const scrubberHoursFromKickoff = (() => {
     if (!selectedMatch) return null;
     const kickoffHour = new Date(selectedMatch.kickoff_utc_iso).getUTCHours();
     let diff = hour - kickoffHour;
@@ -83,6 +88,7 @@ export default function StadiumPanel() {
     if (diff < -12) diff += 24;
     return diff;
   })();
+  const hoursFromKickoff = scrubberHoursFromKickoff === null ? null : (hoursFromKickoffOverride ?? scrubberHoursFromKickoff);
 
   useEffect(() => {
     if (!selectedStadiumId) {

@@ -393,7 +393,7 @@ export default function Stadium3D({
    * direct click on a lot in this scene uses internally. */
   focusLotOsmId?: number | null;
 }) {
-  const { month, hour, matchIndex, setMatchIndex } = useHeatDashboardStore();
+  const { month, hour, matchIndex, setMatchIndex, hoursFromKickoffOverride, setHoursFromKickoffOverride } = useHeatDashboardStore();
   const [lots, setLots] = useState<LotExposure[]>([]);
   const [hoveredLot, setHoveredLot] = useState<LotExposure | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -447,10 +447,13 @@ export default function Stadium3D({
     return diff;
   }, [hour, selectedMatch]);
 
-  const [hoursFromKickoff, setHoursFromKickoff] = useState(0);
-  useEffect(() => {
-    setHoursFromKickoff(scrubberHoursFromKickoff);
-  }, [scrubberHoursFromKickoff]);
+  // hoursFromKickoffOverride lives in the SHARED store (not local
+  // state) specifically so StadiumPanel's parking numbers -- rendered
+  // by a sibling component, not a child of this one -- agree with
+  // whichever of the two controls actually moved. A real bug this
+  // exact gap caused: dragging this slider changed the 3D cars but
+  // left StadiumPanel showing a stale scrubber-derived figure.
+  const hoursFromKickoff = hoursFromKickoffOverride ?? scrubberHoursFromKickoff;
 
   useEffect(() => {
     let cancelled = false;
@@ -613,7 +616,7 @@ export default function Stadium3D({
               max={12}
               step={0.5}
               value={hoursFromKickoff}
-              onChange={(e) => setHoursFromKickoff(Number(e.target.value))}
+              onChange={(e) => setHoursFromKickoffOverride(Number(e.target.value))}
               disabled={!matchMode}
               className="flex-1"
             />

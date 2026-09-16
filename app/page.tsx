@@ -1,4 +1,5 @@
 import HeatMap from "@/components/HeatMap";
+import StadiumPanel from "@/components/StadiumPanel";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       </header>
       <main className="flex-1 relative">
         <HeatMap />
+        <StadiumPanel />
       </main>
     </div>
   );

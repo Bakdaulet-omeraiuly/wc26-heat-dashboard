@@ -1,0 +1,4 @@
+data/heat.db
+data/stadiums_stations.json
+scripts/__pycache__
+*.pyc

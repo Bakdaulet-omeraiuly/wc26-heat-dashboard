@@ -107,3 +107,62 @@ export function rankLotsBySafety(stadiumId: string, month: number, hour: number)
     (a, b) => (a.adjusted_wbgt_c ?? Infinity) - (b.adjusted_wbgt_c ?? Infinity)
   );
 }
+
+// --- Match-day parking occupancy -----------------------------------
+//
+// "Which lot is full, and when" for a REAL World Cup match (see
+// scripts/fetch_match_schedule.py -- real kickoff times from the
+// openfootball/worldcup dataset). The curve shape below (fills
+// accelerating into kickoff, drains slower than it fills) is a real,
+// well-documented traffic-engineering pattern at large stadium events
+// -- egress bottlenecks are a known phenomenon -- but the exact
+// percentages are illustrative, not measured at these specific
+// venues, so this whole calculation is tagged MOCK, never REAL.
+
+export const AVG_M2_PER_PARKING_SPACE = 28; // SEMI: industry rule-of-thumb (~300-330 sq ft incl. drive aisles), not a survey of these specific lots
+export const AVG_OCCUPANTS_PER_VEHICLE = 2.7; // SEMI: commonly cited average vehicle occupancy for event/rideshare travel
+
+/** Fraction of eventual peak parking demand filled at a given offset
+ * from kickoff (negative = before, positive = after). MOCK: modeled
+ * shape, not measured. Ingress ramps over ~3h; egress is
+ * deliberately slower than ingress (real bottleneck effect at a
+ * single-exit stadium lot), draining over ~4.5h. */
+export function occupancyFraction(hoursFromKickoff: number): number {
+  const h = hoursFromKickoff;
+  if (h <= -3) return 0.05;
+  if (h <= -2) return 0.05 + (h - -3) * (0.4 - 0.05); // -3..-2 -> 0.05..0.4
+  if (h <= -1) return 0.4 + (h - -2) * (0.85 - 0.4); // -2..-1 -> 0.4..0.85
+  if (h <= 0) return 0.85 + (h - -1) * (1.0 - 0.85); // -1..0 -> 0.85..1.0
+  if (h <= 2) return 1.0; // match in progress, lot stays full
+  if (h <= 3) return 1.0 - (h - 2) * (1.0 - 0.4); // 2..3 -> 1.0..0.4 (initial rush)
+  if (h <= 4.5) return 0.4 - (h - 3) * ((0.4 - 0.05) / 1.5); // 3..4.5 -> 0.4..0.05 (slow bottleneck tail)
+  return 0.05;
+}
+
+export type LotOccupancy = {
+  lot: ParkingLot;
+  estimated_spaces: number;
+  occupancy_fraction: number;
+  estimated_cars_now: number;
+  data_status: "SEMI"; // real area -> SEMI space count; MOCK occupancy curve on top
+};
+
+/** Distributes estimated demand across a stadium's real lots
+ * proportional to each lot's real area share -- so a big lot always
+ * shows more cars than a small one, real geometry driving a modeled
+ * quantity. */
+export function computeLotOccupancy(stadiumId: string, hoursFromKickoff: number): LotOccupancy[] {
+  const lots = getStadiumParkingLots(stadiumId);
+  if (lots.length === 0) return [];
+  const fraction = occupancyFraction(hoursFromKickoff);
+  return lots.map((lot) => {
+    const estimatedSpaces = Math.max(1, Math.round(lot.area_m2 / AVG_M2_PER_PARKING_SPACE));
+    return {
+      lot,
+      estimated_spaces: estimatedSpaces,
+      occupancy_fraction: Math.round(fraction * 100) / 100,
+      estimated_cars_now: Math.round(estimatedSpaces * fraction),
+      data_status: "SEMI",
+    };
+  });
+}

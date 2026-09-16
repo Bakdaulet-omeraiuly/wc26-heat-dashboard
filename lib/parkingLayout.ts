@@ -71,3 +71,34 @@ export function computeRealParkingLayout(lengthM: number, widthM: number): RealP
   const totalSpaces = rows.reduce((sum, r) => sum + r.stalls, 0);
   return { length_m: lengthM, width_m: widthM, stalls_per_row: stallsPerRow, rows, total_spaces: totalSpaces };
 }
+
+export type StallPosition = {
+  /** position along the lot's real long axis, meters from one edge (not centered) */
+  along_m: number;
+  /** position across the lot's real width, meters from one edge */
+  across_m: number;
+};
+
+/** Every individual real stall's real local position (before rotation/
+ * translation into the 3D scene) -- reconstructed from the compact
+ * row summary (RealParkingLayout.rows), not re-fetched or re-sent per
+ * stall. When a lot has more stalls than `maxCount`, samples an EVENLY
+ * SPACED subset across the whole real layout (not just the first N)
+ * so a render cap still shows the lot's real full extent -- the
+ * caller is responsible for scaling the filled/total counts by the
+ * same sampling ratio so the on/off proportion stays exact. */
+export function stallPositions(layout: RealParkingLayout, maxCount?: number): StallPosition[] {
+  const all: StallPosition[] = [];
+  for (const row of layout.rows) {
+    for (let col = 0; col < row.stalls; col++) {
+      all.push({ along_m: (col + 0.5) * STALL_WIDTH_M, across_m: row.across_m });
+    }
+  }
+  if (!maxCount || all.length <= maxCount) return all;
+  const stride = all.length / maxCount;
+  const sampled: StallPosition[] = [];
+  for (let i = 0; i < maxCount; i++) {
+    sampled.push(all[Math.floor(i * stride)]);
+  }
+  return sampled;
+}

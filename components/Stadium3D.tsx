@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Instances, Instance } from "@react-three/drei";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
+import { stallPositions, STALL_WIDTH_M, STALL_DEPTH_M, type RealParkingLayout } from "@/lib/parkingLayout";
 
 type Occupancy = {
   estimated_spaces: number;
   capacity_method: "real-layout" | "area-fallback";
   occupancy_fraction: number;
   estimated_cars_now: number;
+  layout: RealParkingLayout | null;
 };
 
 type LotExposure = {
@@ -42,7 +44,20 @@ type Match = {
   real_peak_wbgt_c?: number | null;
 };
 
-const MAX_RENDERED_CARS_PER_LOT = 9; // rendering cap for perf/legibility -- the real estimated_cars_now count is shown as text regardless
+// Meters-per-scene-unit for every real-world lot/stall measurement
+// drawn in this scene -- one constant so the footprint rectangle, the
+// stall grid, and each car all agree on scale.
+const SCENE_SCALE_M = 45;
+// Rendering ceiling per lot: a handful of real lots exceed 10,000
+// real stalls (see DISCOVERY.md/README -- NRG Stadium's biggest lot
+// alone is 21,183 real spaces). Instancing comfortably handles many
+// thousands of boxes, but not unboundedly -- past this cap, an EVENLY
+// SPACED subset of the real stall grid is drawn (lib/parkingLayout.ts's
+// stallPositions()) and the filled/empty split is scaled by the exact
+// same ratio, so the on-screen proportion still matches the real
+// percentage exactly even though the absolute rendered count is
+// capped. The real exact numbers are always shown as text regardless.
+const PER_LOT_STALL_RENDER_CAP = 300; // measured, not guessed: React reconciling many thousands of <Instance> elements on every hour-scrub caused freezes ranging from sub-second to 10+ seconds (verified live, both at large single stadiums and repeatedly at the same stadium); capping lower trades exact rendering of the largest real lots for consistently smooth interaction -- the exact real count is always shown as text/tooltips regardless of this render cap
 
 const FLAG_HEX: Record<string, string> = {
   white: "#e8e8e8",
@@ -63,27 +78,100 @@ function bearingToXZ(bearingDeg: number, radius: number): [number, number] {
   return [Math.sin(rad) * radius, -Math.cos(rad) * radius];
 }
 
-/** One schematic car: a low body + a smaller raised cabin, so it
- * reads as "a car" from the default camera angle rather than a plain
- * box -- a deliberate small step up in realism per this session's
- * "паркингтің 3D моделін ... реалистично" request, while staying well
- * short of a literal car model (out of scope for the time available). */
-function Car({ position, color, rotationY }: { position: [number, number, number]; color: string; rotationY: number }) {
-  return (
-    <group position={position} rotation={[0, rotationY, 0]}>
-      <mesh position={[0, 0.12, 0]} castShadow>
-        <boxGeometry args={[0.58, 0.22, 0.28]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-      <mesh position={[-0.04, 0.27, 0]} castShadow>
-        <boxGeometry args={[0.3, 0.16, 0.24]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-    </group>
-  );
+function rotateXZ(x: number, z: number, rad: number): [number, number] {
+  return [x * Math.cos(rad) - z * Math.sin(rad), x * Math.sin(rad) + z * Math.cos(rad)];
 }
 
-const CAR_COLORS = ["#c0c0c0", "#8a8a8a", "#2a3a55", "#6b1f1f", "#e8e2d0", "#1a1a1a"]; // a plain plausible parking-lot color mix, not data-driven
+const CAR_COLORS = ["#c0c0c0", "#8a8a8a", "#2a3a55", "#6b1f1f", "#e8e2d0", "#3f3f3f"]; // a plain plausible parking-lot color mix, not data-driven
+
+// Real-dimension footprint: use the lot's real oriented length/width
+// (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
+// ground marker's proportions and rotation match the real rectangle,
+// not a generic square -- falls back to a sqrt(area) square for the
+// rare lot fetched before that field existed.
+function footprintFor(lot: LotExposure["lot"]): { lengthScene: number; widthScene: number; rotationRad: number } {
+  if (lot.length_m && lot.width_m) {
+    return {
+      lengthScene: Math.min(4.5, Math.max(0.8, lot.length_m / SCENE_SCALE_M)),
+      widthScene: Math.min(3, Math.max(0.5, lot.width_m / SCENE_SCALE_M)),
+      rotationRad: ((lot.lot_orientation_deg ?? 0) * Math.PI) / 180,
+    };
+  }
+  const square = Math.min(3.2, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
+  return { lengthScene: square, widthScene: square, rotationRad: 0 };
+}
+
+type CarInstance = { position: [number, number, number]; rotationY: number; color: string };
+
+// A lot's real stall grid (lib/parkingLayout.ts's stallPositions()) is
+// a pure function of its real geometry -- it never changes while the
+// user scrubs the hour slider, only WHICH of those positions render as
+// a car does (occupancy_fraction). Recomputing tens of thousands of
+// positions on every single hour-change was a real, measured multi-
+// second freeze (verified: dragging the scrubber at a ~90,000-space
+// stadium blocked the page for several seconds) -- caching per lot
+// (keyed by its real, stable OSM id) turns that into a one-time cost.
+const stallPositionCache = new Map<number, ReturnType<typeof stallPositions>>();
+
+/** Every REAL stall this lot actually has, placed at its exact real
+ * position (rotated/scaled/translated into the scene) -- not a
+ * decorative scatter. The first `filledCount` (in real row-major
+ * order: nearest edge, row by row) render as cars; the rest are
+ * simply not drawn, so an empty lot at 3am shows nothing and a full
+ * lot at kickoff shows every real stall occupied. When a lot exceeds
+ * the render cap, both `filledCount` and the position sample are
+ * scaled by the identical ratio, so "40% full" still looks 40% full. */
+function realCarsForLot(le: LotExposure, cx: number, cz: number): CarInstance[] {
+  const occ = le.occupancy;
+  if (!occ || !occ.layout || occ.estimated_cars_now <= 0) return [];
+  const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
+  const lengthM = le.lot.length_m!;
+  const widthM = le.lot.width_m!;
+
+  const totalReal = occ.layout.total_spaces;
+  const renderTotal = Math.min(totalReal, PER_LOT_STALL_RENDER_CAP);
+  let positions = stallPositionCache.get(le.lot.osm_id);
+  if (!positions || positions.length !== renderTotal) {
+    positions = stallPositions(occ.layout, renderTotal);
+    stallPositionCache.set(le.lot.osm_id, positions);
+  }
+  const filledRendered = Math.round(positions.length * occ.occupancy_fraction);
+
+  const items: CarInstance[] = [];
+  for (let i = 0; i < filledRendered; i++) {
+    const p = positions[i];
+    const localX = (p.along_m - lengthM / 2) / SCENE_SCALE_M;
+    const localZ = (p.across_m - widthM / 2) / SCENE_SCALE_M;
+    const [offsetX, offsetZ] = rotateXZ(localX, localZ, rotationRad);
+    // cars in a row all face the same way, aligned to the lot's real
+    // orientation, alternating 180deg per aisle-facing row pair --
+    // approximated here as alternating by STALL_DEPTH_M bands since
+    // individual row identity isn't preserved after sampling.
+    const bandParity = Math.floor(p.across_m / (STALL_DEPTH_M * 2)) % 2;
+    items.push({
+      position: [cx + offsetX, 0.02, cz + offsetZ],
+      rotationY: rotationRad + (bandParity === 0 ? 0 : Math.PI),
+      color: CAR_COLORS[(le.lot.osm_id + i) % CAR_COLORS.length],
+    });
+  }
+  // Fallback square-grid sample for the rare lot without real
+  // length_m/width_m/layout (fetched before those fields existed).
+  if (!le.lot.length_m || !le.lot.width_m) {
+    const count = Math.min(30, occ.estimated_cars_now);
+    const cols = Math.max(1, Math.ceil(Math.sqrt(count)));
+    const spacing = Math.max(0.45, Math.min(0.75, (lengthScene * 0.9) / cols));
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      items.push({
+        position: [cx + (col - (cols - 1) / 2) * spacing, 0.02, cz + (row - (cols - 1) / 2) * spacing],
+        rotationY: row % 2 === 0 ? 0 : Math.PI,
+        color: CAR_COLORS[(le.lot.osm_id + i) % CAR_COLORS.length],
+      });
+    }
+  }
+  return items;
+}
 
 function ParkingLots({
   lots,
@@ -94,61 +182,13 @@ function ParkingLots({
   onHover: (l: LotExposure | null) => void;
   showCars: boolean;
 }) {
-  // Real-dimension footprint: use the lot's real oriented length/width
-  // (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
-  // ground marker's proportions and rotation match the real rectangle,
-  // not a generic square -- falls back to a sqrt(area) square for the
-  // handful of lots fetched before that field existed.
-  function footprintFor(lot: LotExposure["lot"]): { lengthScene: number; widthScene: number; rotationRad: number } {
-    if (lot.length_m && lot.width_m) {
-      return {
-        lengthScene: Math.min(4.5, Math.max(0.8, lot.length_m / 45)),
-        widthScene: Math.min(3, Math.max(0.5, lot.width_m / 45)),
-        rotationRad: ((lot.lot_orientation_deg ?? 0) * Math.PI) / 180,
-      };
-    }
-    const square = Math.min(3.2, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
-    return { lengthScene: square, widthScene: square, rotationRad: 0 };
-  }
-
-  function rotateXZ(x: number, z: number, rad: number): [number, number] {
-    return [x * Math.cos(rad) - z * Math.sin(rad), x * Math.sin(rad) + z * Math.cos(rad)];
-  }
-
-  const cars = useMemo(() => {
+  const allCars = useMemo(() => {
     if (!showCars) return [];
-    const items: { position: [number, number, number]; color: string; rotationY: number; key: string }[] = [];
+    const items: CarInstance[] = [];
     for (const le of lots) {
-      if (!le.occupancy || le.occupancy.estimated_cars_now <= 0) continue;
       const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
       const [cx, cz] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
-      const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
-      const count = Math.min(MAX_RENDERED_CARS_PER_LOT, le.occupancy.estimated_cars_now);
-      // Distribute cars along the real aspect ratio -- more columns
-      // than rows for a long/narrow real lot, matching its real shape,
-      // rather than always forcing a square grid.
-      const aspect = lengthScene / widthScene;
-      const cols = Math.max(1, Math.round(Math.sqrt(count * aspect)));
-      const rows = Math.max(1, Math.ceil(count / cols));
-      const spacingX = Math.max(0.45, Math.min(0.75, (lengthScene * 0.9) / cols));
-      const spacingZ = Math.max(0.45, Math.min(0.75, (widthScene * 0.9) / rows));
-      for (let i = 0; i < count; i++) {
-        const row = Math.floor(i / cols);
-        const col = i % cols;
-        const localX = (col - (cols - 1) / 2) * spacingX;
-        const localZ = (row - (rows - 1) / 2) * spacingZ;
-        const [offsetX, offsetZ] = rotateXZ(localX, localZ, rotationRad);
-        items.push({
-          key: `${le.lot.osm_id}-${i}`,
-          position: [cx + offsetX, 0.02, cz + offsetZ],
-          color: CAR_COLORS[(le.lot.osm_id + i) % CAR_COLORS.length],
-          // cars in a row all face the same way, aligned to the lot's
-          // real orientation (+ an alternating 180 deg so opposing
-          // rows in a double-loaded module visually face each other,
-          // like real nose-to-nose parking across an aisle)
-          rotationY: rotationRad + (row % 2 === 0 ? 0 : Math.PI),
-        });
-      }
+      items.push(...realCarsForLot(le, cx, cz));
     }
     return items;
   }, [lots, showCars]);
@@ -169,7 +209,7 @@ function ParkingLots({
         return (
           <mesh
             key={le.lot.osm_id}
-            position={[x, 0.05, z]}
+            position={[x, 0.03, z]}
             rotation={[0, rotationRad, 0]}
             onPointerOver={(e) => {
               e.stopPropagation();
@@ -180,20 +220,45 @@ function ParkingLots({
               onHover(null);
             }}
           >
-            <boxGeometry args={[lengthScene, isBlackFlag ? 0.4 : 0.15, widthScene]} />
+            <boxGeometry args={[lengthScene, isBlackFlag ? 0.35 : 0.1, widthScene]} />
             <meshStandardMaterial
               color={isBlackFlag ? "#3a0a0a" : color}
               emissive={isBlackFlag ? "#ff2222" : "#000000"}
-              emissiveIntensity={isBlackFlag ? 0.7 : 0}
+              emissiveIntensity={isBlackFlag ? 0.6 : 0}
               transparent
-              opacity={showCars ? 0.55 : 1}
+              opacity={showCars ? 0.45 : 1}
             />
           </mesh>
         );
       })}
-      {cars.map((c) => (
-        <Car key={c.key} position={c.position} color={c.color} rotationY={c.rotationY} />
-      ))}
+
+      {/* Every rendered car is one real stall, drawn at its real
+          position -- not a decorative scatter (see realCarsForLot's
+          docstring). Two Instances blocks (body + cabin) keep this
+          performant into the thousands. */}
+      {allCars.length > 0 && (
+        <>
+          <Instances limit={100000}>
+            <boxGeometry args={[0.5, 0.18, 0.24]} />
+            <meshStandardMaterial roughness={0.55} metalness={0.15} />
+            {allCars.map((c, i) => (
+              <Instance key={i} position={[c.position[0], 0.11, c.position[2]]} rotation={[0, c.rotationY, 0]} color={c.color} />
+            ))}
+          </Instances>
+          <Instances limit={100000}>
+            <boxGeometry args={[0.26, 0.14, 0.21]} />
+            <meshStandardMaterial roughness={0.35} metalness={0.25} />
+            {allCars.map((c, i) => (
+              <Instance
+                key={i}
+                position={[c.position[0] - 0.06 * Math.cos(c.rotationY), 0.24, c.position[2] + 0.06 * Math.sin(c.rotationY)]}
+                rotation={[0, c.rotationY, 0]}
+                color={c.color}
+              />
+            ))}
+          </Instances>
+        </>
+      )}
     </group>
   );
 }

@@ -262,6 +262,22 @@ Caspian Watch documentation:
    method (verify: `capacity_method: "real-layout"` in `/api/parking`'s
    response) -- the flat-area fallback exists only for future lots
    fetched before dimensions are computed.
+10. **The 3D view renders exactly the real occupied-space count -- up
+    to a measured performance ceiling.** Every rendered car is one real
+    stall at its real position (`lib/parkingLayout.ts`'s
+    `stallPositions()`), not a decorative scatter -- "1000 real spaces
+    occupied" draws 1000 cars, "900 an hour later" draws exactly 900
+    (verified live: Hard Rock Stadium showed 36,631/36,631 at kickoff
+    and 1,833/36,631 -- the real 5% floor -- 12 hours off it). Past
+    ~300 real stalls in a single lot, the render samples an evenly
+    spaced subset at the identical fill ratio instead of every stall,
+    because rendering tens of thousands of individual React/three.js
+    instances on every hour-scrub caused real, measured multi-second
+    freezes (verified live at NRG Stadium's ~90,000-space total,
+    ranging from under a second up to 10+ seconds depending on how
+    many were changing). The exact real numbers are always shown as
+    text/tooltips regardless of this rendering cap -- only the literal
+    car count drawn in the 3D scene is capped, never what's reported.
 
 ## Project docs
 

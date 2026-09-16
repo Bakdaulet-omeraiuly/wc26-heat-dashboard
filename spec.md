@@ -341,10 +341,14 @@ out and still have something whole to demo)**
 
 ## 8. Open risks (say plainly, don't hide)
 
-- The humidity-inclusive NOAA dataset/fields haven't actually been
-  pulled yet -- verify this FIRST, since the whole WBGT approach and
-  the 20-year explorer both depend on it existing and being accessible
-  in the free tier, at real hourly granularity, that far back.
+- ~~The humidity-inclusive NOAA dataset/fields haven't actually been
+  pulled yet~~ **RESOLVED**: confirmed live -- NOAA's `global-hourly`
+  (ISD) dataset via NCEI's Access Data Service, bulk CSV per station-
+  year at `https://www.ncei.noaa.gov/data/global-hourly/access/{year}/{station}.csv`,
+  no token or rate limit. All 11 stadiums now have a verified nearby
+  station (`data/stadiums.json`) confirmed to have real TMP+DEW data
+  for 2006/2015/2024. The WBGT formula itself (`lib/wbgt.ts`) is
+  implemented and checked against a real published reference value.
 - Scope is now large for the time left. The checkpoint ordering above
   is deliberate: Views A+B+C alone are already a complete, credible
   Track 3 submission. The 3D model and scenario simulator are the

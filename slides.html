@@ -1,0 +1,297 @@
+<title>HCHIS Pitch Deck</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0b0d; --bg-raised: #131519; --bg-sunken: #060708;
+    --border: #26282e; --border-bright: #3a3d45;
+    --text: #eef0f2; --text-dim: #9a9ea6; --text-faint: #5b5f68;
+    --accent: #ff5a3c; --green: #2fa869; --yellow: #d4af28; --red: #c43c30;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --sans: "IBM Plex Sans", -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+  .deck { height: 100vh; width: 100vw; position: relative; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0; padding: 64px 88px;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; visibility: hidden; transform: translateX(24px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
+  .slide-inner { max-width: 1180px; margin: 0 auto; width: 100%; }
+
+  .eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1, h2, h3 { font-family: var(--serif); margin: 0; text-wrap: balance; }
+
+  /* progress + controls */
+  .chrome { position: fixed; inset: 0; pointer-events: none; z-index: 30; }
+  .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border); }
+  .top-bar .fill { height: 100%; background: var(--accent); transition: width .3s ease; }
+  .counter { position: absolute; bottom: 28px; left: 88px; font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+  .dots { position: absolute; bottom: 28px; right: 88px; display: flex; gap: 7px; pointer-events: auto; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-bright); cursor: pointer; }
+  .dot.active { background: var(--accent); }
+  .nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); pointer-events: auto;
+    width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-bright);
+    background: rgba(19,21,25,.7); color: var(--text); font-family: var(--mono); font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #prev { left: 26px; } #next { right: 26px; }
+
+  /* slide-specific */
+  .title-slide h1 { font-size: clamp(46px, 6vw, 84px); line-height: 1.03; font-weight: 600; }
+  .title-slide .sub { color: var(--text-dim); font-size: 19px; margin-top: 22px; max-width: 620px; }
+  .kicker-num { font-family: var(--mono); font-size: 15px; color: var(--text-faint); }
+
+  .big-stat { font-family: var(--serif); font-size: clamp(64px,9vw,140px); font-weight: 600; color: var(--accent); line-height: 1; }
+  .big-stat + .stat-label { font-size: 20px; color: var(--text-dim); margin-top: 14px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .shot { border: 1px solid var(--border-bright); border-radius: 8px; overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0,0,0,.7); }
+  .shot img { display: block; width: 100%; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 36px; }
+  .compare > div { background: var(--bg-raised); padding: 24px 28px; }
+  .compare .tag { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; padding: 3px 9px; border-radius: 3px; display: inline-block; }
+  .compare .no .tag { color: var(--text-faint); border: 1px solid var(--border-bright); }
+  .compare .yes .tag { background: var(--accent); color: var(--bg); }
+  .compare h4 { font-family: var(--sans); font-weight: 700; font-size: 16px; margin-top: 10px; }
+  .compare p { color: var(--text-dim); font-size: 13.5px; margin-top: 6px; }
+
+  .num-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 36px; }
+  .num-grid > div { background: var(--bg-raised); padding: 26px 22px; }
+  .num-grid .n { font-family: var(--serif); font-size: 34px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .num-grid .l { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+
+  .finding { border-left: 3px solid var(--accent); padding-left: 22px; margin-top: 26px; }
+  .finding .k { font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; }
+  .finding .v { font-family: var(--serif); font-size: 24px; margin-top: 6px; }
+  .finding .v b { color: var(--accent); }
+  .finding p { color: var(--text-dim); font-size: 14.5px; margin-top: 8px; }
+
+  .tag-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+  .data-tag { font-family: var(--mono); font-size: 12px; padding: 5px 11px; border-radius: 3px; border: 1px solid; }
+  .data-tag.real { color: var(--green); border-color: #1f4a34; background: #0e2019; }
+  .data-tag.semi { color: var(--yellow); border-color: #4a3f1f; background: #201a0e; }
+  .data-tag.mock { color: var(--red); border-color: #4a1f1f; background: #200e0e; }
+  .data-tag.forecast { color: #6fb3ff; border-color: #1f334a; background: #0e1620; }
+
+  .timeline3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 40px; }
+  .timeline3 .step { border-top: 2px solid var(--border-bright); padding-top: 14px; }
+  .timeline3 .step.now { border-color: var(--accent); }
+  .timeline3 .when { font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; }
+  .timeline3 h4 { font-size: 16px; margin-top: 6px; font-family: var(--sans); }
+  .timeline3 p { font-size: 13.5px; color: var(--text-dim); margin-top: 6px; }
+
+  .close-links { margin-top: 40px; display: flex; gap: 14px; }
+  .btn { font-family: var(--mono); font-size: 13px; padding: 13px 22px; border-radius: 4px; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #1a0a06; font-weight: 600; }
+  .btn.ghost { border: 1px solid var(--border-bright); color: var(--text); }
+
+  @media (max-width: 900px) {
+    .slide { padding: 40px 28px; }
+    .grid2, .compare, .num-grid, .timeline3 { grid-template-columns: 1fr; }
+    #prev, #next { display: none; }
+  }
+</style>
+
+<div class="deck" id="deck">
+
+  <section class="slide title-slide">
+    <div class="slide-inner">
+      <span class="eyebrow">Rice University Urban Sustainability Hackathon &middot; Track 3</span>
+      <h1 style="margin-top:20px">HCHIS<br><span style="color:var(--text-dim); font-size:0.45em">Host-City Stadium Heat Intelligence System</span></h1>
+      <p class="sub">A real-data instrument for all 11 FIFA World Cup 2026 US stadiums &mdash; heat risk, parking capacity, and now, live coverage of their real ongoing 2026 NFL season.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">01</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">The problem</span>
+      <h2 style="font-size:clamp(32px,4.4vw,54px); margin-top:14px; max-width:900px">World Cup 2026 puts millions of fans in some of the hottest stadiums in the country &mdash; and every existing heat tool answers the wrong question.</h2>
+      <p style="color:var(--text-dim); font-size:17px; margin-top:22px; max-width:760px">City-wide heat indices. Generic weather widgets. One WBGT number pinned to a stadium's coordinates. None of them tell a venue operator which of 40 real parking lots to open first, or how hot the walk from the car actually is.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">02</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">Why nothing like this exists</span>
+      <h2 style="font-size:clamp(28px,3.6vw,44px); margin-top:14px">Every tool stops at the parking lot fence.</h2>
+      <div class="compare">
+        <div class="no"><span class="tag">Elsewhere</span><h4>"Capacity" = area &divide; a constant</h4><p>The one real attempt we found still just divides square footage by a flat number.</p></div>
+        <div class="yes"><span class="tag">Here</span><h4>Real 9&times;18ft stalls, real 24ft aisles</h4><p>An actual ITE/ULI row-and-aisle yield calc on each lot's real shape. 117.4m&times;35.7m &rarr; exactly 126 spaces.</p></div>
+        <div class="no"><span class="tag">Elsewhere</span><h4>AI chatbot bolted on top</h4><p>Ask it a number, it recalls or hallucinates one.</p></div>
+        <div class="yes"><span class="tag">Here</span><h4>An agent that cannot invent a number</h4><p>11 tools, each a wrapper on a real data file. Every claim tagged REAL / SEMI / MOCK / FORECAST.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner grid2">
+      <div class="shot"><img src="slides/pitch_map.png" alt="Map view"></div>
+      <div>
+        <span class="kicker-num">03</span>
+        <span class="eyebrow" style="display:block; margin-top:8px">Live demo &mdash; the map</span>
+        <h3 style="font-size:26px; margin-top:12px">11 real stadiums, ranked live</h3>
+        <p style="color:var(--text-dim); margin-top:12px; font-size:15px">2.46M real NOAA hourly readings drive every marker. Drag the month/hour scrubber &mdash; everything recolors live, no reload.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner grid2">
+      <div>
+        <span class="kicker-num">04</span>
+        <span class="eyebrow" style="display:block; margin-top:8px">Live demo &mdash; the 3D model</span>
+        <h3 style="font-size:26px; margin-top:12px">Real astronomy. Real geometry. Nobody else's 3D model does either.</h3>
+        <p style="color:var(--text-dim); margin-top:12px; font-size:15px">The sun's real position (SunCalc) for this exact lat/lon and moment. 11 real parking lots at their real OpenStreetMap shape and orientation. Click a lot &mdash; the camera flies to it.</p>
+      </div>
+      <div class="shot"><img src="slides/pitch_stadium3d.png" alt="3D stadium model"></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner grid2">
+      <div class="shot"><img src="slides/pitch_parking_zoom.png" alt="Zoomed parking detail"></div>
+      <div>
+        <span class="kicker-num">05</span>
+        <span class="eyebrow" style="display:block; margin-top:8px">Live demo &mdash; zoom all the way in</span>
+        <h3 style="font-size:26px; margin-top:12px">1,000 real spaces means 1,000 cars &mdash; not a sample</h3>
+        <p style="color:var(--text-dim); margin-top:12px; font-size:15px">Every rendered car is one real stall at its real position. Fill a lot to 40% and exactly 40% of its real stalls light up.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner grid2">
+      <div>
+        <span class="kicker-num">06</span>
+        <span class="eyebrow" style="display:block; margin-top:8px">Live demo &mdash; ask it anything</span>
+        <h3 style="font-size:26px; margin-top:12px">An LLM that narrates. Formulas that measure.</h3>
+        <p style="color:var(--text-dim); margin-top:12px; font-size:15px">"Which stadium is highest risk in July at 3pm?" &mdash; the agent calls a real tool, states a real number, and shows exactly which lookup produced it.</p>
+      </div>
+      <div class="shot"><img src="slides/pitch_ask_answer.png" alt="Ask agent answer"></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">07</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">By the numbers</span>
+      <h2 style="font-size:clamp(28px,3.6vw,44px); margin-top:14px">Depth of data was the actual hard part.</h2>
+      <div class="num-grid">
+        <div><div class="n">2.46M</div><div class="l">real NOAA hourly readings, 20 years</div></div>
+        <div><div class="n">78</div><div class="l">real World Cup matches, real weather at kickoff</div></div>
+        <div><div class="n">35.3&deg;C</div><div class="l">real peak WBGT &mdash; Canada vs Morocco, Houston</div></div>
+        <div><div class="n">10 / 11</div><div class="l">stadiums measurably warming, real regression</div></div>
+        <div><div class="n">411</div><div class="l">real parking lots, real OSM geometry</div></div>
+        <div><div class="n">104</div><div class="l">real upcoming NFL games, live forecast</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">08</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">Not a dashboard &mdash; a discovery</span>
+      <h2 style="font-size:clamp(28px,3.6vw,44px); margin-top:14px">Three findings this pipeline computed, not asserted.</h2>
+      <div class="finding"><div class="k">Finding 01</div><div class="v">MetLife Stadium warms at <b>+1.15&deg;C/decade</b> &mdash; fastest of 11</div></div>
+      <div class="finding"><div class="k">Finding 02</div><div class="v">Real 2026 tournament ran <b>+0.89&deg;C hotter</b> than its own 20-yr normal</div></div>
+      <div class="finding"><div class="k">Finding 03</div><div class="v">A 117.4m&times;35.7m lot yields exactly <b>126 real spaces</b></div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">09</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">The discipline underneath it</span>
+      <h2 style="font-size:clamp(28px,3.6vw,44px); margin-top:14px">Every number carries its own receipt.</h2>
+      <div class="tag-row">
+        <span class="data-tag real">REAL &mdash; measured or observed</span>
+        <span class="data-tag forecast">REAL-FORECAST &mdash; live NWS prediction</span>
+        <span class="data-tag semi">SEMI &mdash; real geometry, modeled formula</span>
+        <span class="data-tag mock">MOCK &mdash; a stated assumption</span>
+      </div>
+      <p style="color:var(--text-dim); font-size:16px; margin-top:24px; max-width:760px; font-family:var(--serif); font-style:italic">"AI doesn't measure. Formulas measure. AI narrates what the formulas already found &mdash; and says so."</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="kicker-num">10</span>
+      <span class="eyebrow" style="display:block; margin-top:8px">Built to outlast the tournament</span>
+      <h2 style="font-size:clamp(28px,3.6vw,44px); margin-top:14px">The World Cup ended in July. The site didn't stop.</h2>
+      <p style="color:var(--text-dim); font-size:16px; margin-top:16px; max-width:760px">Same 11 venues are real NFL stadiums. Their 2026 season is happening now &mdash; so "what's next here" pivoted automatically.</p>
+      <div class="timeline3">
+        <div class="step"><div class="when">Jun&ndash;Jul 2026</div><h4>World Cup era</h4><p>78 real matches. Now a closed historical record.</p></div>
+        <div class="step now"><div class="when">Today</div><h4>Live NFL era</h4><p>104 real upcoming games, live NWS forecast on demand.</p></div>
+        <div class="step"><div class="when">Every future season</div><h4>Still running</h4><p>Re-run one script; the instrument belongs to the stadiums.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">Rice University Urban Sustainability Hackathon &middot; Track 3</span>
+      <h2 style="font-size:clamp(30px,4.4vw,56px); margin-top:16px; max-width:840px">Real data, honestly labeled, at a level of precision nobody else went to the trouble of building.</h2>
+      <div class="close-links">
+        <a class="btn primary" href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">Open the live site</a>
+        <a class="btn ghost" href="https://github.com/Bakdaulet-omeraiuly/wc26-heat-dashboard" target="_blank" rel="noopener">View source on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="chrome">
+  <div class="top-bar"><div class="fill" id="fill"></div></div>
+  <button class="nav-btn" id="prev">&larr;</button>
+  <button class="nav-btn" id="next">&rarr;</button>
+  <div class="counter" id="counter"></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsWrap = document.getElementById('dots');
+  let i = 0;
+  slides.forEach((s, idx) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.addEventListener('click', () => go(idx));
+    dotsWrap.appendChild(d);
+  });
+  const dots = dotsWrap.querySelectorAll('.dot');
+
+  function render() {
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    document.getElementById('fill').style.width = ((i + 1) / slides.length * 100) + '%';
+    document.getElementById('counter').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+  }
+  function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+  document.getElementById('prev').addEventListener('click', () => go(i - 1));
+  document.getElementById('next').addEventListener('click', () => go(i + 1));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(i + 1);
+    if (e.key === 'ArrowLeft') go(i - 1);
+  });
+  let touchX = null;
+  window.addEventListener('touchstart', (e) => touchX = e.touches[0].clientX);
+  window.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (dx > 50) go(i - 1); else if (dx < -50) go(i + 1);
+    touchX = null;
+  });
+  render();
+</script>

@@ -1,0 +1,173 @@
+<title>HCHIS Жоба Ақпараты</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0b0d; --bg-raised: #131519; --bg-sunken: #060708;
+    --border: #26282e; --border-bright: #3a3d45;
+    --text: #eef0f2; --text-dim: #9a9ea6; --text-faint: #5b5f68;
+    --accent: #ff5a3c; --green: #2fa869; --yellow: #d4af28; --red: #c43c30;
+    --serif: "Fraunces", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --sans: "IBM Plex Sans", -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 28px; }
+  h1, h2, h3 { font-family: var(--serif); text-wrap: balance; margin: 0; }
+  a { color: var(--accent); }
+  .eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+  header { padding: 64px 0 40px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: clamp(34px,5vw,54px); font-weight: 600; margin-top: 14px; }
+  header p { color: var(--text-dim); font-size: 17px; margin-top: 16px; max-width: 680px; }
+  .quicklinks { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: var(--mono); font-size: 12.5px; padding: 10px 18px; border-radius: 4px; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #1a0a06; font-weight: 600; }
+  .btn.ghost { border: 1px solid var(--border-bright); color: var(--text); }
+
+  section { padding: 52px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  section h2 { font-size: clamp(24px,3vw,32px); font-weight: 600; margin-top: 10px; }
+  section > .eyebrow + h2 { margin-bottom: 20px; }
+  section p { color: var(--text-dim); font-size: 15.5px; margin-top: 12px; }
+  section ul { color: var(--text-dim); font-size: 15px; padding-left: 20px; margin-top: 12px; }
+  section li { margin-top: 8px; }
+  section li b { color: var(--text); }
+
+  .num-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 24px; }
+  .num-grid > div { background: var(--bg-raised); padding: 22px 20px; }
+  .num-grid .n { font-family: var(--serif); font-size: 28px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .num-grid .l { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
+
+  figure { margin: 24px 0 0; }
+  .shot { border: 1px solid var(--border-bright); border-radius: 6px; overflow: hidden; box-shadow: 0 24px 50px -28px rgba(0,0,0,.6); }
+  .shot img { display: block; width: 100%; }
+  figcaption { font-family: var(--mono); font-size: 12px; color: var(--text-faint); margin-top: 10px; }
+
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .data-tag { font-family: var(--mono); font-size: 11px; padding: 4px 9px; border-radius: 3px; border: 1px solid; }
+  .data-tag.real { color: var(--green); border-color: #1f4a34; background: #0e2019; }
+  .data-tag.semi { color: var(--yellow); border-color: #4a3f1f; background: #201a0e; }
+  .data-tag.mock { color: var(--red); border-color: #4a1f1f; background: #200e0e; }
+  .data-tag.forecast { color: #6fb3ff; border-color: #1f334a; background: #0e1620; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--text-faint); letter-spacing: .05em; }
+  td { color: var(--text-dim); }
+  td.n { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  footer { padding: 32px 0 56px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Rice University Urban Sustainability Hackathon &middot; Track 3</span>
+    <h1>HCHIS — Host-City Stadium Heat Intelligence System</h1>
+    <p>2026 жылғы FIFA World Cup-тың 11 АҚШ стадионына арналған, нақты деректерге негізделген ыстық қауіп-қатер жүйесі. Бұл файл — жобаның не істейтіні, қандай нақты деректер қолданылғаны және неге ерекше екені туралы қазақша қысқаша есеп.</p>
+    <div class="quicklinks">
+      <a class="btn primary" href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">Тірі сайт</a>
+      <a class="btn ghost" href="https://github.com/Bakdaulet-omeraiuly/wc26-heat-dashboard" target="_blank" rel="noopener">GitHub код</a>
+    </div>
+  </header>
+
+  <section>
+    <span class="eyebrow">Проблема</span>
+    <h2>Не үшін жасалды</h2>
+    <p>2026 жылғы FIFA World Cup 11 АҚШ қаласында өтеді, олардың бірнешеуі елдегі ең ыстық аймақтарда орналасқан. Миллиондаған көрермен нақты денсаулық қаупіне тап болуы мүмкін. Бірақ бар ыстық құралдардың (heat index) бәрі қала деңгейінде жалпы санды береді — олар нақты стадионның қай паркингіне бару қауіпсіз, көліктен қақпаға дейінгі жол қаншалықты ыстық екенін айтпайды.</p>
+    <p>HCHIS дәл осы нақты, операциялық сұрақтарға нақты деректермен жауап береді — болжам немесе ойдан шығарылған сан жоқ.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Негізгі сандар</span>
+    <h2>Барлығы нақты, тексерілген дерек</h2>
+    <div class="num-grid">
+      <div><div class="n">2.46 млн</div><div class="l">нақты NOAA сағаттық ауа-райы жазбасы, 20 жыл (2006–2025)</div></div>
+      <div><div class="n">78</div><div class="l">нақты World Cup матчы, нақты нәтижелер мен нақты ауа-райымен</div></div>
+      <div><div class="n">411</div><div class="l">нақты паркинг lot-ы, OpenStreetMap геометриясынан өлшенген</div></div>
+      <div><div class="n">10 / 11</div><div class="l">стадион 20 жылда өлшенетіндей ысып жатыр (нақты регрессия)</div></div>
+      <div><div class="n">35.3°C</div><div class="l">нақты матч кезіндегі ең жоғары WBGT (Canada–Morocco, Houston)</div></div>
+      <div><div class="n">104</div><div class="l">алдағы нақты NFL матчы, тірі ауа-райы болжамымен</div></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Негізгі мүмкіндіктер</span>
+    <h2>Сайтта не бар</h2>
+    <figure>
+      <div class="shot"><img src="assets/pitch_map.png" alt="Карта беті"></div>
+      <figcaption>1. Карта — 11 стадион, нақты ыстық қауіп-қатер бойынша түстелген, ай/сағат scrubber-мен live жаңарады</figcaption>
+    </figure>
+    <ul style="margin-top:22px">
+      <li><b>Карта (басты бет):</b> АҚШ картасында 11 стадион, әрқайсысы 2.46М нақты жазбадан есептелген өз пайыздық шкаласы бойынша түсті.</li>
+      <li><b>3D модель:</b> Әр стадионның нақты күн позициясы (астрономиялық есеп), нақты бағытталған 11 паркинг lot-ы шынайы OpenStreetMap пішінімен.</li>
+      <li><b>Паркинг дәлдігі:</b> Әр lot-тың сыйымдылығы нақты 9×18 фут stall және 24 фут aisle стандартымен есептеледі — аудан/тұрақты сан болжамы емес.</li>
+      <li><b>20 жылдық Explorer:</b> Кез келген стадион, кез келген нақты күн/сағат — сол сәттегі нақты температура/WBGT.</li>
+      <li><b>ASK агенті:</b> Сұрақ қойсаң, LLM тек нақты dерек функциясын шақырады, ешбір санды ойдан шығармайды.</li>
+      <li><b>Live режим:</b> World Cup аяқталғандықтан, енді сол 11 стадионның нақты жүріп жатқан 2026 NFL маусымының алдағы матчтары және соларға тірі ауа-райы болжамы қосылған.</li>
+    </ul>
+    <figure>
+      <div class="shot"><img src="assets/pitch_stadium3d.png" alt="3D стадион моделі"></div>
+      <figcaption>2. 3D модель — нақты күн физикасы, нақты паркинг геометриясы, алдағы нақты матч таңдалған</figcaption>
+    </figure>
+    <figure>
+      <div class="shot"><img src="assets/pitch_parking_zoom.png" alt="Жақындатылған паркинг"></div>
+      <figcaption>3. Жақындатылған көрініс — әр көлік нақты бір паркинг орнында, дәл сол санмен (1000 орын болса — 1000 көлік)</figcaption>
+    </figure>
+    <figure>
+      <div class="shot"><img src="assets/pitch_ask.png" alt="ASK агент беті"></div>
+      <figcaption>4. ASK агент — оң жақта нақты статистика (қазіргі WBGT, 48 сағаттық болжам, паркинг), сол жақта сұрақ-жауап</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <span class="eyebrow">Деректің адалдығы</span>
+    <h2>Әр сан өз "тегімен" жүреді</h2>
+    <p>Жобада төрт дәреже бар, ешбір ерекшеліксіз қолданылады:</p>
+    <div class="tag-row">
+      <span class="data-tag real">REAL — өлшенген/бақыланған</span>
+      <span class="data-tag forecast">REAL-FORECAST — тірі NWS болжамы</span>
+      <span class="data-tag semi">SEMI — нақты геометрия + модельделген формула</span>
+      <span class="data-tag mock">MOCK — нақты айтылған болжам</span>
+    </div>
+    <p>Мысалы: паркинг lot-тың қашықтығы мен ауданы — REAL (OpenStreetMap-тан); walk-in WBGT-ке қосылатын +3°C asphalt үстемесі — MOCK (жарияланған зерттеуден, осы стадиондарда өлшенбеген). Бұл айырмашылық сайттың әр карточкасында ашық жазылған.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Технологиялар</span>
+    <h2>Қалай құрылған</h2>
+    <table>
+      <tr><th>Бөлім</th><th>Технология</th></tr>
+      <tr><td>Frontend</td><td class="n">Next.js 16, React, TypeScript, Tailwind CSS</td></tr>
+      <tr><td>Карта</td><td class="n">deck.gl, өз basemap-ы (API key керек емес)</td></tr>
+      <tr><td>3D модель</td><td class="n">Three.js, React Three Fiber, SunCalc (нақты күн астрономиясы)</td></tr>
+      <tr><td>Дерек қоймасы</td><td class="n">SQLite (172MB, 2.46М жол), JSON (climatology, trend)</td></tr>
+      <tr><td>AI агент</td><td class="n">Claude (Anthropic API), function-calling, 11 real-data tool</td></tr>
+      <tr><td>Дерек көздері</td><td class="n">NOAA global-hourly, Iowa State Mesonet, OpenStreetMap, openfootball, nflverse</td></tr>
+      <tr><td>Deploy</td><td class="n">Vercel (production), Docker (локал)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <span class="eyebrow">Нақты ашылым (Discovery)</span>
+    <h2>Есептелген, ойдан шығарылмаған 3 табылым</h2>
+    <ul>
+      <li><b>MetLife Stadium</b> ең жылдам ысиды — <b>+1.15°C/декада</b> (нақты сызықтық регрессия, 20 жыл).</li>
+      <li>Нақты 2026 турнир өз 20 жылдық ортасынан <b>+0.89°C ыстығырақ</b> өтті — бөлек нақты дерек көзінен (Mesonet) тәуелсіз расталды.</li>
+      <li>117.4м × 35.7м нақты паркинг lot-ы дәл <b>126 нақты орынға</b> сәйкес келеді — қолмен тексерілді.</li>
+    </ul>
+  </section>
+
+  <section>
+    <span class="eyebrow">Сілтемелер</span>
+    <h2>Толық материалдар</h2>
+    <ul>
+      <li><b>Тірі сайт:</b> <a href="https://wc26-heat-dashboard.vercel.app" target="_blank" rel="noopener">wc26-heat-dashboard.vercel.app</a></li>
+      <li><b>GitHub код:</b> <a href="https://github.com/Bakdaulet-omeraiuly/wc26-heat-dashboard" target="_blank" rel="noopener">github.com/Bakdaulet-omeraiuly/wc26-heat-dashboard</a></li>
+      <li><b>Ағылшынша pitch парағы:</b> толық аргументтермен, "The Heat Instrument"</li>
+      <li><b>Slide deck:</b> 12 слайдтық презентация, hackathon судьяларына арналған</li>
+    </ul>
+  </section>
+
+  <footer>HCHIS · Rice University Urban Sustainability Hackathon 2026 · Track 3</footer>
+</div>

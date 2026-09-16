@@ -1,5 +1,6 @@
 import HeatMap from "@/components/HeatMap";
 import StadiumPanel from "@/components/StadiumPanel";
+import RankedComparison from "@/components/RankedComparison";
 
 export default function Home() {
   return (
@@ -12,6 +13,9 @@ export default function Home() {
       </header>
       <main className="flex-1 relative">
         <HeatMap />
+        <div className="absolute top-20 left-3 w-96">
+          <RankedComparison />
+        </div>
         <StadiumPanel />
       </main>
     </div>

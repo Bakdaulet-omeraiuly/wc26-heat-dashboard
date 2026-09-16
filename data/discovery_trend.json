@@ -1,0 +1,101 @@
+[
+  {
+    "stadium": "MetLife Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 27.24,
+    "last_year_wbgt": 28.28,
+    "trend_per_decade_c": 1.146
+  },
+  {
+    "stadium": "Lincoln Financial Field",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 27.37,
+    "last_year_wbgt": 29.42,
+    "trend_per_decade_c": 1.124
+  },
+  {
+    "stadium": "Mercedes-Benz Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 27.57,
+    "last_year_wbgt": 29.46,
+    "trend_per_decade_c": 0.968
+  },
+  {
+    "stadium": "Hard Rock Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 30.51,
+    "last_year_wbgt": 31.75,
+    "trend_per_decade_c": 0.914
+  },
+  {
+    "stadium": "NRG Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 30.31,
+    "last_year_wbgt": 31.84,
+    "trend_per_decade_c": 0.861
+  },
+  {
+    "stadium": "Gillette Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 25.82,
+    "last_year_wbgt": 25.33,
+    "trend_per_decade_c": 0.858
+  },
+  {
+    "stadium": "Lumen Field",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 19.97,
+    "last_year_wbgt": 20.46,
+    "trend_per_decade_c": 0.593
+  },
+  {
+    "stadium": "AT&T Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 29.84,
+    "last_year_wbgt": 30.03,
+    "trend_per_decade_c": 0.448
+  },
+  {
+    "stadium": "Arrowhead Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 28.18,
+    "last_year_wbgt": 29.69,
+    "trend_per_decade_c": 0.358
+  },
+  {
+    "stadium": "Levi's Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 22.34,
+    "last_year_wbgt": 20.12,
+    "trend_per_decade_c": 0.295
+  },
+  {
+    "stadium": "SoFi Stadium",
+    "n_years": 20,
+    "first_year": 2006,
+    "last_year": 2025,
+    "first_year_wbgt": 24.72,
+    "last_year_wbgt": 21.54,
+    "trend_per_decade_c": -0.169
+  }
+]

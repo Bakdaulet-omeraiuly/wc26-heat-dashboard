@@ -160,16 +160,21 @@ function altitudeToSkyColor(altitudeDeg: number): string {
 // (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
 // ground marker's proportions and rotation match the real rectangle,
 // not a generic square -- falls back to a sqrt(area) square for the
-// rare lot fetched before that field existed.
+// rare lot fetched before that field existed. Clamp raised from the
+// original 4.5x3 now that lots sit further out (lotRadius() 34-52,
+// separated from the stadium bowl -- see that function's comment),
+// which gives real neighboring lots more room between them: a real
+// 60,000m2 lot can now visibly read as bigger than a real 700m2 one
+// instead of both hitting the same small cap.
 function footprintFor(lot: LotExposure["lot"]): { lengthScene: number; widthScene: number; rotationRad: number } {
   if (lot.length_m && lot.width_m) {
     return {
-      lengthScene: Math.min(4.5, Math.max(0.8, lot.length_m / SCENE_SCALE_M)),
-      widthScene: Math.min(3, Math.max(0.5, lot.width_m / SCENE_SCALE_M)),
+      lengthScene: Math.min(6, Math.max(0.8, lot.length_m / SCENE_SCALE_M)),
+      widthScene: Math.min(4, Math.max(0.5, lot.width_m / SCENE_SCALE_M)),
       rotationRad: ((lot.lot_orientation_deg ?? 0) * Math.PI) / 180,
     };
   }
-  const square = Math.min(3.2, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
+  const square = Math.min(4, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
   return { lengthScene: square, widthScene: square, rotationRad: 0 };
 }
 
@@ -184,6 +189,22 @@ type CarInstance = { position: [number, number, number]; rotationY: number; colo
 // stadium blocked the page for several seconds) -- caching per lot
 // (keyed by its real, stable OSM id) turns that into a one-time cost.
 const stallPositionCache = new Map<number, ReturnType<typeof stallPositions>>();
+
+// A car instance's fixed rendered footprint (body box is 0.5 x 0.24
+// scene units, see the Instances block below) plus a small render
+// margin -- used to work out how many cars can ACTUALLY fit inside a
+// lot's footprint without visually overlapping, not just an arbitrary
+// count. A real bug this exact gap caused: a huge real lot (e.g. AT&T
+// Stadium's Lot 21, 325m long) gets its FOOTPRINT clamped to a small
+// legible scene size (footprintFor() caps at 4.5 units), so its real
+// per-stall spacing once rendered can be a tiny fraction of a scene
+// unit -- but PER_LOT_STALL_RENDER_CAP still tried to draw up to 300
+// FIXED-SIZE car boxes into that tiny compressed space, so they
+// visually piled on top of each other into a solid, z-fighting mass
+// (reported live, screenshot-confirmed) instead of reading as
+// separated cars.
+const CAR_FOOTPRINT_LEN = 0.55;
+const CAR_FOOTPRINT_WID = 0.32;
 
 /** Every REAL stall this lot actually has, placed at its exact real
  * position (rotated/scaled/translated into the scene) -- not a
@@ -201,7 +222,11 @@ function realCarsForLot(le: LotExposure, cx: number, cz: number): CarInstance[] 
   const widthM = le.lot.width_m!;
 
   const totalReal = occ.layout.total_spaces;
-  const renderTotal = Math.min(totalReal, PER_LOT_STALL_RENDER_CAP);
+  // Never try to render more cars than can actually fit, without
+  // overlapping, inside this lot's own (possibly heavily clamped)
+  // scene footprint -- see CAR_FOOTPRINT_LEN/WID's comment above.
+  const visualCap = Math.max(1, Math.floor(lengthScene / CAR_FOOTPRINT_LEN)) * Math.max(1, Math.floor(widthScene / CAR_FOOTPRINT_WID));
+  const renderTotal = Math.min(totalReal, PER_LOT_STALL_RENDER_CAP, visualCap);
   let positions = stallPositionCache.get(le.lot.osm_id);
   if (!positions || positions.length !== renderTotal) {
     positions = stallPositions(occ.layout, renderTotal);

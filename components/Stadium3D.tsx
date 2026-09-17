@@ -184,6 +184,96 @@ function altitudeToSkyColor(altitudeDeg: number): string {
   return "#0b0e1a"; // night
 }
 
+// --- Procedural ground/pavement textures ---------------------------
+//
+// Studying real 3D map/city renderers (streets.gl, researched this
+// session) for what actually makes their ground/pavement read as
+// real: not polygon count -- an actual tileable surface texture
+// (asphalt grain, terrain speckle) instead of one flat solid color.
+// This app has no real per-venue surface photography to load (and
+// wouldn't invent one), so these are procedurally generated (canvas-
+// drawn noise, cached once) rather than a stock stock-photo asphalt
+// image -- equally "not measured at this venue" as a flat color, but
+// far more legible as actual ground/pavement.
+function makeNoiseTexture(base: string, specks: { count: number; size: [number, number]; rgb: () => [number, number, number]; alpha: [number, number] }): THREE.Texture {
+  // This scene lives entirely inside react-three-fiber's <Canvas>,
+  // which only ever mounts its children client-side (both current
+  // call sites also guard on a selected stadium being present before
+  // rendering Stadium3D at all) -- so `document` should always exist
+  // by the time this runs. Guarded anyway, matching this codebase's
+  // "fail open, don't crash" convention (see lib/parkingData.ts):
+  // an empty texture renders as an untextured surface, not a 500.
+  if (typeof document === "undefined") return new THREE.Texture();
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < specks.count; i++) {
+    const [r, g, b] = specks.rgb();
+    const a = specks.alpha[0] + Math.random() * (specks.alpha[1] - specks.alpha[0]);
+    ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
+    const s = specks.size[0] + Math.random() * (specks.size[1] - specks.size[0]);
+    ctx.fillRect(Math.random() * size, Math.random() * size, s, s);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+let groundTextureCache: THREE.Texture | null = null;
+function getGroundTexture(): THREE.Texture {
+  if (!groundTextureCache) {
+    groundTextureCache = makeNoiseTexture("#3d4032", {
+      count: 1400,
+      size: [1, 3.2],
+      rgb: () => {
+        const g = 40 + Math.random() * 40;
+        return Math.random() < 0.5 ? [g, g + 12, g - 8] : [g + 10, g + 4, g - 6];
+      },
+      alpha: [0.25, 0.55],
+    });
+  }
+  return groundTextureCache;
+}
+
+let asphaltTextureCache: THREE.Texture | null = null;
+function getAsphaltTexture(): THREE.Texture {
+  if (!asphaltTextureCache) {
+    asphaltTextureCache = makeNoiseTexture("#3f3f45", {
+      count: 1800,
+      size: [0.6, 2],
+      rgb: () => {
+        const g = 45 + Math.random() * 45;
+        return [g, g, g + 4];
+      },
+      alpha: [0.12, 0.34],
+    });
+  }
+  return asphaltTextureCache;
+}
+
+// Per-lot clone of the shared asphalt texture with its OWN repeat set
+// from this lot's real footprint size, so the grain reads at a
+// consistent density on a tiny lot and a huge one alike -- cached by
+// the lot's real, stable OSM id (same caching pattern as
+// stallPositionCache below) so it's created once, not every render.
+const lotTextureCache = new Map<number, THREE.Texture>();
+function getLotAsphaltTexture(osmId: number, lengthScene: number, widthScene: number): THREE.Texture {
+  let tex = lotTextureCache.get(osmId);
+  if (!tex) {
+    tex = getAsphaltTexture().clone();
+    tex.needsUpdate = true;
+    lotTextureCache.set(osmId, tex);
+  }
+  const TILE = 1.1; // scene units per texture repeat
+  tex.repeat.set(Math.max(1, lengthScene / TILE), Math.max(1, widthScene / TILE));
+  return tex;
+}
+
 // Real-dimension footprint: use the lot's real oriented length/width
 // (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
 // ground marker's proportions and rotation match the real rectangle,
@@ -405,7 +495,7 @@ function ParkingLots({
               }}
             >
               <boxGeometry args={[lengthScene, 0.06, widthScene]} />
-              <meshStandardMaterial color="#48484e" roughness={0.92} />
+              <meshStandardMaterial map={getLotAsphaltTexture(le.lot.osm_id, lengthScene, widthScene)} color="#b0b0b8" roughness={0.92} />
             </mesh>
             {stripeRows.map((row, i) => {
               // Row's real across-lot position (lib/parkingLayout.ts's
@@ -550,13 +640,19 @@ function Streets({ segments }: { segments: StreetSegment[] }) {
   }, [segments]);
 
   const majorQuads = quads.filter((q) => q.highway === "motorway" || q.highway === "trunk" || q.highway === "primary");
+  const roadTexture = useMemo(() => {
+    const t = getAsphaltTexture().clone();
+    t.needsUpdate = true;
+    t.repeat.set(1, 2.5); // one shared repeat for every quad -- roads are thin ribbons, not worth a per-quad texture clone the way lots get one
+    return t;
+  }, []);
 
   return (
     <group>
       {quads.map((q, i) => (
         <mesh key={i} position={[q.x, 0.015, q.z]} rotation={[-Math.PI / 2, 0, q.rotationY]}>
           <planeGeometry args={[q.width, q.length]} />
-          <meshStandardMaterial color="#4a4a52" roughness={0.9} />
+          <meshStandardMaterial map={roadTexture} color="#9a9aa4" roughness={0.9} />
         </mesh>
       ))}
       {/* Center-line stripes, major roads only -- a cheap real detail
@@ -723,19 +819,32 @@ function StadiumBowl({
   const STADIUM_GROUND_RADIUS = 25;
   const PLAZA_OUTER_RADIUS = LOT_RADIUS_MIN; // meets the real lots' inner edge exactly, no gap and no overlap
 
+  const campusTexture = useMemo(() => {
+    const t = getAsphaltTexture().clone();
+    t.needsUpdate = true;
+    t.repeat.set(STADIUM_GROUND_RADIUS * 2, STADIUM_GROUND_RADIUS * 2);
+    return t;
+  }, [STADIUM_GROUND_RADIUS]);
+  const plazaTexture = useMemo(() => {
+    const t = getAsphaltTexture().clone();
+    t.needsUpdate = true;
+    t.repeat.set((PLAZA_OUTER_RADIUS - STADIUM_GROUND_RADIUS) * 3, (PLAZA_OUTER_RADIUS - STADIUM_GROUND_RADIUS) * 3);
+    return t;
+  }, [STADIUM_GROUND_RADIUS, PLAZA_OUTER_RADIUS]);
+
   return (
     <group>
       {/* Paved stadium-campus ground, stopping just past the pylons -- NOT reaching the real parking lots. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
         <circleGeometry args={[STADIUM_GROUND_RADIUS, 48]} />
-        <meshStandardMaterial color="#26262b" roughness={0.95} />
+        <meshStandardMaterial map={campusTexture} color="#8a8a90" roughness={0.95} />
       </mesh>
       {/* Plaza/walkway ring -- a distinct lighter concrete tone filling
           the real gap between the stadium campus and the parking
           lots, so the two read as adjoining but separate structures. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.045, 0]} receiveShadow>
         <ringGeometry args={[STADIUM_GROUND_RADIUS, PLAZA_OUTER_RADIUS, 48]} />
-        <meshStandardMaterial color="#57575e" roughness={0.9} />
+        <meshStandardMaterial map={plazaTexture} color="#b8b8c0" roughness={0.9} />
       </mesh>
 
       {/* Everything below (field, bowl decks, pylons, roof, scoreboard)
@@ -1120,6 +1229,13 @@ export default function Stadium3D({
 
   const totalCarsNow = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_cars_now ?? 0), 0);
   const totalSpaces = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_spaces ?? 0), 0);
+  const groundRadius = LOT_RADIUS_MIN + LOT_RADIUS_SPAN + 12;
+  const groundTexture = useMemo(() => {
+    const t = getGroundTexture().clone();
+    t.needsUpdate = true;
+    t.repeat.set(groundRadius * 2.2, groundRadius * 2.2);
+    return t;
+  }, [groundRadius]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -1154,8 +1270,8 @@ export default function Stadium3D({
               lot's own paved pad, so those still read as distinct
               surfaces layered on top of this one shared site. */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.09, 0]} receiveShadow>
-            <circleGeometry args={[LOT_RADIUS_MIN + LOT_RADIUS_SPAN + 12, 64]} />
-            <meshStandardMaterial color="#3c3e37" roughness={1} />
+            <circleGeometry args={[groundRadius, 64]} />
+            <meshStandardMaterial map={groundTexture} color="#8a9078" roughness={1} />
           </mesh>
           <StadiumBowl
             stadium={stadium}
@@ -1185,32 +1301,20 @@ export default function Stadium3D({
             onStart={() => setFocusTarget(null)}
           />
           {/* Real, achievable polish borrowed from studying dedicated
-              3D-map renderers like streets.gl (a mature, multi-year
-              custom WebGL2 engine with deferred PBR shading, screen-
-              space reflections, TAA -- reproducing that from scratch
-              is out of scope here, see the "View real 3D city" link
-              below for the genuine article instead). Ambient occlusion
-              (N8AO) gives the bowl decks and cars real contact shadow
-              depth instead of flat-lit boxes; Bloom (high threshold,
-              so only real emissive things -- lit floodlights, the
-              night scoreboard/videoboard, black-flag lots -- glow, not
-              the daytime sky) adds the kind of light bleed a real
-              camera sensor shows at night. */}
+              3D-map renderers (streets.gl's real texture/material
+              approach for ground and pavement -- see the ground/lot/
+              street textures below for the bigger piece of that).
+              Ambient occlusion (N8AO) gives the bowl decks and cars
+              real contact shadow depth instead of flat-lit boxes;
+              Bloom (high threshold, so only real emissive things --
+              lit floodlights, the night scoreboard/videoboard, black-
+              flag lots -- glow, not the daytime sky) adds the kind of
+              light bleed a real camera sensor shows at night. */}
           <EffectComposer enableNormalPass>
             <N8AO intensity={2.2} aoRadius={2} distanceFalloff={1} quality="medium" />
             <Bloom luminanceThreshold={0.8} luminanceSmoothing={0.25} intensity={0.55} mipmapBlur />
           </EffectComposer>
         </Canvas>
-
-        <a
-          href={`https://streets.gl/#${stadium.lat.toFixed(5)},${stadium.lon.toFixed(5)},60,0,600`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute bottom-2 right-2 bg-black/70 hover:bg-black/90 text-zinc-100 font-mono text-[10px] px-2.5 py-1.5 rounded border border-zinc-700 transition-colors"
-          title="Opens streets.gl (real, MIT-licensed OSM 3D city renderer) centered on this stadium's real coordinates -- true photorealistic buildings/streets, not this schematic model"
-        >
-          🌍 View real 3D city &middot; streets.gl ↗
-        </a>
 
         <div className="absolute bottom-2 left-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700">
           <div>SUN ALT {altitudeDeg.toFixed(1)}&deg; {altitudeDeg < 0 ? "(below horizon)" : ""} &middot; AZ {azimuthDeg.toFixed(0)}&deg;</div>

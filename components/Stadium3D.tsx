@@ -1015,9 +1015,19 @@ export default function Stadium3D({
   return (
     <div className="w-full h-full flex flex-col">
       <div className="relative flex-1 min-h-0">
-        <Canvas shadows camera={{ position: [24, 19, 24], fov: 42 }}>
+        {/* Real bug from pushing the real lots out to lotRadius()'s new
+            34-52 range (separating them from the stadium bowl, see
+            that function's comment): the OLD default camera position
+            was tuned for the OLD 15-23 range and sat almost inside the
+            new, much farther-out lot ring -- rendering as a chaotic
+            close-up jumble with no visible stadium shape. Pulled the
+            camera back (and raised maxDistance to match) so the whole
+            real complex -- stadium, plaza, streets, and every real lot
+            -- fits in frame; scroll to zoom in for stall-level detail,
+            or click a lot to fly right up to it. */}
+        <Canvas shadows camera={{ position: [58, 46, 58], fov: 42 }}>
           <color attach="background" args={[altitudeToSkyColor(altitudeDeg)]} />
-          <fog attach="fog" args={[altitudeToSkyColor(altitudeDeg), 45, 130]} />
+          <fog attach="fog" args={[altitudeToSkyColor(altitudeDeg), 60, 220]} />
           <ambientLight intensity={altitudeDeg > 0 ? 0.5 : 0.22} />
           <directionalLight
             position={[sunDirection[0] * 20, Math.max(sunDirection[1] * 20, 2), sunDirection[2] * 20]}
@@ -1048,7 +1058,7 @@ export default function Stadium3D({
             enableZoom
             enablePan={false}
             minDistance={2.5}
-            maxDistance={70}
+            maxDistance={170}
             zoomSpeed={0.9}
             onStart={() => setFocusTarget(null)}
           />

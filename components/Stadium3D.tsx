@@ -9,6 +9,7 @@ import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
 import { stallPositions, STALL_WIDTH_M, STALL_DEPTH_M, type RealParkingLayout } from "@/lib/parkingLayout";
 import type { StreetSegment } from "@/lib/streetData";
+import type { Building } from "@/lib/buildingData";
 
 /** Flies the camera to a clicked parking lot -- click a lot and orbit
  * smoothly re-centers on it and zooms in, instead of the user having
@@ -149,6 +150,14 @@ const LOT_RADIUS_SPAN = 18;
 function lotRadius(distanceM: number): number {
   return LOT_RADIUS_MIN + (Math.min(distanceM, 1200) / 1200) * LOT_RADIUS_SPAN;
 }
+
+// The stadium's own paved campus radius -- shared module-level so
+// StadiumBowl's ground/plaza discs and the pedestrian route's real
+// "stadium entrance" endpoint (approximated as the edge of this same
+// campus, at whichever real compass bearing the walk is coming from)
+// never drift apart into two different numbers for what's supposed to
+// be the same real boundary.
+const STADIUM_GROUND_RADIUS = 25;
 
 // IMPORTANT, verified directly (a real bug this exact mismatch caused:
 // a lot's own boundary outline/stall stripes rendering at a visibly
@@ -760,13 +769,97 @@ function StreetTrees({ segments }: { segments: StreetSegment[] }) {
   );
 }
 
+/** Real surrounding buildings (scripts/fetch_buildings.py) -- real OSM
+ * footprint, real oriented dimensions, extruded to a real height when
+ * OSM has one (REAL), a real-levels-derived one (SEMI), or a flat
+ * default when neither exists (MOCK) -- context for the pedestrian
+ * route below, not the focus of the scene, so kept as plain untextured
+ * blocks rather than competing visually with the stadium/lots. */
+function Buildings({ buildings }: { buildings: Building[] }) {
+  const items = useMemo(
+    () =>
+      buildings.map((b) => {
+        const scaledRadius = lotRadius(b.distance_m);
+        const [x, z] = bearingToXZ(b.bearing_from_stadium_deg, scaledRadius);
+        const lengthScene = Math.min(9, Math.max(0.5, b.length_m / SCENE_SCALE_M));
+        const widthScene = Math.min(6, Math.max(0.4, b.width_m / SCENE_SCALE_M));
+        const heightScene = Math.min(4.5, Math.max(0.18, b.height_m / SCENE_SCALE_M));
+        // rotateXZ()'s convention is the opposite sense from Three's
+        // own `rotation.y` prop (see rotateXZ()'s own comment) -- this
+        // mesh uses Three's rotation directly, so negate to match.
+        const rotationRad = -((b.orientation_deg * Math.PI) / 180);
+        const color = b.height_status === "REAL" ? "#5a5a66" : b.height_status === "SEMI" ? "#525260" : "#48485399";
+        return { key: b.osm_id, x, z, lengthScene, widthScene, heightScene, rotationRad, color };
+      }),
+    [buildings]
+  );
+
+  return (
+    <group>
+      {items.map((it) => (
+        <mesh key={it.key} position={[it.x, it.heightScene / 2, it.z]} rotation={[0, it.rotationRad, 0]} castShadow receiveShadow>
+          <boxGeometry args={[it.lengthScene, it.heightScene, it.widthScene]} />
+          <meshStandardMaterial color={it.color} roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** The clear pedestrian route this session's brief asked for: real
+ * parking lot -> nearest real street node -> a real stadium-entrance
+ * point (approximated as the edge of the stadium's own real paved
+ * campus, at the same real compass bearing the lot sits at -- this
+ * app has no real per-gate entrance survey, so this is the honest
+ * approximation, not a guessed exact door). Colored by the SAME real
+ * WBGT sports-flag color as the lot itself, so the route visually
+ * answers "where does this walk get hot", not just "where is it". */
+function PedestrianRoute({ lot, streets }: { lot: LotExposure; streets: StreetSegment[] }) {
+  const points = useMemo(() => {
+    const lotR = lotRadius(lot.lot.distance_m);
+    const [lx, lz] = bearingToXZ(lot.lot.bearing_from_stadium_deg, lotR);
+
+    let nearest: [number, number] | null = null;
+    let nearestDist = Infinity;
+    for (const seg of streets) {
+      for (const p of seg.points) {
+        const r = lotRadius(p.distance_m);
+        const [sx, sz] = bearingToXZ(p.bearing_deg, r);
+        const d = Math.hypot(sx - lx, sz - lz);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearest = [sx, sz];
+        }
+      }
+    }
+
+    const [ex, ez] = bearingToXZ(lot.lot.bearing_from_stadium_deg, STADIUM_GROUND_RADIUS);
+    const path: [number, number][] = nearest ? [[lx, lz], nearest, [ex, ez]] : [[lx, lz], [ex, ez]];
+    return path.map(([x, z]) => new THREE.Vector3(x, 0.09, z));
+  }, [lot, streets]);
+
+  // Same "black flag is real but invisible as a stroke on this dark
+  // ground" fix already applied to the lot outline itself.
+  const color = lot.sports_flag === "black" ? "#9a9aa2" : lot.sports_flag ? FLAG_HEX[lot.sports_flag] : "#8a8a90";
+
+  return <Line points={points} color={color} lineWidth={3} dashed dashSize={0.35} gapSize={0.18} />;
+}
+
 export type StadiumInterventions = {
   greenRoof?: boolean;
   coolRoof?: boolean;
   coolPavementCoverage?: number; // 0..1
   smartGrowthCoverage?: number; // 0..1
+  // Real environment context (real OSM buildings/streets, and the
+  // real-lot-to-real-entrance pedestrian route) -- default ON: when
+  // this prop is omitted entirely (the main Map+3D view), the scene
+  // should already look like a real place, not an empty lot. Urban
+  // Lab's own toggle checkboxes pass explicit booleans to turn any of
+  // these off for a cleaner what-if view.
   showStreets?: boolean;
   showStreetTrees?: boolean;
+  showBuildings?: boolean;
+  showPedestrianRoute?: boolean;
 };
 
 type StadiumInfo = {
@@ -874,7 +967,6 @@ function StadiumBowl({
   // to exactly where lotRadius() begins -- so the stadium campus and
   // the surrounding real lots read as two separate, adjoining things,
   // not one fused blob.
-  const STADIUM_GROUND_RADIUS = 25;
   const PLAZA_OUTER_RADIUS = LOT_RADIUS_MIN; // meets the real lots' inner edge exactly, no gap and no overlap
 
   const campusTexture = useMemo(() => {
@@ -1153,9 +1245,20 @@ export default function Stadium3D({
   const controlsRef = useRef<any>(null);
   const [focusTarget, setFocusTarget] = useState<[number, number, number] | null>(null);
   const [streets, setStreets] = useState<StreetSegment[]>([]);
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  // Default ON when the caller doesn't say otherwise -- the main
+  // Map+3D view (StadiumPanel) passes no `interventions` prop at all,
+  // and a real environment (real streets, real buildings, a real
+  // pedestrian route) should be there by default, not hidden behind a
+  // toggle only Urban Lab knows about. Urban Lab's own checkboxes
+  // (explicit true/false) still override these for its what-if views.
+  const showStreets = interventions?.showStreets ?? true;
+  const showStreetTrees = interventions?.showStreetTrees ?? false;
+  const showBuildings = interventions?.showBuildings ?? true;
+  const showPedestrianRoute = interventions?.showPedestrianRoute ?? true;
 
   useEffect(() => {
-    if (!interventions?.showStreets && !interventions?.showStreetTrees) {
+    if (!showStreets && !showStreetTrees && !showPedestrianRoute) {
       setStreets([]);
       return;
     }
@@ -1167,7 +1270,22 @@ export default function Stadium3D({
     return () => {
       cancelled = true;
     };
-  }, [stadium.id, interventions?.showStreets, interventions?.showStreetTrees]);
+  }, [stadium.id, showStreets, showStreetTrees, showPedestrianRoute]);
+
+  useEffect(() => {
+    if (!showBuildings) {
+      setBuildings([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/buildings?stadium=${stadium.id}`)
+      .then((r) => r.json())
+      .then((d) => !cancelled && setBuildings(d.buildings ?? []))
+      .catch(() => !cancelled && setBuildings([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [stadium.id, showBuildings]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1302,6 +1420,17 @@ export default function Stadium3D({
   const totalCarsNow = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_cars_now ?? 0), 0);
   const totalSpaces = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_spaces ?? 0), 0);
   const totalLotAreaM2 = lots.reduce((sum, l) => sum + l.lot.area_m2, 0);
+  // The two real lots the pedestrian route is drawn for -- the real
+  // safest and real hottest by adjusted_wbgt_c, so the route visually
+  // contrasts the best and worst real walk, not an arbitrary lot.
+  const routeLots = useMemo(() => {
+    const withWbgt = lots.filter((l) => l.adjusted_wbgt_c !== null);
+    if (withWbgt.length === 0) return [];
+    const sorted = [...withWbgt].sort((a, b) => (a.adjusted_wbgt_c ?? 0) - (b.adjusted_wbgt_c ?? 0));
+    const safest = sorted[0];
+    const hottest = sorted[sorted.length - 1];
+    return safest.lot.osm_id === hottest.lot.osm_id ? [safest] : [safest, hottest];
+  }, [lots]);
   // Real street length, in real meters -- computed from each node's own
   // REAL {distance_m, bearing_deg} from the stadium (law of cosines on
   // two polar points sharing that origin), NOT from the compressed
@@ -1372,8 +1501,11 @@ export default function Stadium3D({
             onFocus={setFocusTarget}
           />
           <SunMarker direction={sunDirection} altitude={altitudeDeg} />
-          {interventions?.showStreets && <Streets segments={streets} />}
-          {interventions?.showStreetTrees && <StreetTrees segments={streets} />}
+          {showStreets && <Streets segments={streets} />}
+          {showStreetTrees && <StreetTrees segments={streets} />}
+          {showBuildings && <Buildings buildings={buildings} />}
+          {showPedestrianRoute &&
+            routeLots.map((le) => <PedestrianRoute key={`route-${le.lot.osm_id}`} lot={le} streets={streets} />)}
           <ParkingLots
             lots={lots}
             onHover={setHoveredLot}

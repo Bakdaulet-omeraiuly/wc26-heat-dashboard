@@ -1325,10 +1325,24 @@ export default function Stadium3D({
             smartGrowthCoverage={interventions?.smartGrowthCoverage ?? 0}
           />
           <CameraFocus controlsRef={controlsRef} focusTarget={focusTarget} onArrived={() => setFocusTarget(null)} />
+          {/* Google-Maps-style free movement: panning was OFF before
+              (only rotate-around-a-fixed-point + zoom), which meant
+              the only way to look elsewhere was to orbit around
+              whatever the current target happened to be -- with no
+              lot focused, that's the stadium's own center (0,0,0), so
+              every drag just spun the whole real complex around the
+              stadium instead of actually moving the view across it.
+              Panning translates the camera+target together instead,
+              the way dragging a real map does. Damping adds a touch
+              of inertia so drags/zooms settle smoothly rather than
+              stopping dead the instant the pointer lifts. */}
           <OrbitControls
             ref={controlsRef}
             enableZoom
-            enablePan={false}
+            enablePan
+            enableDamping
+            dampingFactor={0.08}
+            panSpeed={1.1}
             minDistance={2.5}
             maxDistance={170}
             zoomSpeed={0.9}

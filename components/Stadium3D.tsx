@@ -589,27 +589,39 @@ function ParkingLots({
 // same "compressed schematic" convention as everything else placed by
 // bearingToXZ), so a real motorway visibly reads as wider pavement
 // than a real residential street, not just a thicker wireframe line.
+// Widened from the first pass (0.13-0.55) -- too thin to read clearly
+// once lots got pushed further out; roads are the one real feature
+// meant to be legible from the default zoomed-out view.
 const ROAD_WIDTH: Record<string, number> = {
-  motorway: 0.55,
-  trunk: 0.45,
-  primary: 0.38,
-  secondary: 0.3,
-  tertiary: 0.24,
-  residential: 0.16,
-  unclassified: 0.13,
+  motorway: 1.05,
+  trunk: 0.9,
+  primary: 0.75,
+  secondary: 0.6,
+  tertiary: 0.48,
+  residential: 0.32,
+  unclassified: 0.26,
 };
 
 type RoadQuad = { x: number; z: number; length: number; rotationY: number; width: number };
+type RoadJoint = { x: number; z: number; radius: number };
 
 /** Real OSM street centerlines (scripts/fetch_streets.py), placed with
  * the exact same bearingToXZ() schematic transform as parking lots --
  * real compass bearing, compressed-not-to-scale radius -- so streets
  * line up visually with the lots they actually serve. Rendered as flat
  * paved ribbons (one quad per real consecutive node pair, width keyed
- * to real OSM highway classification) instead of a thin wireframe
- * line, plus a center-line stripe on the two largest real road
- * classes -- a real, if schematic, "this is pavement" look rather
- * than a debug overlay. */
+ * to real OSM highway classification), plus a center-line stripe on
+ * the largest real road classes -- a real, if schematic, "this is
+ * pavement" look rather than a debug overlay.
+ *
+ * Round joints (this pass): the tricky part every real map renderer
+ * (Google Maps, Mapbox, streets.gl) solves the same way -- a real
+ * road's shape is a POLYLINE of many short real segments, and drawing
+ * each one as an independent straight rectangle leaves visible gaps/
+ * notches at every bend where two rectangles meet at an angle instead
+ * of lining up flush. A small disc (radius = half the road's real
+ * width) at every interior real node fills exactly that gap, the same
+ * "round line join" technique real cartographic renderers use. */
 function Streets({ segments }: { segments: StreetSegment[] }) {
   const quads = useMemo(() => {
     const items: (RoadQuad & { highway: string })[] = [];
@@ -639,6 +651,22 @@ function Streets({ segments }: { segments: StreetSegment[] }) {
     return items;
   }, [segments]);
 
+  const joints = useMemo(() => {
+    const items: RoadJoint[] = [];
+    for (const seg of segments) {
+      const width = ROAD_WIDTH[seg.highway ?? "unclassified"] ?? 0.13;
+      // Interior nodes only (skip the two endpoints) -- a real bend
+      // in the road's own real shape, not a made-up point.
+      for (let i = 1; i < seg.points.length - 1; i++) {
+        const p = seg.points[i];
+        const r = lotRadius(p.distance_m);
+        const [x, z] = bearingToXZ(p.bearing_deg, r);
+        items.push({ x, z, radius: width / 2 });
+      }
+    }
+    return items;
+  }, [segments]);
+
   const majorQuads = quads.filter((q) => q.highway === "motorway" || q.highway === "trunk" || q.highway === "primary");
   const roadTexture = useMemo(() => {
     const t = getAsphaltTexture().clone();
@@ -655,11 +683,17 @@ function Streets({ segments }: { segments: StreetSegment[] }) {
           <meshStandardMaterial map={roadTexture} color="#9a9aa4" roughness={0.9} />
         </mesh>
       ))}
+      {joints.map((j, i) => (
+        <mesh key={`j${i}`} position={[j.x, 0.016, j.z]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[j.radius, 12]} />
+          <meshStandardMaterial map={roadTexture} color="#9a9aa4" roughness={0.9} />
+        </mesh>
+      ))}
       {/* Center-line stripes, major roads only -- a cheap real detail
           that reads as "this is a real road", not decoration. */}
       {majorQuads.map((q, i) => (
         <mesh key={`c${i}`} position={[q.x, 0.017, q.z]} rotation={[-Math.PI / 2, 0, q.rotationY]}>
-          <planeGeometry args={[0.02, q.length * 0.9]} />
+          <planeGeometry args={[0.035, q.length * 0.9]} />
           <meshStandardMaterial color="#d8c840" />
         </mesh>
       ))}

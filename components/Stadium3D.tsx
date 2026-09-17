@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Instances, Instance, Line } from "@react-three/drei";
+import { EffectComposer, Bloom, N8AO } from "@react-three/postprocessing";
 import * as THREE from "three";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
@@ -1183,7 +1184,33 @@ export default function Stadium3D({
             zoomSpeed={0.9}
             onStart={() => setFocusTarget(null)}
           />
+          {/* Real, achievable polish borrowed from studying dedicated
+              3D-map renderers like streets.gl (a mature, multi-year
+              custom WebGL2 engine with deferred PBR shading, screen-
+              space reflections, TAA -- reproducing that from scratch
+              is out of scope here, see the "View real 3D city" link
+              below for the genuine article instead). Ambient occlusion
+              (N8AO) gives the bowl decks and cars real contact shadow
+              depth instead of flat-lit boxes; Bloom (high threshold,
+              so only real emissive things -- lit floodlights, the
+              night scoreboard/videoboard, black-flag lots -- glow, not
+              the daytime sky) adds the kind of light bleed a real
+              camera sensor shows at night. */}
+          <EffectComposer enableNormalPass>
+            <N8AO intensity={2.2} aoRadius={2} distanceFalloff={1} quality="medium" />
+            <Bloom luminanceThreshold={0.8} luminanceSmoothing={0.25} intensity={0.55} mipmapBlur />
+          </EffectComposer>
         </Canvas>
+
+        <a
+          href={`https://streets.gl/#${stadium.lat.toFixed(5)},${stadium.lon.toFixed(5)},60,0,600`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-2 right-2 bg-black/70 hover:bg-black/90 text-zinc-100 font-mono text-[10px] px-2.5 py-1.5 rounded border border-zinc-700 transition-colors"
+          title="Opens streets.gl (real, MIT-licensed OSM 3D city renderer) centered on this stadium's real coordinates -- true photorealistic buildings/streets, not this schematic model"
+        >
+          🌍 View real 3D city &middot; streets.gl ↗
+        </a>
 
         <div className="absolute bottom-2 left-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700">
           <div>SUN ALT {altitudeDeg.toFixed(1)}&deg; {altitudeDeg < 0 ? "(below horizon)" : ""} &middot; AZ {azimuthDeg.toFixed(0)}&deg;</div>

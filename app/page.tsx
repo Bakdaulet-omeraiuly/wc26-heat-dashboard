@@ -59,7 +59,13 @@ export default function Home() {
         {tab === "map" && (
           <div className="absolute inset-0">
             <HeatMap />
-            <div className="absolute top-20 left-3 w-96">
+            {/* Bounded + its own scroll: this list grows to fit all 11
+                real stadiums (plus each one's real safest-walk line),
+                and with no bottom bound it grew tall enough to cover
+                the month/hour scrubber fixed at the bottom of the map
+                (real reported bug, screenshot-confirmed) -- stopping
+                short of the scrubber and scrolling internally instead. */}
+            <div className="absolute top-20 left-3 w-96 bottom-36 overflow-y-auto">
               <RankedComparison />
             </div>
             <StadiumPanel />

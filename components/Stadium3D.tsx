@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Instances, Instance } from "@react-three/drei";
+import { OrbitControls, Instances, Instance, Line } from "@react-three/drei";
 import * as THREE from "three";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
@@ -327,44 +327,92 @@ function ParkingLots({
 
   return (
     <group>
+      {/* Each real lot renders like an actual painted lot -- a plain
+          asphalt pad with a crisp boundary outline and real stall-row
+          stripes -- instead of one bold solid-colored block. Real
+          parking-lot 3D models (researched this session: Sketchfab's
+          asphalt-lot references, CityEngine's procedural street/
+          parking styling) all do this: a neutral paved surface plus
+          painted line markings carries the detail, not a flat color
+          fill. The WBGT safety flag still reads at a glance -- now as
+          the outline's color -- without turning every lot into a
+          solid, visually competing block. */}
       {lots.map((le) => {
         const scaledRadius = lotRadius(le.lot.distance_m);
         const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
         const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
-        const color = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#555555";
-        // "Black" flag (#1a1a1a) is real-but-invisible against this
-        // scene's dark background -- same problem hit in
-        // ForecastSidebar's bar chart. Give it an emissive red glow
-        // instead of relying on the literal near-black fill, so the
-        // highest-risk lots read as alarming rather than disappearing.
+        const flagColor = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#8a8a90";
         const isBlackFlag = le.sports_flag === "black";
+        const hx = lengthScene / 2;
+        const hz = widthScene / 2;
+        const corners: [number, number][] = [
+          [-hx, -hz],
+          [hx, -hz],
+          [hx, hz],
+          [-hx, hz],
+          [-hx, -hz],
+        ].map(([lx, lz]) => rotateXZ(lx, lz, rotationRad)) as [number, number][];
+        const outlinePoints = corners.map(([lx, lz]) => new THREE.Vector3(x + lx, 0.05, z + lz));
+
+        // Real stall-row stripes: this lot's own real layout.rows
+        // (lib/parkingLayout.ts), capped and evenly sampled -- not
+        // every single stall boundary (too many to draw legibly at
+        // this scale), but the real row divisions, at their real
+        // relative position across the lot's real width.
+        const rows = le.occupancy?.layout?.rows ?? [];
+        const widthM = le.lot.width_m ?? 1;
+        const maxStripes = 6;
+        const stride = rows.length > maxStripes ? rows.length / maxStripes : 1;
+        const stripeRows = stride > 1 ? Array.from({ length: maxStripes }, (_, i) => rows[Math.floor(i * stride)]) : rows;
+
         return (
-          <mesh
-            key={le.lot.osm_id}
-            position={[x, 0.03, z]}
-            rotation={[0, rotationRad, 0]}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              onHover(le);
-            }}
-            onPointerOut={(e) => {
-              e.stopPropagation();
-              onHover(null);
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onFocus([x, 0.15, z]);
-            }}
-          >
-            <boxGeometry args={[lengthScene, isBlackFlag ? 0.35 : 0.1, widthScene]} />
-            <meshStandardMaterial
-              color={isBlackFlag ? "#3a0a0a" : color}
-              emissive={isBlackFlag ? "#ff2222" : "#000000"}
-              emissiveIntensity={isBlackFlag ? 0.6 : 0}
+          <group key={le.lot.osm_id}>
+            <mesh
+              position={[x, 0.03, z]}
+              rotation={[0, rotationRad, 0]}
+              onPointerOver={(e) => {
+                e.stopPropagation();
+                onHover(le);
+              }}
+              onPointerOut={(e) => {
+                e.stopPropagation();
+                onHover(null);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onFocus([x, 0.15, z]);
+              }}
+            >
+              <boxGeometry args={[lengthScene, 0.06, widthScene]} />
+              <meshStandardMaterial color="#48484e" roughness={0.92} />
+            </mesh>
+            {stripeRows.map((row, i) => {
+              // Row's real across-lot position (lib/parkingLayout.ts's
+              // RealParkingLayout.rows), normalized the same way real
+              // stall/car positions are (fraction of real width x the
+              // footprint's clamped scene size), then rotated into the
+              // lot's own real orientation -- a box, not a rotated
+              // plane, so it composes with rotationRad as a single
+              // clean Y-axis rotation (no Euler-order ambiguity from
+              // stacking a flattening X-rotation with a Y-rotation).
+              const acrossOffset = (row.across_m / widthM - 0.5) * widthScene;
+              const [lx, lz] = rotateXZ(0, acrossOffset, rotationRad);
+              return (
+                <mesh key={i} position={[x + lx, 0.05, z + lz]} rotation={[0, rotationRad, 0]}>
+                  <boxGeometry args={[lengthScene * 0.92, 0.01, 0.025]} />
+                  <meshStandardMaterial color="#d8d8dc" />
+                </mesh>
+              );
+            })}
+            <Line
+              points={outlinePoints}
+              color={flagColor}
+              lineWidth={isBlackFlag ? 2.5 : 1.5}
               transparent
-              opacity={showCars ? 0.45 : 1}
+              opacity={showCars ? 0.7 : 1}
             />
-          </mesh>
+            {isBlackFlag && <pointLight position={[x, 0.6, z]} intensity={1.2} distance={4} color="#ff2222" />}
+          </group>
         );
       })}
 
@@ -1075,6 +1123,19 @@ export default function Stadium3D({
             castShadow
             shadow-mapSize={[1024, 1024]}
           />
+          {/* One continuous ground surface under the ENTIRE real
+              complex -- stadium, plaza, streets, every real lot --
+              instead of each piece sitting on its own disconnected
+              patch. This was the core of the "scattered" complaint:
+              lots floated as separate colored plates with nothing
+              visually tying them to the stadium or to each other. Sits
+              just below the stadium's own ground/plaza discs and each
+              lot's own paved pad, so those still read as distinct
+              surfaces layered on top of this one shared site. */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.09, 0]} receiveShadow>
+            <circleGeometry args={[LOT_RADIUS_MIN + LOT_RADIUS_SPAN + 12, 64]} />
+            <meshStandardMaterial color="#3c3e37" roughness={1} />
+          </mesh>
           <StadiumBowl
             stadium={stadium}
             sunDirection={sunDirection}

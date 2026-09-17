@@ -248,6 +248,7 @@ export default function UrbanLab() {
   const [data, setData] = useState<LabResponse | null>(null);
   const [osmId, setOsmId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [activeCard, setActiveCard] = useState<"trees" | "roofs" | "pavement" | "growth" | "angle">("trees");
 
   // The big context scene's own toggles -- independent of the per-lot
   // scenario sliders above (this view shows a stadium-wide illustration,
@@ -349,72 +350,105 @@ export default function UrbanLab() {
         {loading && <span className="text-zinc-600 text-xs">loading&hellip;</span>}
       </div>
 
-      {/* --- Stadium + streets context --- */}
+      {/* --- Stadium + streets context: the hero. Real bowl geometry
+          (two decks, floodlights that light up at real night, a
+          scoreboard, a real per-venue roof shape, the field rotated to
+          this stadium's own real measured compass orientation), real
+          OSM streets rendered as paved ribbons, real parking lots --
+          every strategy toggle below drives this ONE shared scene. */}
       <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
-        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">STADIUM + STREETS CONTEXT &middot; {activeStadium?.name ?? "..."}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-4">
-          <div className="h-[420px] bg-zinc-900 rounded overflow-hidden border border-zinc-800">
-            {activeStadium && <Stadium3D stadium={activeStadium} interventions={interventions} />}
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-zinc-300 font-bold text-xs tracking-wide">STADIUM + STREETS &middot; {activeStadium?.name ?? "..."}</h3>
+          <span className="text-zinc-600 text-[10px]">drag to orbit &middot; scroll to zoom &middot; click a lot to fly in</span>
+        </div>
+        <div className="h-[540px] bg-zinc-900 rounded overflow-hidden border border-zinc-800">
+          {activeStadium && <Stadium3D stadium={activeStadium} interventions={interventions} />}
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-xs bg-zinc-900/60 border border-zinc-800 rounded p-3">
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={ctxStreets} onChange={(e) => setCtxStreets(e.target.checked)} />
+            Streets
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={ctxStreetTrees} onChange={(e) => setCtxStreetTrees(e.target.checked)} />
+            Street trees
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ctxGreenRoof}
+              onChange={(e) => {
+                setCtxGreenRoof(e.target.checked);
+                if (e.target.checked) setCtxCoolRoof(false);
+              }}
+            />
+            2&#41; Green roof
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ctxCoolRoof}
+              onChange={(e) => {
+                setCtxCoolRoof(e.target.checked);
+                if (e.target.checked) setCtxGreenRoof(false);
+              }}
+            />
+            3&#41; Cool roof
+          </label>
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex justify-between text-zinc-500 mb-0.5">
+              <span>4&#41; Cool pavement</span>
+              <span>{Math.round(ctxCoolPavement * 100)}%</span>
+            </div>
+            <input type="range" min={0} max={1} step={0.05} value={ctxCoolPavement} onChange={(e) => setCtxCoolPavement(Number(e.target.value))} className="w-full" />
           </div>
-          <div className="space-y-3 text-xs">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={ctxStreets} onChange={(e) => setCtxStreets(e.target.checked)} />
-              Real streets (OSM road centerlines)
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={ctxStreetTrees} onChange={(e) => setCtxStreetTrees(e.target.checked)} />
-              Street trees (illustrative placement)
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={ctxGreenRoof}
-                onChange={(e) => {
-                  setCtxGreenRoof(e.target.checked);
-                  if (e.target.checked) setCtxCoolRoof(false);
-                }}
-              />
-              2&#41; Green roof
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={ctxCoolRoof}
-                onChange={(e) => {
-                  setCtxCoolRoof(e.target.checked);
-                  if (e.target.checked) setCtxGreenRoof(false);
-                }}
-              />
-              3&#41; Cool (reflective) roof
-            </label>
-            <div>
-              <div className="flex justify-between text-zinc-500 mb-1">
-                <span>4&#41; Cool pavement, all lots</span>
-                <span>{Math.round(ctxCoolPavement * 100)}%</span>
-              </div>
-              <input type="range" min={0} max={1} step={0.05} value={ctxCoolPavement} onChange={(e) => setCtxCoolPavement(Number(e.target.value))} className="w-full" />
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex justify-between text-zinc-500 mb-0.5">
+              <span>5&#41; Smart growth</span>
+              <span>{Math.round(ctxSmartGrowth * 100)}%</span>
             </div>
-            <div>
-              <div className="flex justify-between text-zinc-500 mb-1">
-                <span>5&#41; Smart growth, all lots</span>
-                <span>{Math.round(ctxSmartGrowth * 100)}%</span>
-              </div>
-              <input type="range" min={0} max={1} step={0.05} value={ctxSmartGrowth} onChange={(e) => setCtxSmartGrowth(Number(e.target.value))} className="w-full" />
-            </div>
-            <p className="text-[10px] text-zinc-600 leading-relaxed">
-              This view is a stadium-wide illustration (all lots tinted uniformly). The exact real numbers for one
-              specific lot are in the cards below.
-            </p>
+            <input type="range" min={0} max={1} step={0.05} value={ctxSmartGrowth} onChange={(e) => setCtxSmartGrowth(Number(e.target.value))} className="w-full" />
           </div>
         </div>
+        <p className="text-[10px] text-zinc-600 leading-relaxed">
+          Still a schematic model, not a CAD-accurate replica of any one venue -- but every real number this app has
+          about this stadium is now applied to it: real field compass orientation, real roof type, real OSM streets
+          and lots, real sun position for lighting/floodlights. Roof/pavement/growth tints apply uniformly across all
+          lots here; the exact real number for one specific lot is in the cards below.
+        </p>
       </section>
 
+      {/* --- Tab bar: one scenario card visible at a time, not all 5
+          stacked and scrolled through -- each is still fully real/SEMI,
+          just not all shown at once. */}
+      <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+        {(
+          [
+            ["trees", "1) Trees"],
+            ["roofs", "2–3) Roofs"],
+            ["pavement", "4) Cool pavement"],
+            ["growth", "5) Smart growth"],
+            ["angle", "Angled parking"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setActiveCard(key)}
+            className={`px-3 py-1.5 rounded border text-xs ${
+              activeCard === key ? "bg-zinc-100 text-zinc-900 border-zinc-100" : "border-zinc-700 text-zinc-400 hover:text-zinc-100"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* --- 1) Tree shade --- */}
-      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+      <section hidden={activeCard !== "trees"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
         <h3 className="text-zinc-300 font-bold text-xs tracking-wide">1&#41; TREE SHADE &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
-            {lot?.length_m && lot?.width_m ? (
+            {activeCard === "trees" && lot?.length_m && lot?.width_m ? (
               <TreeShadeScene lengthM={lot.length_m} widthM={lot.width_m} treeCount={treeCount} />
             ) : (
               <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
@@ -469,7 +503,7 @@ export default function UrbanLab() {
       </section>
 
       {/* --- 2/3) Green roof / cool roof info --- */}
-      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+      <section hidden={activeCard !== "roofs"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
         <h3 className="text-zinc-300 font-bold text-xs tracking-wide">2&#41; GREEN ROOF &middot; 3&#41; COOL ROOF</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div className="bg-zinc-900 border border-zinc-800 rounded p-3 space-y-1.5">
@@ -499,11 +533,11 @@ export default function UrbanLab() {
       </section>
 
       {/* --- 4) Cool pavement --- */}
-      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+      <section hidden={activeCard !== "pavement"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
         <h3 className="text-zinc-300 font-bold text-xs tracking-wide">4&#41; COOL PAVEMENT &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
-            {lot?.length_m && lot?.width_m ? (
+            {activeCard === "pavement" && lot?.length_m && lot?.width_m ? (
               <SurfaceScene lengthM={lot.length_m} widthM={lot.width_m} coverageFraction={coolPavementCoverage} tint="#e8e8ec" dropCars={false} />
             ) : (
               <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
@@ -546,11 +580,11 @@ export default function UrbanLab() {
       </section>
 
       {/* --- 5) Smart growth --- */}
-      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+      <section hidden={activeCard !== "growth"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
         <h3 className="text-zinc-300 font-bold text-xs tracking-wide">5&#41; SMART GROWTH &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
-            {lot?.length_m && lot?.width_m ? (
+            {activeCard === "growth" && lot?.length_m && lot?.width_m ? (
               <SurfaceScene lengthM={lot.length_m} widthM={lot.width_m} coverageFraction={smartGrowthCoverage} tint="#2e7d32" dropCars />
             ) : (
               <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
@@ -602,11 +636,11 @@ export default function UrbanLab() {
       </section>
 
       {/* --- Re-striping for more cars --- */}
-      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+      <section hidden={activeCard !== "angle"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
         <h3 className="text-zinc-300 font-bold text-xs tracking-wide">RE-STRIPING FOR MORE CARS &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
-            {angleLayout && lot?.length_m && lot?.width_m ? (
+            {activeCard === "angle" && angleLayout && lot?.length_m && lot?.width_m ? (
               <AngledLayoutScene layout={angleLayout} lengthM={lot.length_m} widthM={lot.width_m} />
             ) : (
               <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>

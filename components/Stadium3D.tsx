@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Instances, Instance } from "@react-three/drei";
+import { OrbitControls, Instances, Instance, Line } from "@react-three/drei";
 import * as THREE from "three";
 import * as SunCalc from "suncalc";
 import { useHeatDashboardStore } from "@/lib/store";
 import { stallPositions, STALL_WIDTH_M, STALL_DEPTH_M, type RealParkingLayout } from "@/lib/parkingLayout";
+import type { StreetSegment } from "@/lib/streetData";
 
 /** Flies the camera to a clicked parking lot -- click a lot and orbit
  * smoothly re-centers on it and zooms in, instead of the user having
@@ -225,11 +226,21 @@ function ParkingLots({
   onHover,
   onFocus,
   showCars,
+  coolPavementCoverage = 0,
+  smartGrowthCoverage = 0,
 }: {
   lots: LotExposure[];
   onHover: (l: LotExposure | null) => void;
   onFocus: (position: [number, number, number]) => void;
   showCars: boolean;
+  /** Illustrative overlay only -- applied uniformly across every lot
+   * (unlike Urban Lab's per-lot cards, this stadium-wide view isn't
+   * trying to show one exact lot's math, just what a stadium-wide
+   * rollout of either intervention would look like). The real,
+   * exact-lot numbers live in lib/interventions.ts's simulate*
+   * functions and Urban Lab's text cards, not in this opacity value. */
+  coolPavementCoverage?: number;
+  smartGrowthCoverage?: number;
 }) {
   const allCars = useMemo(() => {
     if (!showCars) return [];
@@ -285,6 +296,33 @@ function ParkingLots({
         );
       })}
 
+      {/* Illustrative coverage overlays -- see the props' docstring. A
+          higher coverage fraction reads as more opaque, not a bigger
+          footprint (the real capacity trade-off for smart growth is a
+          text figure in Urban Lab, computed exactly per lot). */}
+      {(coolPavementCoverage > 0 || smartGrowthCoverage > 0) &&
+        lots.map((le) => {
+          const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+          const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
+          const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
+          return (
+            <group key={`overlay-${le.lot.osm_id}`}>
+              {coolPavementCoverage > 0 && (
+                <mesh position={[x, 0.06, z]} rotation={[0, rotationRad, 0]}>
+                  <boxGeometry args={[lengthScene, 0.02, widthScene]} />
+                  <meshStandardMaterial color="#f4f4f4" transparent opacity={coolPavementCoverage * 0.7} />
+                </mesh>
+              )}
+              {smartGrowthCoverage > 0 && (
+                <mesh position={[x, 0.07, z]} rotation={[0, rotationRad, 0]}>
+                  <boxGeometry args={[lengthScene, 0.02, widthScene]} />
+                  <meshStandardMaterial color="#2e7d32" transparent opacity={smartGrowthCoverage * 0.7} />
+                </mesh>
+              )}
+            </group>
+          );
+        })}
+
       {/* Every rendered car is one real stall, drawn at its real
           position -- not a decorative scatter (see realCarsForLot's
           docstring). Two Instances blocks (body + cabin) keep this
@@ -316,6 +354,93 @@ function ParkingLots({
   );
 }
 
+/** Real OSM street centerlines (scripts/fetch_streets.py), placed with
+ * the exact same bearingToXZ() schematic transform as parking lots --
+ * real compass bearing, compressed-not-to-scale radius -- so streets
+ * line up visually with the lots they actually serve. Thickness/color
+ * hints at real OSM road classification (highway=primary vs
+ * residential etc.), not decorative variety. */
+function Streets({ segments }: { segments: StreetSegment[] }) {
+  const ROAD_WIDTH: Record<string, number> = {
+    motorway: 4.5,
+    trunk: 3.5,
+    primary: 3,
+    secondary: 2.5,
+    tertiary: 2,
+    residential: 1.5,
+    unclassified: 1.2,
+  };
+  return (
+    <group>
+      {segments.map((seg) => {
+        const pts = seg.points.map((p) => {
+          const scaledRadius = 15 + (Math.min(p.distance_m, 1200) / 1200) * 8;
+          const [x, z] = bearingToXZ(p.bearing_deg, scaledRadius);
+          return new THREE.Vector3(x, 0.01, z);
+        });
+        if (pts.length < 2) return null;
+        return (
+          <Line
+            key={seg.osm_id}
+            points={pts}
+            color="#5a5a62"
+            lineWidth={ROAD_WIDTH[seg.highway ?? "unclassified"] ?? 1.2}
+          />
+        );
+      })}
+    </group>
+  );
+}
+
+/** Illustrative street trees along real road centerlines -- placed at
+ * fixed intervals between each real segment's real nodes (not a real
+ * tree survey; OSM doesn't carry that), toggled on with the "street
+ * trees" intervention. Purely visual context alongside the lot-level
+ * tree-shade scenario in Urban Lab, which is where the actual WBGT
+ * math for tree shade lives. */
+function StreetTrees({ segments }: { segments: StreetSegment[] }) {
+  const positions = useMemo(() => {
+    const pts: [number, number][] = [];
+    const SPACING_UNITS = 1.1;
+    for (const seg of segments) {
+      for (let i = 0; i < seg.points.length - 1; i++) {
+        const a = seg.points[i];
+        const b = seg.points[i + 1];
+        const ra = 15 + (Math.min(a.distance_m, 1200) / 1200) * 8;
+        const rb = 15 + (Math.min(b.distance_m, 1200) / 1200) * 8;
+        const [ax, az] = bearingToXZ(a.bearing_deg, ra);
+        const [bx, bz] = bearingToXZ(b.bearing_deg, rb);
+        const segLen = Math.hypot(bx - ax, bz - az);
+        const steps = Math.max(1, Math.floor(segLen / SPACING_UNITS));
+        for (let s = 0; s < steps; s++) {
+          const t = s / steps;
+          pts.push([ax + (bx - ax) * t + 0.15, az + (bz - az) * t + 0.15]);
+        }
+      }
+    }
+    return pts;
+  }, [segments]);
+
+  return (
+    <Instances limit={2000}>
+      <coneGeometry args={[0.14, 0.32, 6]} />
+      <meshStandardMaterial color="#3f8f3f" />
+      {positions.map(([x, z], i) => (
+        <Instance key={i} position={[x, 0.22, z]} />
+      ))}
+    </Instances>
+  );
+}
+
+export type StadiumInterventions = {
+  greenRoof?: boolean;
+  coolRoof?: boolean;
+  coolPavementCoverage?: number; // 0..1
+  smartGrowthCoverage?: number; // 0..1
+  showStreets?: boolean;
+  showStreetTrees?: boolean;
+};
+
 type StadiumInfo = {
   id: string;
   name: string;
@@ -332,7 +457,20 @@ type StadiumInfo = {
  * architectural detail). One oval ring of "stands" + a flat pitch,
  * reused for every stadium, individually lit by each stadium's own
  * real lat/lon + the scrubber's real month/hour via SunCalc. */
-function StadiumBowl({ stadium, sunDirection }: { stadium: StadiumInfo; sunDirection: [number, number, number] }) {
+function StadiumBowl({
+  stadium,
+  sunDirection,
+  roofMode,
+}: {
+  stadium: StadiumInfo;
+  sunDirection: [number, number, number];
+  /** "green" tints the roof to represent a green (vegetated) roof
+   * intervention; "cool" tints it a bright reflective white -- both
+   * purely visual (the real, cited effect sizes for each -- and cool
+   * roof's honest lack of a published outdoor WBGT number -- are
+   * shown as text in Urban Lab, not computed from this color). */
+  roofMode?: "green" | "cool" | null;
+}) {
   const standSegments = useMemo(() => {
     const segments = 24;
     const items = [];
@@ -377,7 +515,13 @@ function StadiumBowl({ stadium, sunDirection }: { stadium: StadiumInfo; sunDirec
       {stadium.roof_type !== "open" && (
         <mesh position={[0, 6, 0]}>
           <torusGeometry args={[13, 0.3, 8, 24]} />
-          <meshStandardMaterial color="#888888" transparent opacity={0.4} />
+          <meshStandardMaterial
+            color={roofMode === "green" ? "#2e7d32" : roofMode === "cool" ? "#f2f2f2" : "#888888"}
+            emissive={roofMode === "cool" ? "#ffffff" : "#000000"}
+            emissiveIntensity={roofMode === "cool" ? 0.25 : 0}
+            transparent
+            opacity={roofMode ? 0.85 : 0.4}
+          />
         </mesh>
       )}
     </group>
@@ -398,12 +542,16 @@ function SunMarker({ direction, altitude }: { direction: [number, number, number
 export default function Stadium3D({
   stadium,
   focusLotOsmId,
+  interventions,
 }: {
   stadium: StadiumInfo;
   /** Set from outside (StadiumPanel's stat rows) to fly the camera to
    * a specific real lot by its real OSM id -- the same mechanism a
    * direct click on a lot in this scene uses internally. */
   focusLotOsmId?: number | null;
+  /** Urban Lab's toggles -- undefined/empty means the plain Map+3D
+   * view (no visual change from before this feature existed). */
+  interventions?: StadiumInterventions;
 }) {
   const { month, hour, matchIndex, setMatchIndex, hoursFromKickoffOverride, setHoursFromKickoffOverride } = useHeatDashboardStore();
   const [lots, setLots] = useState<LotExposure[]>([]);
@@ -412,6 +560,22 @@ export default function Stadium3D({
   const [matchMode, setMatchMode] = useState(true);
   const controlsRef = useRef<any>(null);
   const [focusTarget, setFocusTarget] = useState<[number, number, number] | null>(null);
+  const [streets, setStreets] = useState<StreetSegment[]>([]);
+
+  useEffect(() => {
+    if (!interventions?.showStreets && !interventions?.showStreetTrees) {
+      setStreets([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/streets?stadium=${stadium.id}`)
+      .then((r) => r.json())
+      .then((d) => !cancelled && setStreets(d.segments ?? []))
+      .catch(() => !cancelled && setStreets([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [stadium.id, interventions?.showStreets, interventions?.showStreetTrees]);
 
   useEffect(() => {
     let cancelled = false;
@@ -556,9 +720,22 @@ export default function Stadium3D({
             intensity={altitudeDeg > 0 ? 1.2 : 0.2}
             castShadow
           />
-          <StadiumBowl stadium={stadium} sunDirection={sunDirection} />
+          <StadiumBowl
+            stadium={stadium}
+            sunDirection={sunDirection}
+            roofMode={interventions?.greenRoof ? "green" : interventions?.coolRoof ? "cool" : null}
+          />
           <SunMarker direction={sunDirection} altitude={altitudeDeg} />
-          <ParkingLots lots={lots} onHover={setHoveredLot} onFocus={setFocusTarget} showCars={matchMode && hasMatches} />
+          {interventions?.showStreets && <Streets segments={streets} />}
+          {interventions?.showStreetTrees && <StreetTrees segments={streets} />}
+          <ParkingLots
+            lots={lots}
+            onHover={setHoveredLot}
+            onFocus={setFocusTarget}
+            showCars={matchMode && hasMatches}
+            coolPavementCoverage={interventions?.coolPavementCoverage ?? 0}
+            smartGrowthCoverage={interventions?.smartGrowthCoverage ?? 0}
+          />
           <CameraFocus controlsRef={controlsRef} focusTarget={focusTarget} onArrived={() => setFocusTarget(null)} />
           <OrbitControls
             ref={controlsRef}

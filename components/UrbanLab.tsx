@@ -5,17 +5,31 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Instances, Instance } from "@react-three/drei";
 import { useHeatDashboardStore } from "@/lib/store";
 import { stallPositions, type RealParkingLayout } from "@/lib/parkingLayout";
+import Stadium3D, { type StadiumInterventions } from "@/components/Stadium3D";
 
 /**
- * "Urban Lab" -- two real what-if scenarios on one real parking lot,
- * backed by /api/urban-lab (see that route's docstring for the exact
- * cited research and standards). Both scenarios stay clearly SEMI/MOCK
- * -tagged: real lot geometry and real climatology feed a modeled shade
- * effect and a real capacity-standard calculation, never a claim about
- * what these specific lots actually look like today.
+ * "Urban Lab" -- all 5 of the EPA's real heat-island reduction
+ * strategies (epa.gov/green-infrastructure/reduce-heat-islands),
+ * applied to one real stadium's real parking lots and streets. Every
+ * number here is computed by /api/urban-lab from real geometry (OSM)
+ * and real cited research (see that route's and lib/interventions.ts's
+ * docstrings) -- never invented -- and stays tagged SEMI/MOCK since
+ * none of it is a survey of what these specific venues look like
+ * today. The strategies are shown as independent cards, never summed
+ * into one composite number, since their real effects overlap the
+ * same physical surface area.
  */
 
-const SCALE = 0.045; // meters -> scene units, tuned so a ~300m lot fills the small canvas
+const SCALE = 0.045; // meters -> scene units, tuned so a ~300m lot fills a small canvas
+
+type StadiumFull = {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  roof_type: string;
+  field_orientation_deg: number | null;
+};
 
 type LotOption = { osm_id: number; name: string; area_m2: number; has_dimensions: boolean };
 type TreeShade = {
@@ -36,11 +50,28 @@ type AngleComparison = {
   current_total: number;
   gain_vs_90: number;
 };
+type CoolPavement = {
+  coverage_fraction: number;
+  temp_reduction_c: number;
+  base_wbgt_c: number | null;
+  treated_wbgt_c: number | null;
+};
+type SmartGrowth = {
+  converted_fraction: number;
+  temp_reduction_c: number;
+  base_wbgt_c: number | null;
+  treated_wbgt_c: number | null;
+  spaces_before: number;
+  spaces_after: number;
+  spaces_lost: number;
+};
 type LabResponse = {
   lots: LotOption[];
   selected_osm_id: number;
   tree_shade: TreeShade;
   angle_comparison: AngleComparison | null;
+  cool_pavement: CoolPavement;
+  smart_growth: SmartGrowth;
 };
 
 function flagColor(wbgt: number | null): string {
@@ -51,9 +82,6 @@ function flagColor(wbgt: number | null): string {
   return "#ef4444";
 }
 
-/** Deterministic pseudo-random grid placement within a length x width
- * footprint -- for illustrating shade coverage, not real tree survey
- * positions (there is no such survey; OSM doesn't carry tree data). */
 function treePositions(count: number, lengthScene: number, widthScene: number): [number, number][] {
   const cols = Math.max(1, Math.ceil(Math.sqrt((count * lengthScene) / widthScene)));
   const rows = Math.max(1, Math.ceil(count / cols));
@@ -70,23 +98,27 @@ function treePositions(count: number, lengthScene: number, widthScene: number): 
   return positions;
 }
 
+function carGrid(lengthScene: number, widthScene: number, cols: number, rows: number, skipFraction = 0): [number, number][] {
+  const spots: [number, number][] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      // Skip a contiguous fraction of columns (from one edge) to
+      // visually represent "this portion of the lot is no longer
+      // parking" -- consistent with the real space-count reduction
+      // reported alongside it, not an arbitrary decoration.
+      if (c / cols >= 1 - skipFraction) continue;
+      spots.push([(((c + 0.5) / cols) - 0.5) * lengthScene, (((r + 0.5) / rows) - 0.5) * widthScene * 0.9]);
+    }
+  }
+  return spots;
+}
+
 function TreeShadeScene({ lengthM, widthM, treeCount }: { lengthM: number; widthM: number; treeCount: number }) {
   const lengthScene = Math.min(6, lengthM * SCALE);
   const widthScene = Math.min(4.5, widthM * SCALE);
-  const renderedTrees = Math.min(treeCount, 400); // render cap, same reasoning as Stadium3D's PER_LOT_STALL_RENDER_CAP -- keeps the frame smooth
+  const renderedTrees = Math.min(treeCount, 400);
   const trees = useMemo(() => treePositions(renderedTrees, lengthScene, widthScene), [renderedTrees, lengthScene, widthScene]);
-  // A fixed illustrative parked-car pattern (not tied to real occupancy -- this scene is about shade, not fill level)
-  const cars = useMemo(() => {
-    const spots: [number, number][] = [];
-    const cols = 10;
-    const rows = 4;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        spots.push([(((c + 0.5) / cols) - 0.5) * lengthScene, (((r + 0.5) / rows) - 0.5) * widthScene * 0.9]);
-      }
-    }
-    return spots;
-  }, [lengthScene, widthScene]);
+  const cars = useMemo(() => carGrid(lengthScene, widthScene, 10, 4), [lengthScene, widthScene]);
 
   return (
     <Canvas camera={{ position: [lengthScene * 0.9, lengthScene * 0.75, widthScene * 1.3], fov: 45 }}>
@@ -151,35 +183,106 @@ function AngledLayoutScene({ layout, lengthM, widthM }: { layout: RealParkingLay
   );
 }
 
+/** Shared scene for the two "re-surface part of the lot" scenarios --
+ * cool pavement (tints toward white) and smart growth (tints toward
+ * green AND visually drops cars from the converted fraction, since
+ * that pavement stops being parking at all). */
+function SurfaceScene({
+  lengthM,
+  widthM,
+  coverageFraction,
+  tint,
+  dropCars,
+}: {
+  lengthM: number;
+  widthM: number;
+  coverageFraction: number;
+  tint: string;
+  dropCars: boolean;
+}) {
+  const lengthScene = Math.min(6, lengthM * SCALE);
+  const widthScene = Math.min(4.5, widthM * SCALE);
+  const cars = useMemo(
+    () => carGrid(lengthScene, widthScene, 10, 4, dropCars ? coverageFraction : 0),
+    [lengthScene, widthScene, dropCars, coverageFraction]
+  );
+  const overlayLength = lengthScene * coverageFraction;
+
+  return (
+    <Canvas camera={{ position: [lengthScene * 0.9, lengthScene * 0.75, widthScene * 1.3], fov: 45 }}>
+      <ambientLight intensity={0.75} />
+      <directionalLight position={[5, 8, 3]} intensity={1.1} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+        <planeGeometry args={[lengthScene, widthScene]} />
+        <meshStandardMaterial color="#3f3f46" />
+      </mesh>
+      {coverageFraction > 0 && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[lengthScene / 2 - overlayLength / 2, -0.01, 0]}>
+          <planeGeometry args={[overlayLength, widthScene]} />
+          <meshStandardMaterial color={tint} />
+        </mesh>
+      )}
+      <Instances limit={200}>
+        <boxGeometry args={[0.22, 0.09, 0.11]} />
+        <meshStandardMaterial color="#a1a1aa" />
+        {cars.map(([x, z], i) => (
+          <Instance key={i} position={[x, 0.045, z]} />
+        ))}
+      </Instances>
+      <OrbitControls enablePan={false} minDistance={2} maxDistance={20} />
+    </Canvas>
+  );
+}
+
 export default function UrbanLab() {
   const storeStadiumId = useHeatDashboardStore((s) => s.selectedStadiumId);
   const month = useHeatDashboardStore((s) => s.month);
   const hour = useHeatDashboardStore((s) => s.hour);
 
-  const [stadiums, setStadiums] = useState<{ id: string; name: string }[]>([]);
+  const [stadiums, setStadiums] = useState<StadiumFull[]>([]);
   const [stadiumId, setStadiumId] = useState<string | null>(storeStadiumId);
   const [treeCount, setTreeCount] = useState(20);
   const [angle, setAngle] = useState<"90" | "60" | "45">("90");
+  const [coolPavementCoverage, setCoolPavementCoverage] = useState(0.5);
+  const [smartGrowthCoverage, setSmartGrowthCoverage] = useState(0.25);
   const [data, setData] = useState<LabResponse | null>(null);
   const [osmId, setOsmId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // The big context scene's own toggles -- independent of the per-lot
+  // scenario sliders above (this view shows a stadium-wide illustration,
+  // the cards below show one lot's exact real numbers).
+  const [ctxGreenRoof, setCtxGreenRoof] = useState(false);
+  const [ctxCoolRoof, setCtxCoolRoof] = useState(false);
+  const [ctxCoolPavement, setCtxCoolPavement] = useState(0);
+  const [ctxSmartGrowth, setCtxSmartGrowth] = useState(0);
+  const [ctxStreets, setCtxStreets] = useState(true);
+  const [ctxStreetTrees, setCtxStreetTrees] = useState(false);
+
   useEffect(() => {
     fetch("/api/stadiums")
       .then((r) => r.json())
-      .then((d) => setStadiums(d.stadiums.map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))));
+      .then((d) => setStadiums(d.stadiums));
   }, []);
 
   useEffect(() => {
     if (storeStadiumId && !stadiumId) setStadiumId(storeStadiumId);
   }, [storeStadiumId, stadiumId]);
 
-  const activeStadium = stadiumId ?? stadiums[0]?.id ?? null;
+  const activeStadiumId = stadiumId ?? stadiums[0]?.id ?? null;
+  const activeStadium = stadiums.find((s) => s.id === activeStadiumId) ?? null;
 
   useEffect(() => {
-    if (!activeStadium) return;
+    if (!activeStadiumId) return;
     setLoading(true);
-    const params = new URLSearchParams({ stadium: activeStadium, trees: String(treeCount), month: String(month), hour: String(hour) });
+    const params = new URLSearchParams({
+      stadium: activeStadiumId,
+      trees: String(treeCount),
+      cool_pavement: String(coolPavementCoverage),
+      smart_growth: String(smartGrowthCoverage),
+      month: String(month),
+      hour: String(hour),
+    });
     if (osmId !== null) params.set("osm_id", String(osmId));
     fetch(`/api/urban-lab?${params}`)
       .then((r) => r.json())
@@ -189,20 +292,29 @@ export default function UrbanLab() {
         if (osmId === null) setOsmId(d.selected_osm_id);
       })
       .finally(() => setLoading(false));
-  }, [activeStadium, treeCount, month, hour, osmId]);
+  }, [activeStadiumId, treeCount, coolPavementCoverage, smartGrowthCoverage, month, hour, osmId]);
 
   const lot = data?.tree_shade?.lot;
   const angleLayout = data?.angle_comparison?.by_angle?.[angle] ?? null;
 
+  const interventions: StadiumInterventions = {
+    greenRoof: ctxGreenRoof,
+    coolRoof: ctxCoolRoof,
+    coolPavementCoverage: ctxCoolPavement,
+    smartGrowthCoverage: ctxSmartGrowth,
+    showStreets: ctxStreets,
+    showStreetTrees: ctxStreetTrees,
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto font-mono text-sm text-zinc-200 space-y-8">
       <div>
-        <h2 className="text-lg font-bold text-zinc-50">URBAN LAB &middot; &laquo;what if&raquo; scenarios</h2>
+        <h2 className="text-lg font-bold text-zinc-50">URBAN LAB &middot; EPA&apos;s 5 heat-island strategies, applied</h2>
         <p className="text-zinc-500 text-xs mt-1 max-w-3xl">
-          Two real, computed questions on one real parking lot: how much would tree shade actually cool it, and does
-          re-striping its real dimensions at an angle actually fit more cars. Both scenarios are grounded in real lot
-          geometry (OpenStreetMap) and real published standards -- never invented -- and stay tagged SEMI/MOCK since
-          neither is a survey of what these specific lots look like today.
+          Real questions, computed from real lot/street geometry (OpenStreetMap) and real published research (EPA,
+          USDA Forest Service, City of Kerrville TX) -- never invented. Each strategy below is independent, never
+          summed into one number, since their real effects overlap the same physical surface. All tagged SEMI/MOCK:
+          none of this is a survey of what these specific venues look like today.
         </p>
       </div>
 
@@ -210,7 +322,7 @@ export default function UrbanLab() {
         <label className="text-zinc-500 text-xs">STADIUM</label>
         <select
           className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs"
-          value={activeStadium ?? ""}
+          value={activeStadiumId ?? ""}
           onChange={(e) => {
             setStadiumId(e.target.value);
             setOsmId(null);
@@ -222,7 +334,7 @@ export default function UrbanLab() {
             </option>
           ))}
         </select>
-        <label className="text-zinc-500 text-xs ml-2">LOT</label>
+        <label className="text-zinc-500 text-xs ml-2">LOT (for cards 1, 4, 5)</label>
         <select
           className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs max-w-[220px]"
           value={osmId ?? ""}
@@ -237,11 +349,69 @@ export default function UrbanLab() {
         {loading && <span className="text-zinc-600 text-xs">loading&hellip;</span>}
       </div>
 
-      {/* --- Tree shade scenario --- */}
+      {/* --- Stadium + streets context --- */}
       <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
-        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">
-          1&#41; TREE SHADE &middot; {lot?.name ?? "..."}
-        </h3>
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">STADIUM + STREETS CONTEXT &middot; {activeStadium?.name ?? "..."}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-4">
+          <div className="h-[420px] bg-zinc-900 rounded overflow-hidden border border-zinc-800">
+            {activeStadium && <Stadium3D stadium={activeStadium} interventions={interventions} />}
+          </div>
+          <div className="space-y-3 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={ctxStreets} onChange={(e) => setCtxStreets(e.target.checked)} />
+              Real streets (OSM road centerlines)
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={ctxStreetTrees} onChange={(e) => setCtxStreetTrees(e.target.checked)} />
+              Street trees (illustrative placement)
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={ctxGreenRoof}
+                onChange={(e) => {
+                  setCtxGreenRoof(e.target.checked);
+                  if (e.target.checked) setCtxCoolRoof(false);
+                }}
+              />
+              2&#41; Green roof
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={ctxCoolRoof}
+                onChange={(e) => {
+                  setCtxCoolRoof(e.target.checked);
+                  if (e.target.checked) setCtxGreenRoof(false);
+                }}
+              />
+              3&#41; Cool (reflective) roof
+            </label>
+            <div>
+              <div className="flex justify-between text-zinc-500 mb-1">
+                <span>4&#41; Cool pavement, all lots</span>
+                <span>{Math.round(ctxCoolPavement * 100)}%</span>
+              </div>
+              <input type="range" min={0} max={1} step={0.05} value={ctxCoolPavement} onChange={(e) => setCtxCoolPavement(Number(e.target.value))} className="w-full" />
+            </div>
+            <div>
+              <div className="flex justify-between text-zinc-500 mb-1">
+                <span>5&#41; Smart growth, all lots</span>
+                <span>{Math.round(ctxSmartGrowth * 100)}%</span>
+              </div>
+              <input type="range" min={0} max={1} step={0.05} value={ctxSmartGrowth} onChange={(e) => setCtxSmartGrowth(Number(e.target.value))} className="w-full" />
+            </div>
+            <p className="text-[10px] text-zinc-600 leading-relaxed">
+              This view is a stadium-wide illustration (all lots tinted uniformly). The exact real numbers for one
+              specific lot are in the cards below.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 1) Tree shade --- */}
+      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">1&#41; TREE SHADE &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
             {lot?.length_m && lot?.width_m ? (
@@ -292,16 +462,148 @@ export default function UrbanLab() {
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI: real lot area feeds a linear shade model (mature-canopy diameter ~10.7m, a standard cited in city
               parking-shade ordinances) scaled to a real published air-temperature effect of full tree-canopy shade
-              over pavement (~4-8&deg;F / 2.2-4.4&deg;C cooler air, USDA Forest Service Davis, CA study) -- not a
-              measurement at this specific lot.
+              over pavement (~4-8&deg;F / 2.2-4.4&deg;C cooler air, USDA Forest Service Davis, CA study).
             </p>
           </div>
         </div>
       </section>
 
-      {/* --- Angled layout scenario --- */}
+      {/* --- 2/3) Green roof / cool roof info --- */}
       <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
-        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">2&#41; RE-STRIPING FOR MORE CARS &middot; {lot?.name ?? "..."}</h3>
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">2&#41; GREEN ROOF &middot; 3&#41; COOL ROOF</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="bg-zinc-900 border border-zinc-800 rounded p-3 space-y-1.5">
+            <div className="text-zinc-300 font-bold">Green roof</div>
+            <div>
+              Pedestrian-level air temperature: <span className="text-emerald-400 font-bold">-0.2&deg;C</span> (real cited
+              range 0.10-0.30&deg;C, midpoint)
+            </div>
+            <div className="text-zinc-600">
+              Small and localized compared to tree shade or cool pavement -- a green roof cools the structure and its
+              immediate surroundings, not the parking fields. Source: EPA, Using Green Roofs to Reduce Heat Islands.
+            </div>
+          </div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded p-3 space-y-1.5">
+            <div className="text-zinc-300 font-bold">Cool (reflective) roof</div>
+            <div>
+              Roof surface: <span className="text-emerald-400 font-bold">-28&deg;C</span> (~50&deg;F, 80% vs 20% reflective) &middot;
+              indoor: <span className="text-emerald-400 font-bold">-1.2 to -3.3&deg;C</span>
+            </div>
+            <div className="text-zinc-600">
+              Honestly: no published outdoor/pedestrian WBGT number exists for cool roofs -- the real, cited benefit is
+              roof-surface and indoor/energy, not outdoor heat exposure. Shown here for structural context only, not
+              counted as a WBGT reduction. Source: EPA, Using Cool Roofs to Reduce Heat Islands.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 4) Cool pavement --- */}
+      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">4&#41; COOL PAVEMENT &middot; {lot?.name ?? "..."}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
+            {lot?.length_m && lot?.width_m ? (
+              <SurfaceScene lengthM={lot.length_m} widthM={lot.width_m} coverageFraction={coolPavementCoverage} tint="#e8e8ec" dropCars={false} />
+            ) : (
+              <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
+            )}
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                <span>COVERAGE</span>
+                <span>{Math.round(coolPavementCoverage * 100)}% of this lot re-surfaced</span>
+              </div>
+              <input type="range" min={0} max={1} step={0.05} value={coolPavementCoverage} onChange={(e) => setCoolPavementCoverage(Number(e.target.value))} className="w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
+                <div className="text-lg font-bold text-emerald-400">-{data?.cool_pavement.temp_reduction_c ?? 0}&deg;C</div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.cool_pavement.base_wbgt_c ?? null) }}>
+                    {data?.cool_pavement.base_wbgt_c ?? "-"}
+                  </span>
+                  <span className="text-zinc-600">&rarr;</span>
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.cool_pavement.treated_wbgt_c ?? null) }}>
+                    {data?.cool_pavement.treated_wbgt_c ?? "-"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p className="text-[11px] text-zinc-600 leading-relaxed">
+              SEMI: real cited "up to 2&deg;C" ambient air-temperature reduction at full reflective/permeable-pavement
+              coverage (EPA, Using Cool Pavements to Reduce Heat Islands; a real Arizona pavement-temperature pilot
+              study), scaled linearly by how much of this lot is re-surfaced. Smaller than tree shade or smart growth
+              since it changes reflectivity only, not canopy or evapotranspiration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 5) Smart growth --- */}
+      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">5&#41; SMART GROWTH &middot; {lot?.name ?? "..."}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
+            {lot?.length_m && lot?.width_m ? (
+              <SurfaceScene lengthM={lot.length_m} widthM={lot.width_m} coverageFraction={smartGrowthCoverage} tint="#2e7d32" dropCars />
+            ) : (
+              <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
+            )}
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                <span>CONVERTED TO GREEN SPACE</span>
+                <span>{Math.round(smartGrowthCoverage * 100)}% of this lot</span>
+              </div>
+              <input type="range" min={0} max={1} step={0.05} value={smartGrowthCoverage} onChange={(e) => setSmartGrowthCoverage(Number(e.target.value))} className="w-full" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
+                <div className="text-lg font-bold text-emerald-400">-{data?.smart_growth.temp_reduction_c ?? 0}&deg;C</div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.smart_growth.base_wbgt_c ?? null) }}>
+                    {data?.smart_growth.base_wbgt_c ?? "-"}
+                  </span>
+                  <span className="text-zinc-600">&rarr;</span>
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.smart_growth.treated_wbgt_c ?? null) }}>
+                    {data?.smart_growth.treated_wbgt_c ?? "-"}
+                  </span>
+                </div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">SPACES LOST</div>
+                <div className="text-lg font-bold text-orange-400">
+                  -{data?.smart_growth.spaces_lost ?? 0}
+                </div>
+                <div className="text-[9px] text-zinc-600">
+                  {data?.smart_growth.spaces_before ?? "-"} &rarr; {data?.smart_growth.spaces_after ?? "-"}
+                </div>
+              </div>
+            </div>
+            <p className="text-[11px] text-zinc-600 leading-relaxed">
+              SEMI: converting pavement to real vegetated ground reuses the vegetative-cooling magnitude (2.2-4.4&deg;C,
+              same USDA Forest Service study as card 1) since it's real green space, not just a coating -- but it
+              isn't free: the real capacity math (lib/parkingLayout.ts) shows exactly how many spaces that trade costs.
+              Source: EPA, Smart Growth and Heat Islands.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* --- Re-striping for more cars --- */}
+      <section className="border border-zinc-800 rounded-lg p-4 space-y-3">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">RE-STRIPING FOR MORE CARS &middot; {lot?.name ?? "..."}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
             {angleLayout && lot?.length_m && lot?.width_m ? (
@@ -350,8 +652,7 @@ export default function UrbanLab() {
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI: real double-loaded-module capacity math applied to this lot&apos;s own real oriented dimensions
               (scripts/fetch_parking_lots.py), using the City of Kerrville, TX&apos;s published parking design
-              standards for 45&deg;/60&deg;/90&deg; stall width, depth and aisle width -- not a survey of this lot&apos;s
-              actual striping.
+              standards for 45&deg;/60&deg;/90&deg; stall width, depth and aisle width.
             </p>
           </div>
         </div>

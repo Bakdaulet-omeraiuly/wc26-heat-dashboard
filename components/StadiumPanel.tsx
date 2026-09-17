@@ -173,16 +173,17 @@ export default function StadiumPanel() {
         </button>
       </div>
 
-      {/* Headline card moved ABOVE the 3D model -- the one number a
-          researcher scans for first shouldn't require scrolling past
-          a tall 3D view + its own match-control footer to reach. Real
-          reported problem: as the 3D model's own overlays/footer grew
-          this session, the WBGT card (further down in the scroll
-          area) could end up mostly off-screen on a normal laptop
-          viewport. Always visible now, independent of how tall the 3D
-          area gets. */}
-      <div className="px-4 pt-3 pb-2 border-b border-zinc-700 shrink-0">
-        <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3 font-mono text-xs">
+      {/* Back to the original order: 3D model first, stats below it in
+          the scrollable area -- reverted per feedback (the earlier
+          move-it-above attempt traded one problem for a layout the
+          user didn't want). */}
+      <div className="h-96 border-b border-zinc-700 shrink-0">
+        <Stadium3D stadium={stadium} focusLotOsmId={focusLotOsmId} />
+      </div>
+
+      <div className="p-4 font-mono text-xs space-y-3 overflow-y-auto flex-1">
+        {/* Headline card: the one number + risk pill a researcher scans for first */}
+        <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-zinc-500 uppercase tracking-wide text-[10px]">WBGT &middot; this bucket</span>
             {stadium.heat_risk_level && <Pill color={riskColor}>{stadium.heat_risk_level}</Pill>}
@@ -212,21 +213,7 @@ export default function StadiumPanel() {
             <div className="text-zinc-600">no data</div>
           )}
         </div>
-      </div>
 
-      {/* Reverted back to its original height: shrinking this to make
-          more room for the WBGT card above caused a real regression --
-          Stadium3D's own overlay panels (REAL LOTS, REAL AGGREGATE
-          STATS, SUN ALT/field-orientation) need this much room and
-          started visibly overlapping/garbling into each other at the
-          smaller size (screenshot-confirmed). The WBGT card stays
-          moved above (that part was a real, wanted fix); only the 3D
-          area's own height is restored. */}
-      <div className="h-96 border-b border-zinc-700 shrink-0">
-        <Stadium3D stadium={stadium} focusLotOsmId={focusLotOsmId} />
-      </div>
-
-      <div className="p-4 font-mono text-xs space-y-3 overflow-y-auto flex-1">
         {/* Venue facts card */}
         <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3">
           <div className="text-zinc-500 uppercase tracking-wide text-[10px] mb-2">Venue</div>

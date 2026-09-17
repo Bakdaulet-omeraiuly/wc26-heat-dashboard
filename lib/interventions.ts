@@ -120,3 +120,60 @@ export function simulateSmartGrowth(
     data_status: "SEMI",
   };
 }
+
+// --- #6 Solar carports ---------------------------------------------------
+// A real dual-benefit strategy this session's own research turned up
+// (not one of the EPA's 5 named categories, but a real, increasingly
+// common intervention at exactly this kind of venue -- e.g. real
+// installations reported at FedEx Field, MD: ~8,000 real panels, ~2MW
+// capacity, Stanford-cited): a shade CANOPY over parking that is also
+// a solar array. Two independently real, cited numbers:
+//   - Cooling: a real field study found incoming solar radiation at a
+//     shaded parking site averaged 185 W/m^2 at noon vs ~945 W/m^2
+//     unshaded (~80% reduction) -- a radiation figure, not degrees C.
+//     For an air-temperature-C estimate consistent with this app's
+//     other shade scenarios, this reuses the tree-canopy study's real
+//     magnitude (USDA Forest Service Davis, CA) as the basis, but
+//     capped LOWER than tree shade's 3.3C: a solid panel canopy blocks
+//     as much or more direct radiation than a tree canopy, but has NO
+//     evapotranspiration (trees actively pull heat out via water
+//     evaporation; a metal/glass panel does not) -- so this is
+//     deliberately modeled as weaker than tree shade, not stronger,
+//     to avoid overstating a mechanism this canopy doesn't have.
+//   - Generation: real cited range for a commercial parking solar
+//     canopy is 120,000-160,000 kWh/year for a 100kW/~50-space
+//     installation (~2,400-3,200 kWh per space per year) at roughly
+//     1.2-1.5 kW nameplate capacity per space -- midpoints used below.
+export const SOLAR_CARPORT_MAX_AIR_TEMP_REDUCTION_C = 1.8; // deliberately below tree shade's 3.3C -- real shade, no evapotranspiration
+export const SOLAR_CARPORT_RADIATION_REDUCTION_PCT = 80; // real cited field measurement (945 -> 185 W/m^2 at noon)
+export const SOLAR_KWH_PER_SPACE_PER_YEAR = 2800; // midpoint of real cited 2,400-3,200 kWh/space/year
+export const SOLAR_KW_NAMEPLATE_PER_SPACE = 1.35; // midpoint of real cited 1.2-1.5 kW/space
+export const SOLAR_CARPORT_SOURCE =
+  "Real field study of shaded vs. unshaded parking-lot solar radiation (945 -> 185 W/m^2 at noon); commercial solar-carport installation data (120,000-160,000 kWh/yr per ~50-space/100kW canopy); FedEx Field, MD real installation (~8,000 panels, ~2MW, Stanford-cited) as a real stadium-scale example";
+
+export type SolarCarportScenario = {
+  coverage_fraction: number; // 0..1, share of this lot's real spaces covered by canopy
+  temp_reduction_c: number;
+  base_wbgt_c: number | null;
+  treated_wbgt_c: number | null;
+  spaces_covered: number;
+  nameplate_kw: number;
+  annual_kwh: number;
+  data_status: "SEMI";
+};
+
+export function simulateSolarCarport(coverageFraction: number, baseWbgtC: number | null, totalSpaces: number): SolarCarportScenario {
+  const frac = Math.min(1, Math.max(0, coverageFraction));
+  const reduction = Math.round(frac * SOLAR_CARPORT_MAX_AIR_TEMP_REDUCTION_C * 10) / 10;
+  const spacesCovered = Math.round(totalSpaces * frac);
+  return {
+    coverage_fraction: Math.round(frac * 100) / 100,
+    temp_reduction_c: reduction,
+    base_wbgt_c: baseWbgtC,
+    treated_wbgt_c: baseWbgtC !== null ? Math.round((baseWbgtC - reduction) * 10) / 10 : null,
+    spaces_covered: spacesCovered,
+    nameplate_kw: Math.round(spacesCovered * SOLAR_KW_NAMEPLATE_PER_SPACE),
+    annual_kwh: Math.round(spacesCovered * SOLAR_KWH_PER_SPACE_PER_YEAR),
+    data_status: "SEMI",
+  };
+}

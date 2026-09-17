@@ -1,21 +1,22 @@
 import { NextRequest } from "next/server";
 import { getStadiumParkingLots, simulateTreeShade, getLotAngleComparison } from "@/lib/parkingData";
 import { computeRealParkingLayout } from "@/lib/parkingLayout";
-import { simulateCoolPavement, simulateSmartGrowth } from "@/lib/interventions";
+import { simulateCoolPavement, simulateSmartGrowth, simulateSolarCarport } from "@/lib/interventions";
 
 /**
  * GET /api/urban-lab?stadium=<id>&osm_id=<lot id>&trees=<int>&cool_pavement=<0-1>&smart_growth=<0-1>&month=<1-12>&hour=<0-23>
  *
  * Backs the "Urban Lab" tab's real what-if scenarios for one real
  * parking lot -- the EPA's 5 heat-island reduction strategies
- * (epa.gov/green-infrastructure/reduce-heat-islands), each computed
- * independently (never summed, to avoid double-counting overlapping
- * surface area):
+ * (epa.gov/green-infrastructure/reduce-heat-islands) plus one more
+ * this session's research turned up, each computed independently
+ * (never summed, to avoid double-counting overlapping surface area):
  *   1) tree shade -- tree count -> shaded fraction -> WBGT (lib/parkingData.ts)
  *   2) green roof -- fixed real pedestrian-level effect (lib/interventions.ts)
  *   3) cool roof -- real roof-surface/indoor effect, honestly NO ambient WBGT number
  *   4) cool pavement -- coverage fraction -> WBGT (lib/interventions.ts)
  *   5) smart growth -- pavement-to-green-space conversion fraction -> WBGT + real space-count cost
+ *   6) solar carports -- coverage fraction -> WBGT + real annual kWh generation (lib/interventions.ts)
  * plus a real 90/60/45-degree capacity comparison (lib/parkingLayout.ts,
  * City of Kerrville, TX's published parking design standards).
  *
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
   const trees = Number(searchParams.get("trees") ?? 0);
   const coolPavementCoverage = Number(searchParams.get("cool_pavement") ?? 0);
   const smartGrowthCoverage = Number(searchParams.get("smart_growth") ?? 0);
+  const solarCarportCoverage = Number(searchParams.get("solar_carport") ?? 0);
 
   const lots = getStadiumParkingLots(stadiumId);
   if (lots.length === 0) {
@@ -57,6 +59,7 @@ export async function GET(request: NextRequest) {
 
   const coolPavement = simulateCoolPavement(coolPavementCoverage, treeShade.base_wbgt_c);
   const smartGrowth = simulateSmartGrowth(smartGrowthCoverage, treeShade.base_wbgt_c, spacesBefore);
+  const solarCarport = simulateSolarCarport(solarCarportCoverage, treeShade.base_wbgt_c, spacesBefore);
 
   return Response.json({
     stadium_id: stadiumId,
@@ -66,5 +69,6 @@ export async function GET(request: NextRequest) {
     angle_comparison: angleComparison,
     cool_pavement: coolPavement,
     smart_growth: smartGrowth,
+    solar_carport: solarCarport,
   });
 }

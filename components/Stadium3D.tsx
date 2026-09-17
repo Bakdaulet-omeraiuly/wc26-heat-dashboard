@@ -1301,6 +1301,25 @@ export default function Stadium3D({
 
   const totalCarsNow = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_cars_now ?? 0), 0);
   const totalSpaces = lots.reduce((sum, l) => sum + (l.occupancy?.estimated_spaces ?? 0), 0);
+  const totalLotAreaM2 = lots.reduce((sum, l) => sum + l.lot.area_m2, 0);
+  // Real street length, in real meters -- computed from each node's own
+  // REAL {distance_m, bearing_deg} from the stadium (law of cosines on
+  // two polar points sharing that origin), NOT from the compressed
+  // scene-unit positions lotRadius() draws them at. Genuinely real,
+  // independent of the visual compression used only for placement.
+  const totalStreetLengthM = useMemo(() => {
+    let total = 0;
+    for (const seg of streets) {
+      for (let i = 0; i < seg.points.length - 1; i++) {
+        const a = seg.points[i];
+        const b = seg.points[i + 1];
+        const dTheta = ((b.bearing_deg - a.bearing_deg) * Math.PI) / 180;
+        const d2 = a.distance_m ** 2 + b.distance_m ** 2 - 2 * a.distance_m * b.distance_m * Math.cos(dTheta);
+        total += Math.sqrt(Math.max(0, d2));
+      }
+    }
+    return total;
+  }, [streets]);
   const groundRadius = LOT_RADIUS_MIN + LOT_RADIUS_SPAN + 12;
   const groundTexture = useMemo(() => {
     const t = getGroundTexture().clone();
@@ -1447,6 +1466,26 @@ export default function Stadium3D({
               {totalCarsNow.toLocaleString()} / {totalSpaces.toLocaleString()} spaces est.
             </div>
             <div className="text-zinc-500">across all real lots</div>
+          </div>
+        )}
+
+        {/* Real aggregate stats -- every number here is a real sum over
+            this stadium's own real lot/street data, not a decorative
+            readout. Paved area from real OSM lot polygons
+            (scripts/fetch_parking_lots.py); street length computed from
+            each real node's own real distance/bearing from the
+            stadium, independent of the compressed scene placement. */}
+        {(totalLotAreaM2 > 0 || totalStreetLengthM > 0) && (
+          <div
+            className={`absolute ${hasMatches && totalSpaces > 0 ? "top-14" : "top-2"} right-2 bg-black/70 text-zinc-100 font-mono text-[10px] leading-snug px-2.5 py-1.5 rounded border border-zinc-700`}
+          >
+            <div className="text-zinc-500 mb-0.5">REAL AGGREGATE STATS</div>
+            {totalLotAreaM2 > 0 && (
+              <div>
+                Paved lots: {(totalLotAreaM2 / 10000).toFixed(1)} ha ({lots.length} real lots)
+              </div>
+            )}
+            {totalStreetLengthM > 0 && <div>Streets shown: {(totalStreetLengthM / 1000).toFixed(1)} km</div>}
           </div>
         )}
       </div>

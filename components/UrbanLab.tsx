@@ -65,6 +65,15 @@ type SmartGrowth = {
   spaces_after: number;
   spaces_lost: number;
 };
+type SolarCarport = {
+  coverage_fraction: number;
+  temp_reduction_c: number;
+  base_wbgt_c: number | null;
+  treated_wbgt_c: number | null;
+  spaces_covered: number;
+  nameplate_kw: number;
+  annual_kwh: number;
+};
 type LabResponse = {
   lots: LotOption[];
   selected_osm_id: number;
@@ -72,6 +81,7 @@ type LabResponse = {
   angle_comparison: AngleComparison | null;
   cool_pavement: CoolPavement;
   smart_growth: SmartGrowth;
+  solar_carport: SolarCarport;
 };
 
 function flagColor(wbgt: number | null): string {
@@ -234,6 +244,61 @@ function SurfaceScene({
   );
 }
 
+/** Solar carport canopy: unlike cool pavement (recolors the same
+ * surface) or smart growth (removes spaces to make green space
+ * instead), a carport is a structure ABOVE the existing parking --
+ * every real space stays a real space, cars stay put underneath, and
+ * panels appear over the covered fraction. That's a real, meaningful
+ * difference in this strategy's trade-off (no capacity cost), so the
+ * scene shows it structurally rather than just tinting the ground. */
+function SolarCarportScene({ lengthM, widthM, coverageFraction }: { lengthM: number; widthM: number; coverageFraction: number }) {
+  const lengthScene = Math.min(6, lengthM * SCALE);
+  const widthScene = Math.min(4.5, widthM * SCALE);
+  const cars = useMemo(() => carGrid(lengthScene, widthScene, 10, 4), [lengthScene, widthScene]);
+  const panelCols = Math.max(0, Math.round(10 * coverageFraction));
+
+  const panels = useMemo(() => {
+    const items: [number, number][] = [];
+    for (let c = 0; c < panelCols; c++) {
+      items.push([(((c + 0.5) / 10) - 0.5) * lengthScene, 0]);
+    }
+    return items;
+  }, [panelCols, lengthScene]);
+
+  return (
+    <Canvas camera={{ position: [lengthScene * 0.9, lengthScene * 0.85, widthScene * 1.4], fov: 45 }}>
+      <ambientLight intensity={0.75} />
+      <directionalLight position={[5, 8, 3]} intensity={1.1} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+        <planeGeometry args={[lengthScene, widthScene]} />
+        <meshStandardMaterial color="#3f3f46" />
+      </mesh>
+      <Instances limit={200}>
+        <boxGeometry args={[0.22, 0.09, 0.11]} />
+        <meshStandardMaterial color="#a1a1aa" />
+        {cars.map(([x, z], i) => (
+          <Instance key={i} position={[x, 0.045, z]} />
+        ))}
+      </Instances>
+      {panels.map(([x], i) => (
+        <group key={i} position={[x, 0, 0]}>
+          {[-1, 1].map((side) => (
+            <mesh key={side} position={[0, 0, side * widthScene * 0.42]}>
+              <cylinderGeometry args={[0.015, 0.015, 0.5, 6]} />
+              <meshStandardMaterial color="#3a3a3f" metalness={0.4} roughness={0.6} />
+            </mesh>
+          ))}
+          <mesh position={[0, 0.5, 0]} rotation={[0.12, 0, 0]}>
+            <boxGeometry args={[(lengthScene / 10) * 0.95, 0.02, widthScene * 0.95]} />
+            <meshStandardMaterial color="#1a2c44" metalness={0.6} roughness={0.25} />
+          </mesh>
+        </group>
+      ))}
+      <OrbitControls enablePan={false} minDistance={2} maxDistance={20} />
+    </Canvas>
+  );
+}
+
 export default function UrbanLab() {
   const storeStadiumId = useHeatDashboardStore((s) => s.selectedStadiumId);
   const month = useHeatDashboardStore((s) => s.month);
@@ -245,10 +310,11 @@ export default function UrbanLab() {
   const [angle, setAngle] = useState<"90" | "60" | "45">("90");
   const [coolPavementCoverage, setCoolPavementCoverage] = useState(0.5);
   const [smartGrowthCoverage, setSmartGrowthCoverage] = useState(0.25);
+  const [solarCarportCoverage, setSolarCarportCoverage] = useState(0.4);
   const [data, setData] = useState<LabResponse | null>(null);
   const [osmId, setOsmId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeCard, setActiveCard] = useState<"trees" | "roofs" | "pavement" | "growth" | "angle">("trees");
+  const [activeCard, setActiveCard] = useState<"trees" | "roofs" | "pavement" | "growth" | "solar" | "angle">("trees");
 
   // The big context scene's own toggles -- independent of the per-lot
   // scenario sliders above (this view shows a stadium-wide illustration,
@@ -281,6 +347,7 @@ export default function UrbanLab() {
       trees: String(treeCount),
       cool_pavement: String(coolPavementCoverage),
       smart_growth: String(smartGrowthCoverage),
+      solar_carport: String(solarCarportCoverage),
       month: String(month),
       hour: String(hour),
     });
@@ -293,7 +360,7 @@ export default function UrbanLab() {
         if (osmId === null) setOsmId(d.selected_osm_id);
       })
       .finally(() => setLoading(false));
-  }, [activeStadiumId, treeCount, coolPavementCoverage, smartGrowthCoverage, month, hour, osmId]);
+  }, [activeStadiumId, treeCount, coolPavementCoverage, smartGrowthCoverage, solarCarportCoverage, month, hour, osmId]);
 
   const lot = data?.tree_shade?.lot;
   const angleLayout = data?.angle_comparison?.by_angle?.[angle] ?? null;
@@ -418,6 +485,90 @@ export default function UrbanLab() {
         </p>
       </section>
 
+      {/* --- Comparison table: all 6 strategies side by side for THIS
+          lot, at the sliders' current values -- so "which one actually
+          helps most" is visible at a glance instead of only inside
+          each tab. Rows link to their own tab; never summed into one
+          number (see the strategies' own SEMI-tagged independence). */}
+      <section className="border border-zinc-800 rounded-lg p-4 space-y-2">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">COMPARE ALL 6 &middot; {lot?.name ?? "..."}</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="text-zinc-500 text-left border-b border-zinc-800">
+                <th className="py-1.5 pr-3 font-normal">STRATEGY</th>
+                <th className="py-1.5 pr-3 font-normal">MECHANISM</th>
+                <th className="py-1.5 pr-3 font-normal text-right">TEMP DROP NOW</th>
+                <th className="py-1.5 pr-3 font-normal text-right">REAL MAX</th>
+                <th className="py-1.5 pr-3 font-normal text-right">REAL SPACE COST</th>
+                <th className="py-1.5 font-normal text-right">OTHER</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(
+                [
+                  {
+                    key: "trees" as const,
+                    label: "1) Trees",
+                    mechanism: "shade + evapotranspiration",
+                    now: data?.tree_shade.temp_reduction_c ?? 0,
+                    max: 3.3,
+                    spacesLost: 0,
+                    other: "",
+                  },
+                  { key: "roofs" as const, label: "2) Green roof", mechanism: "roof shade + evapotranspiration", now: 0.2, max: 0.2, spacesLost: 0, other: "fixed, roof-level" },
+                  { key: "roofs" as const, label: "3) Cool roof", mechanism: "reflectivity (roof only)", now: null, max: null, spacesLost: 0, other: "no ambient number" },
+                  {
+                    key: "pavement" as const,
+                    label: "4) Cool pavement",
+                    mechanism: "reflectivity (surface only)",
+                    now: data?.cool_pavement.temp_reduction_c ?? 0,
+                    max: 2.0,
+                    spacesLost: 0,
+                    other: "",
+                  },
+                  {
+                    key: "growth" as const,
+                    label: "5) Smart growth",
+                    mechanism: "pavement -> real green space",
+                    now: data?.smart_growth.temp_reduction_c ?? 0,
+                    max: 3.3,
+                    spacesLost: data?.smart_growth.spaces_lost ?? 0,
+                    other: "",
+                  },
+                  {
+                    key: "solar" as const,
+                    label: "6) Solar carports",
+                    mechanism: "shade (no evapotranspiration)",
+                    now: data?.solar_carport.temp_reduction_c ?? 0,
+                    max: 1.8,
+                    spacesLost: 0,
+                    other: data?.solar_carport.annual_kwh ? `+${Math.round(data.solar_carport.annual_kwh / 1000).toLocaleString()} MWh/yr` : "",
+                  },
+                ] as const
+              ).map((row, i) => (
+                <tr
+                  key={i}
+                  onClick={() => setActiveCard(row.key)}
+                  className="border-b border-zinc-900 cursor-pointer hover:bg-zinc-900/60"
+                >
+                  <td className="py-1.5 pr-3 text-zinc-200">{row.label}</td>
+                  <td className="py-1.5 pr-3 text-zinc-500">{row.mechanism}</td>
+                  <td className="py-1.5 pr-3 text-right font-bold text-emerald-400">{row.now === null ? "–" : `-${row.now}°C`}</td>
+                  <td className="py-1.5 pr-3 text-right text-zinc-500">{row.max === null ? "–" : `-${row.max}°C`}</td>
+                  <td className="py-1.5 pr-3 text-right">{row.spacesLost > 0 ? <span className="text-orange-400">-{row.spacesLost}</span> : <span className="text-zinc-600">0</span>}</td>
+                  <td className="py-1.5 text-right text-sky-400">{row.other}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[10px] text-zinc-600 leading-relaxed">
+          Never summed into one number -- these overlap the same physical surface (e.g. cool pavement + smart growth
+          can&apos;t both apply to the same square meter). Click a row to open that strategy&apos;s own tab.
+        </p>
+      </section>
+
       {/* --- Tab bar: one scenario card visible at a time, not all 5
           stacked and scrolled through -- each is still fully real/SEMI,
           just not all shown at once. */}
@@ -428,6 +579,7 @@ export default function UrbanLab() {
             ["roofs", "2–3) Roofs"],
             ["pavement", "4) Cool pavement"],
             ["growth", "5) Smart growth"],
+            ["solar", "6) Solar carports"],
             ["angle", "Angled parking"],
           ] as const
         ).map(([key, label]) => (
@@ -630,6 +782,59 @@ export default function UrbanLab() {
               same USDA Forest Service study as card 1) since it's real green space, not just a coating -- but it
               isn't free: the real capacity math (lib/parkingLayout.ts) shows exactly how many spaces that trade costs.
               Source: EPA, Smart Growth and Heat Islands.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 6) Solar carports --- */}
+      <section hidden={activeCard !== "solar"} className="border border-zinc-800 rounded-lg p-4 space-y-3">
+        <h3 className="text-zinc-300 font-bold text-xs tracking-wide">6&#41; SOLAR CARPORTS &middot; {lot?.name ?? "..."}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-64 bg-zinc-900 rounded overflow-hidden border border-zinc-800">
+            {activeCard === "solar" && lot?.length_m && lot?.width_m ? (
+              <SolarCarportScene lengthM={lot.length_m} widthM={lot.width_m} coverageFraction={solarCarportCoverage} />
+            ) : (
+              <div className="h-full flex items-center justify-center text-zinc-600 text-xs">no real dimensions for this lot</div>
+            )}
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                <span>CANOPY COVERAGE</span>
+                <span>{Math.round(solarCarportCoverage * 100)}% of this lot -- 0 spaces lost</span>
+              </div>
+              <input type="range" min={0} max={1} step={0.05} value={solarCarportCoverage} onChange={(e) => setSolarCarportCoverage(Number(e.target.value))} className="w-full" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
+                <div className="text-lg font-bold text-emerald-400">-{data?.solar_carport.temp_reduction_c ?? 0}&deg;C</div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.solar_carport.base_wbgt_c ?? null) }}>
+                    {data?.solar_carport.base_wbgt_c ?? "-"}
+                  </span>
+                  <span className="text-zinc-600">&rarr;</span>
+                  <span className="text-lg font-bold" style={{ color: flagColor(data?.solar_carport.treated_wbgt_c ?? null) }}>
+                    {data?.solar_carport.treated_wbgt_c ?? "-"}
+                  </span>
+                </div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div className="text-[10px] text-zinc-500">CLEAN ENERGY</div>
+                <div className="text-lg font-bold text-sky-400">{((data?.solar_carport.annual_kwh ?? 0) / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })} MWh/yr</div>
+                <div className="text-[9px] text-zinc-600">{data?.solar_carport.nameplate_kw?.toLocaleString() ?? "-"} kW nameplate</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-zinc-600 leading-relaxed">
+              SEMI, dual-benefit: unlike the other strategies, a carport costs ZERO real spaces -- it&apos;s a structure
+              over the existing lot, not a conversion of it. Cooling is deliberately capped below tree shade&apos;s
+              magnitude (real field study: shaded parking radiation ~80% lower at noon, 945&rarr;185 W/m&sup2; -- but a
+              panel has no evapotranspiration, unlike a tree). Energy: real cited commercial carport installations
+              generate ~2,400-3,200 kWh per covered space per year at ~1.2-1.5 kW nameplate per space.
             </p>
           </div>
         </div>

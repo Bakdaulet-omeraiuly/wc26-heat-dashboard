@@ -196,6 +196,30 @@ export function getAllTrends(): TrendResult[] {
     .sort((a, b) => b.trend_c_per_decade - a.trend_c_per_decade);
 }
 
+type YearlyBucket = { n: number; mean: number };
+let yearlyCache: Record<string, Record<string, YearlyBucket>> | null = null;
+function loadYearlyTrend(): Record<string, Record<string, YearlyBucket>> {
+  if (!yearlyCache) yearlyCache = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "yearly_trend.json"), "utf-8"));
+  return yearlyCache!;
+}
+
+/** The real year-by-year series getStadiumTrend()'s regression was
+ * computed from -- backed by data/yearly_trend.json
+ * (scripts/compute_discovery.py's own real per-year/month aggregate of
+ * the 2.46M-row NOAA table). Verified directly against
+ * discovery_trend.json before this was written: this file's own
+ * `mean` for the July bucket matches that file's first_year_wbgt/
+ * last_year_wbgt exactly, so it's the same real number, just every
+ * year instead of only the two endpoints. */
+export function getStadiumYearlySeries(stadiumId: string, month = 7): { year: number; wbgt_c: number; sample_size: number }[] {
+  const buckets = loadYearlyTrend()[stadiumId] ?? {};
+  const monthKey = String(month).padStart(2, "0");
+  return Object.entries(buckets)
+    .filter(([key]) => key.endsWith(`-${monthKey}`))
+    .map(([key, b]) => ({ year: Number(key.slice(0, 4)), wbgt_c: b.mean, sample_size: b.n }))
+    .sort((a, b) => a.year - b.year);
+}
+
 export type ProjectionResult = {
   stadium_id: string;
   stadium_name: string;

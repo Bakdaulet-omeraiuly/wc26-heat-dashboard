@@ -1,4 +1,4 @@
-import { listStadiums, getAllTrends, getHottestRealMatches } from "@/lib/agentData";
+import { listStadiums, getAllTrends, getHottestRealMatches, getStadiumYearlySeries } from "@/lib/agentData";
 import { rankLotsBySafety } from "@/lib/parkingData";
 
 /**
@@ -55,7 +55,15 @@ export async function GET() {
       warming_count: warmingCount,
       total: trends.length,
       hottest_trend: trends[0] ? { stadium_name: trends[0].stadium_name, trend_c_per_decade: trends[0].trend_c_per_decade } : null,
-      stadiums: trends.map((t) => ({ stadium_name: t.stadium_name, trend_c_per_decade: t.trend_c_per_decade, direction: t.direction })),
+      stadiums: trends.map((t) => ({
+        stadium_id: t.stadium_id,
+        stadium_name: t.stadium_name,
+        trend_c_per_decade: t.trend_c_per_decade,
+        direction: t.direction,
+        // Real year-by-year July series -- what the trend line/decade
+        // number above is actually computed from, not a separate stat.
+        yearly: getStadiumYearlySeries(t.stadium_id, 7),
+      })),
       data_status: "REAL",
     },
     hottest_matches: hottestMatches,

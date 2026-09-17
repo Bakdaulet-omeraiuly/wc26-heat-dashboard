@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 /**
  * The homepage story: one question, the strongest verified real
@@ -27,7 +28,13 @@ type HomeStoryData = {
     warming_count: number;
     total: number;
     hottest_trend: { stadium_name: string; trend_c_per_decade: number } | null;
-    stadiums: { stadium_name: string; trend_c_per_decade: number; direction: "warming" | "cooling" | "flat" }[];
+    stadiums: {
+      stadium_id: string;
+      stadium_name: string;
+      trend_c_per_decade: number;
+      direction: "warming" | "cooling" | "flat";
+      yearly: { year: number; wbgt_c: number; sample_size: number }[];
+    }[];
   };
   hottest_matches: { matchup_raw: string; city: string; round: string; kickoff_utc_iso: string; real_peak_wbgt_c: number }[];
   parking: {
@@ -45,6 +52,39 @@ function Tag({ status }: { status: "REAL" | "SEMI" | "MOCK" }) {
   return <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wide border shrink-0 ${styles[status]}`}>{status}</span>;
 }
 
+/** Counts up from 0 to `end` once, on mount -- the one cheap, honest
+ * "moving" touch every reference dashboard like this uses for its
+ * headline numbers (referenced from caspian-dash-tr1c.vercel.app):
+ * animates HOW the real number is presented, never invents a
+ * different one to animate toward. */
+function CountUp({ end, decimals = 0, duration = 1100, suffix = "", prefix = "" }: { end: number; decimals?: number; duration?: number; suffix?: string; prefix?: string }) {
+  const [value, setValue] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const start = performance.now();
+    let frame: number;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setValue(end * eased);
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [end, duration]);
+
+  return (
+    <>
+      {prefix}
+      {value.toFixed(decimals)}
+      {suffix}
+    </>
+  );
+}
+
 function Section({ n, title, tag, children }: { n: string; title: string; tag: "REAL" | "SEMI" | "MOCK"; children: React.ReactNode }) {
   return (
     <section className="border-t border-zinc-800 py-8">
@@ -60,15 +100,20 @@ function Section({ n, title, tag, children }: { n: string; title: string; tag: "
 
 export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority" | "map" | "lab" | "ask") => void }) {
   const [data, setData] = useState<HomeStoryData | null>(null);
+  const [chartStadiumId, setChartStadiumId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/home-story")
       .then((r) => r.json())
-      .then(setData)
+      .then((d: HomeStoryData) => {
+        setData(d);
+        setChartStadiumId((prev) => prev ?? d.trend.stadiums[0]?.stadium_id ?? null);
+      })
       .catch(() => setData(null));
   }, []);
 
   const maxTrend = data ? Math.max(...data.trend.stadiums.map((s) => Math.abs(s.trend_c_per_decade)), 0.1) : 0.1;
+  const chartStadium = useMemo(() => data?.trend.stadiums.find((s) => s.stadium_id === chartStadiumId) ?? null, [data, chartStadiumId]);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -86,14 +131,14 @@ export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority"
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
           {[
-            { value: "78", label: "real matches analyzed", sub: "real per-match weather, Mesonet ASOS" },
-            { value: "54 / 78", label: "hotter than normal", sub: "real peak WBGT exceeded that stadium's own 20-yr average" },
-            { value: "35.3°C", label: "hottest real peak WBGT", sub: "black-flag territory — highest measured across all 78" },
-            { value: "10 / 11", label: "stadiums warming", sub: "real 20-year NOAA trend, 2006-2025" },
-          ].map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-zinc-800 bg-zinc-900 p-3 flex flex-col gap-1">
+            { node: <CountUp end={78} />, label: "real matches analyzed", sub: "real per-match weather, Mesonet ASOS" },
+            { node: <><CountUp end={54} /> / 78</>, label: "hotter than normal", sub: "real peak WBGT exceeded that stadium's own 20-yr average" },
+            { node: <><CountUp end={35.3} decimals={1} />&deg;C</>, label: "hottest real peak WBGT", sub: "black-flag territory — highest measured across all 78" },
+            { node: <><CountUp end={10} /> / 11</>, label: "stadiums warming", sub: "real 20-year NOAA trend, 2006-2025" },
+          ].map((stat, i) => (
+            <div key={i} className="rounded-lg border border-zinc-800 bg-zinc-900 p-3 flex flex-col gap-1">
               <Tag status="REAL" />
-              <div className="text-2xl font-bold text-zinc-100 tabular-nums leading-none mt-1">{stat.value}</div>
+              <div className="text-2xl font-bold text-zinc-100 tabular-nums leading-none mt-1">{stat.node}</div>
               <div className="text-zinc-400 text-xs">{stat.label}</div>
               <div className="text-zinc-600 text-[10px] leading-snug">{stat.sub}</div>
             </div>
@@ -129,13 +174,61 @@ export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority"
                   </>
                 )}
               </p>
+              {/* Interactive: pick a stadium, watch its real 20-year July
+                  WBGT line draw in -- the actual year-by-year series
+                  getStadiumTrend()'s regression is computed from, not a
+                  separate chart. */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {data.trend.stadiums.map((s) => (
+                  <button
+                    key={s.stadium_id}
+                    onClick={() => setChartStadiumId(s.stadium_id)}
+                    className={`px-2 py-1 rounded text-[10px] border transition-colors ${
+                      chartStadiumId === s.stadium_id ? "bg-zinc-100 text-zinc-900 border-zinc-100" : "border-zinc-700 text-zinc-400 hover:text-zinc-100"
+                    }`}
+                  >
+                    {s.stadium_name}
+                  </button>
+                ))}
+              </div>
+              {chartStadium && (
+                <div className="rounded border border-zinc-800 bg-zinc-900 p-3 mb-4">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={chartStadium.yearly} margin={{ top: 5, right: 10, bottom: 0, left: -10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                      <XAxis dataKey="year" stroke="#71717a" fontSize={10} tickLine={false} />
+                      <YAxis stroke="#71717a" fontSize={10} tickLine={false} domain={["auto", "auto"]} unit="°C" />
+                      <Tooltip
+                        contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", fontSize: 11 }}
+                        labelFormatter={(y) => `July ${y}`}
+                        formatter={(v) => [`${Number(v).toFixed(2)}°C`, "real July mean WBGT"]}
+                      />
+                      <Line type="monotone" dataKey="wbgt_c" stroke="#fb923c" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} animationDuration={900} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="text-zinc-600 text-[10px] mt-1">
+                    {chartStadium.stadium_name}: real July mean WBGT, {chartStadium.yearly[0]?.year}-{chartStadium.yearly[chartStadium.yearly.length - 1]?.year}
+                    {" · "}
+                    <span className={chartStadium.direction === "warming" ? "text-orange-400" : "text-sky-400"}>
+                      {chartStadium.trend_c_per_decade > 0 ? "+" : ""}
+                      {chartStadium.trend_c_per_decade.toFixed(2)}&deg;C/decade
+                    </span>
+                  </div>
+                </div>
+              )}
               <div className="space-y-1">
                 {data.trend.stadiums.map((s) => (
-                  <div key={s.stadium_name} className="flex items-center gap-2 text-[11px]">
-                    <span className="w-40 truncate text-zinc-400">{s.stadium_name}</span>
+                  <button
+                    key={s.stadium_name}
+                    onClick={() => setChartStadiumId(s.stadium_id)}
+                    className={`w-full flex items-center gap-2 text-[11px] rounded px-1 -mx-1 hover:bg-zinc-900/60 transition-colors ${
+                      chartStadiumId === s.stadium_id ? "bg-zinc-900" : ""
+                    }`}
+                  >
+                    <span className="w-40 truncate text-zinc-400 text-left">{s.stadium_name}</span>
                     <div className="flex-1 h-3 bg-zinc-900 rounded overflow-hidden flex items-center">
                       <div
-                        className={`h-full rounded ${s.direction === "warming" ? "bg-orange-500" : s.direction === "cooling" ? "bg-sky-500" : "bg-zinc-600"}`}
+                        className={`h-full rounded transition-all ${s.direction === "warming" ? "bg-orange-500" : s.direction === "cooling" ? "bg-sky-500" : "bg-zinc-600"}`}
                         style={{ width: `${(Math.abs(s.trend_c_per_decade) / maxTrend) * 100}%` }}
                       />
                     </div>
@@ -143,7 +236,7 @@ export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority"
                       {s.trend_c_per_decade > 0 ? "+" : ""}
                       {s.trend_c_per_decade.toFixed(2)}&deg;C
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </>

@@ -1531,26 +1531,23 @@ export default function Stadium3D({
               </span>
             )}
           </div>
-          <div className="text-zinc-600 leading-snug">
-            Drag this slider for a quick preview, or the HOUR scrubber (Map+3D view, bottom) to move the
-            whole scene's sun/heat too &mdash; the scrubber re-syncs this slider each time it moves.
+          <div className="text-zinc-600 text-[9px] leading-tight">
+            Drag for a quick preview, or use the HOUR scrubber below to move sun/heat too (re-syncs this slider).
           </div>
           {selectedMatch && selectedMatch.real_kickoff_wbgt_c != null && (
-            <div className="text-zinc-400">
+            <div className="text-zinc-400 text-[9px] leading-tight">
               REAL weather that day: {selectedMatch.real_kickoff_wbgt_c}&deg;C at kickoff, peaked{" "}
-              <span className="text-zinc-100 font-bold">{selectedMatch.real_peak_wbgt_c}&deg;C</span> during play
-              &mdash; not climatology, what actually happened (Mesonet ASOS, same station).
+              <span className="text-zinc-100 font-bold">{selectedMatch.real_peak_wbgt_c}&deg;C</span> (Mesonet ASOS).
             </div>
           )}
           {selectedMatch?.is_future && (
-            <div className="text-zinc-400">
+            <div className="text-zinc-400 text-[9px] leading-tight">
               {liveForecast === null && "loading live forecast…"}
               {liveForecast && "error" in liveForecast && <span className="text-zinc-600">{liveForecast.error}</span>}
               {liveForecast && "wbgt_c" in liveForecast && (
                 <>
-                  LIVE forecast for this real upcoming game:{" "}
-                  <span className="text-zinc-100 font-bold">{liveForecast.wbgt_c}&deg;C</span> WBGT ({liveForecast.sports_flag}{" "}
-                  flag) &mdash; fetched live from api.weather.gov, not a stored value.
+                  LIVE forecast: <span className="text-zinc-100 font-bold">{liveForecast.wbgt_c}&deg;C</span> WBGT ({liveForecast.sports_flag}{" "}
+                  flag) &mdash; api.weather.gov, not stored.
                 </>
               )}
             </div>

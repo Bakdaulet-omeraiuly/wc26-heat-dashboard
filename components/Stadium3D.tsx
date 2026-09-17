@@ -33,8 +33,23 @@ function CameraFocus({
     desired.current.set(tx, ty, tz);
     target.lerp(desired.current, 0.1);
 
+    // Real bug, screenshot-confirmed: a fixed [+4.5,+4,+4.5] camera
+    // offset looked at every lot from the SAME fixed compass
+    // direction regardless of where that lot actually sits relative
+    // to the stadium -- for lots on one side, that pointed the close-
+    // up view straight back through the stadium's own structures
+    // (a floodlight pylon reads as a thin stray line crossing a
+    // lot's car grid when it's this close to the camera and far in
+    // the background). Fixed by computing the offset FROM the real
+    // radial direction (stadium center -> this lot): the camera sits
+    // slightly toward the stadium from the lot, elevated, so it
+    // always looks OUTWARD past the lot -- away from the stadium,
+    // never back through it -- whichever real bearing the lot is at.
+    const radial = new THREE.Vector2(tx, tz);
+    const dist = radial.length();
+    const dir = dist > 0.001 ? radial.clone().normalize() : new THREE.Vector2(1, 0);
+    const desiredCamPos = new THREE.Vector3(tx - dir.x * 6, ty + 6, tz - dir.y * 6);
     const camPos = controls.object.position as THREE.Vector3;
-    const desiredCamPos = new THREE.Vector3(tx + 4.5, ty + 4, tz + 4.5);
     camPos.lerp(desiredCamPos, 0.1);
     controls.update();
 

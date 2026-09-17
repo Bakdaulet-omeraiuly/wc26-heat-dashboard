@@ -103,7 +103,7 @@ type LiveForecast = { wbgt_c: number; sports_flag: string; forecast_time_local: 
 // Meters-per-scene-unit for every real-world lot/stall measurement
 // drawn in this scene -- one constant so the footprint rectangle, the
 // stall grid, and each car all agree on scale.
-const SCENE_SCALE_M = 45;
+const SCENE_SCALE_M = 35; // lower = every real lot maps to a bigger scene footprint before footprintFor()'s clamp kicks in
 // Rendering ceiling per lot: a handful of real lots exceed 10,000
 // real stalls (see DISCOVERY.md/README -- NRG Stadium's biggest lot
 // alone is 21,183 real spaces). Instancing comfortably handles many
@@ -288,21 +288,21 @@ function getLotAsphaltTexture(osmId: number, lengthScene: number, widthScene: nu
 // (scripts/fetch_parking_lots.py's oriented_dimensions()) so the
 // ground marker's proportions and rotation match the real rectangle,
 // not a generic square -- falls back to a sqrt(area) square for the
-// rare lot fetched before that field existed. Clamp raised from the
-// original 4.5x3 now that lots sit further out (lotRadius() 34-52,
-// separated from the stadium bowl -- see that function's comment),
-// which gives real neighboring lots more room between them: a real
-// 60,000m2 lot can now visibly read as bigger than a real 700m2 one
-// instead of both hitting the same small cap.
+// rare lot fetched before that field existed. Clamp raised again this
+// pass (6x4 -> 8x5, plus SCENE_SCALE_M lowered) now that lots sit
+// further out (lotRadius() 34-52, separated from the stadium bowl --
+// see that function's comment) with real room between neighbors: a
+// real 60,000m2 lot can now visibly read as bigger than a real 700m2
+// one instead of both hitting the same small cap.
 function footprintFor(lot: LotExposure["lot"]): { lengthScene: number; widthScene: number; rotationRad: number } {
   if (lot.length_m && lot.width_m) {
     return {
-      lengthScene: Math.min(6, Math.max(0.8, lot.length_m / SCENE_SCALE_M)),
-      widthScene: Math.min(4, Math.max(0.5, lot.width_m / SCENE_SCALE_M)),
+      lengthScene: Math.min(8, Math.max(1, lot.length_m / SCENE_SCALE_M)),
+      widthScene: Math.min(5, Math.max(0.65, lot.width_m / SCENE_SCALE_M)),
       rotationRad: ((lot.lot_orientation_deg ?? 0) * Math.PI) / 180,
     };
   }
-  const square = Math.min(4, Math.max(0.6, Math.sqrt(lot.area_m2) / 15));
+  const square = Math.min(5, Math.max(0.75, Math.sqrt(lot.area_m2) / 12));
   return { lengthScene: square, widthScene: square, rotationRad: 0 };
 }
 
@@ -462,8 +462,17 @@ function ParkingLots({
         const scaledRadius = lotRadius(le.lot.distance_m);
         const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
         const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
-        const flagColor = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#8a8a90";
         const isBlackFlag = le.sports_flag === "black";
+        // "Black" flag's real hex (#1a1a1a) is real-but-invisible as
+        // an OUTLINE stroke against this scene's dark ground -- same
+        // problem already solved for the old solid-fill lot box (see
+        // the point light below) and for ForecastSidebar's bar chart,
+        // just not yet applied to this outline. Substituted with a
+        // clearly visible gray here ONLY -- the real black-flag hex
+        // stays exactly as-is everywhere else in the app (legend,
+        // pills, bars), where it sits on a light background and reads
+        // fine.
+        const flagColor = le.sports_flag ? (isBlackFlag ? "#9a9aa2" : FLAG_HEX[le.sports_flag]) : "#8a8a90";
         const hx = lengthScene / 2;
         const hz = widthScene / 2;
         const corners: [number, number][] = [

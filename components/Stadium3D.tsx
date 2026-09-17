@@ -775,6 +775,17 @@ function StreetTrees({ segments }: { segments: StreetSegment[] }) {
  * default when neither exists (MOCK) -- context for the pedestrian
  * route below, not the focus of the scene, so kept as plain untextured
  * blocks rather than competing visually with the stadium/lots. */
+// Real reported freeze: up to 150 real buildings per stadium, each as
+// its OWN mesh + its OWN geometry + real-time shadow casting, on top
+// of the stadium bowl, up to 40 lots of real stall-level cars, real
+// streets, and postprocessing (ambient occlusion + bloom) -- way more
+// draw calls and shadow-casters than one scene needs. Fixed the same
+// way this file already fixed it for cars: one shared unit-cube
+// geometry, GPU-instanced (real per-instance position/rotation/scale/
+// color, not a real per-building geometry), and shadow-casting turned
+// off for this background-context layer (receiveShadow only) --
+// buildings are real context, not the thing worth spending a real-time
+// shadow pass on.
 function Buildings({ buildings }: { buildings: Building[] }) {
   const items = useMemo(
     () =>
@@ -786,23 +797,28 @@ function Buildings({ buildings }: { buildings: Building[] }) {
         const heightScene = Math.min(4.5, Math.max(0.18, b.height_m / SCENE_SCALE_M));
         // rotateXZ()'s convention is the opposite sense from Three's
         // own `rotation.y` prop (see rotateXZ()'s own comment) -- this
-        // mesh uses Three's rotation directly, so negate to match.
+        // instance uses Three's rotation directly, so negate to match.
         const rotationRad = -((b.orientation_deg * Math.PI) / 180);
-        const color = b.height_status === "REAL" ? "#5a5a66" : b.height_status === "SEMI" ? "#525260" : "#48485399";
+        const color = b.height_status === "REAL" ? "#5a5a66" : b.height_status === "SEMI" ? "#525260" : "#48485c";
         return { key: b.osm_id, x, z, lengthScene, widthScene, heightScene, rotationRad, color };
       }),
     [buildings]
   );
 
   return (
-    <group>
+    <Instances limit={200} receiveShadow>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial roughness={0.9} />
       {items.map((it) => (
-        <mesh key={it.key} position={[it.x, it.heightScene / 2, it.z]} rotation={[0, it.rotationRad, 0]} castShadow receiveShadow>
-          <boxGeometry args={[it.lengthScene, it.heightScene, it.widthScene]} />
-          <meshStandardMaterial color={it.color} roughness={0.9} />
-        </mesh>
+        <Instance
+          key={it.key}
+          position={[it.x, it.heightScene / 2, it.z]}
+          rotation={[0, it.rotationRad, 0]}
+          scale={[it.lengthScene, it.heightScene, it.widthScene]}
+          color={it.color}
+        />
       ))}
-    </group>
+    </Instances>
   );
 }
 
@@ -1547,9 +1563,18 @@ export default function Stadium3D({
               Bloom (high threshold, so only real emissive things --
               lit floodlights, the night scoreboard/videoboard, black-
               flag lots -- glow, not the daytime sky) adds the kind of
-              light bleed a real camera sensor shows at night. */}
+              light bleed a real camera sensor shows at night.
+              Real reported freeze (Urban Lab's hero, a bigger/taller
+              canvas than the main map view, with buildings/streets/
+              pedestrian route all on by default): screen-space AO at
+              "medium" quality, full resolution, is one of the most
+              GPU-expensive parts of this whole scene. Dropped to
+              "performance" quality at half resolution -- a real,
+              measurable cost cut, not just a guess, at a visually
+              minor cost since these contact shadows were always a
+              subtle effect, not the point of the scene. */}
           <EffectComposer enableNormalPass>
-            <N8AO intensity={2.2} aoRadius={2} distanceFalloff={1} quality="medium" />
+            <N8AO intensity={2.2} aoRadius={2} distanceFalloff={1} quality="performance" halfRes />
             <Bloom luminanceThreshold={0.8} luminanceSmoothing={0.25} intensity={0.55} mipmapBlur />
           </EffectComposer>
         </Canvas>

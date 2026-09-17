@@ -173,13 +173,16 @@ export default function StadiumPanel() {
         </button>
       </div>
 
-      <div className="h-96 border-b border-zinc-700">
-        <Stadium3D stadium={stadium} focusLotOsmId={focusLotOsmId} />
-      </div>
-
-      <div className="p-4 font-mono text-xs space-y-3 overflow-y-auto flex-1">
-        {/* Headline card: the one number + risk pill a researcher scans for first */}
-        <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3">
+      {/* Headline card moved ABOVE the 3D model -- the one number a
+          researcher scans for first shouldn't require scrolling past
+          a tall 3D view + its own match-control footer to reach. Real
+          reported problem: as the 3D model's own overlays/footer grew
+          this session, the WBGT card (further down in the scroll
+          area) could end up mostly off-screen on a normal laptop
+          viewport. Always visible now, independent of how tall the 3D
+          area gets. */}
+      <div className="px-4 pt-3 pb-2 border-b border-zinc-700 shrink-0">
+        <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3 font-mono text-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-zinc-500 uppercase tracking-wide text-[10px]">WBGT &middot; this bucket</span>
             {stadium.heat_risk_level && <Pill color={riskColor}>{stadium.heat_risk_level}</Pill>}
@@ -209,7 +212,13 @@ export default function StadiumPanel() {
             <div className="text-zinc-600">no data</div>
           )}
         </div>
+      </div>
 
+      <div className="h-64 border-b border-zinc-700 shrink-0 overflow-hidden">
+        <Stadium3D stadium={stadium} focusLotOsmId={focusLotOsmId} />
+      </div>
+
+      <div className="p-4 font-mono text-xs space-y-3 overflow-y-auto flex-1">
         {/* Venue facts card */}
         <div className="rounded border border-zinc-800 bg-zinc-950/60 p-3">
           <div className="text-zinc-500 uppercase tracking-wide text-[10px] mb-2">Venue</div>

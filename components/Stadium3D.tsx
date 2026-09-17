@@ -224,17 +224,27 @@ function makeNoiseTexture(base: string, specks: { count: number; size: [number, 
   return tex;
 }
 
+// Real bug this session: a mesh's `color` prop multiplies its texture
+// (never brightens it -- a value >1 per channel isn't valid), so a
+// dark textured base times a mid-tone tint compounds into something
+// much darker than either color looks alone (e.g. a base ~0.24 times
+// a tint ~0.54 renders at ~0.13 -- visibly near-black under normal
+// lighting, not the muted-but-visible ground either color suggested
+// on its own). Fixed by making these base textures properly LIT-
+// looking on their own, and treating every mesh's `color` as a light
+// (<=1, usually close to white) tint from here on, never a rescue for
+// a too-dark base.
 let groundTextureCache: THREE.Texture | null = null;
 function getGroundTexture(): THREE.Texture {
   if (!groundTextureCache) {
-    groundTextureCache = makeNoiseTexture("#3d4032", {
+    groundTextureCache = makeNoiseTexture("#6e7458", {
       count: 1400,
       size: [1, 3.2],
       rgb: () => {
-        const g = 40 + Math.random() * 40;
-        return Math.random() < 0.5 ? [g, g + 12, g - 8] : [g + 10, g + 4, g - 6];
+        const g = 90 + Math.random() * 55;
+        return Math.random() < 0.5 ? [g, g + 14, g - 10] : [g + 12, g + 6, g - 8];
       },
-      alpha: [0.25, 0.55],
+      alpha: [0.2, 0.45],
     });
   }
   return groundTextureCache;
@@ -243,14 +253,14 @@ function getGroundTexture(): THREE.Texture {
 let asphaltTextureCache: THREE.Texture | null = null;
 function getAsphaltTexture(): THREE.Texture {
   if (!asphaltTextureCache) {
-    asphaltTextureCache = makeNoiseTexture("#3f3f45", {
+    asphaltTextureCache = makeNoiseTexture("#84848c", {
       count: 1800,
       size: [0.6, 2],
       rgb: () => {
-        const g = 45 + Math.random() * 45;
-        return [g, g, g + 4];
+        const g = 95 + Math.random() * 60;
+        return [g, g, g + 5];
       },
-      alpha: [0.12, 0.34],
+      alpha: [0.1, 0.28],
     });
   }
   return asphaltTextureCache;
@@ -495,7 +505,7 @@ function ParkingLots({
               }}
             >
               <boxGeometry args={[lengthScene, 0.06, widthScene]} />
-              <meshStandardMaterial map={getLotAsphaltTexture(le.lot.osm_id, lengthScene, widthScene)} color="#b0b0b8" roughness={0.92} />
+              <meshStandardMaterial map={getLotAsphaltTexture(le.lot.osm_id, lengthScene, widthScene)} color="#e8e8ec" roughness={0.92} />
             </mesh>
             {stripeRows.map((row, i) => {
               // Row's real across-lot position (lib/parkingLayout.ts's
@@ -680,13 +690,13 @@ function Streets({ segments }: { segments: StreetSegment[] }) {
       {quads.map((q, i) => (
         <mesh key={i} position={[q.x, 0.015, q.z]} rotation={[-Math.PI / 2, 0, q.rotationY]}>
           <planeGeometry args={[q.width, q.length]} />
-          <meshStandardMaterial map={roadTexture} color="#9a9aa4" roughness={0.9} />
+          <meshStandardMaterial map={roadTexture} color="#c4c4ca" roughness={0.9} />
         </mesh>
       ))}
       {joints.map((j, i) => (
         <mesh key={`j${i}`} position={[j.x, 0.016, j.z]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[j.radius, 12]} />
-          <meshStandardMaterial map={roadTexture} color="#9a9aa4" roughness={0.9} />
+          <meshStandardMaterial map={roadTexture} color="#c4c4ca" roughness={0.9} />
         </mesh>
       ))}
       {/* Center-line stripes, major roads only -- a cheap real detail
@@ -890,14 +900,14 @@ function StadiumBowl({
         }}
       >
         <circleGeometry args={[STADIUM_GROUND_RADIUS, 48]} />
-        <meshStandardMaterial map={campusTexture} color="#8a8a90" roughness={0.95} />
+        <meshStandardMaterial map={campusTexture} color="#c8c8ce" roughness={0.95} />
       </mesh>
       {/* Plaza/walkway ring -- a distinct lighter concrete tone filling
           the real gap between the stadium campus and the parking
           lots, so the two read as adjoining but separate structures. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.045, 0]} receiveShadow>
         <ringGeometry args={[STADIUM_GROUND_RADIUS, PLAZA_OUTER_RADIUS, 48]} />
-        <meshStandardMaterial map={plazaTexture} color="#b8b8c0" roughness={0.9} />
+        <meshStandardMaterial map={plazaTexture} color="#eeeef0" roughness={0.9} />
       </mesh>
 
       {/* Everything below (field, bowl decks, pylons, roof, scoreboard)
@@ -1324,7 +1334,7 @@ export default function Stadium3D({
               surfaces layered on top of this one shared site. */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.09, 0]} receiveShadow>
             <circleGeometry args={[groundRadius, 64]} />
-            <meshStandardMaterial map={groundTexture} color="#8a9078" roughness={1} />
+            <meshStandardMaterial map={groundTexture} color="#d8e0c0" roughness={1} />
           </mesh>
           <StadiumBowl
             stadium={stadium}

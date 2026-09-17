@@ -92,6 +92,68 @@ function flagColor(wbgt: number | null): string {
   return "#ef4444";
 }
 
+// Same real WBGT sports-flag thresholds as flagColor(), named -- so a
+// stat card's comparison line can say what risk category the treated
+// value actually lands in, not just a bare degree number.
+function sportsFlagLabel(wbgt: number | null): string {
+  if (wbgt === null) return "";
+  if (wbgt < 27.8) return "green flag";
+  if (wbgt < 29.4) return "yellow flag";
+  if (wbgt < 31.7) return "red flag";
+  return "black flag";
+}
+
+function pctDelta(base: number | null | undefined, treated: number | null | undefined): number | null {
+  if (base == null || treated == null || base === 0) return null;
+  return ((treated - base) / base) * 100;
+}
+
+/** A real headline-number stat card: big current value, a plain-
+ * language comparison line underneath, and a colored percent-change
+ * badge when there's a real before/after to compare -- the same
+ * pattern real environmental-monitoring dashboards use (a large
+ * primary figure + baseline comparison + trend, source named below),
+ * not just a bare number in a small box. */
+function StatCard({
+  label,
+  value,
+  unit,
+  valueColor,
+  comparison,
+  deltaPct,
+  deltaGoodDirection = "down",
+}: {
+  label: string;
+  value: string | number;
+  unit?: string;
+  valueColor?: string;
+  comparison?: string;
+  /** percent change from a real baseline to a real treated value -- omit when there's no real before/after */
+  deltaPct?: number | null;
+  /** whether a NEGATIVE delta is the good outcome (e.g. temperature drop) or a POSITIVE one is (e.g. spaces gained) */
+  deltaGoodDirection?: "down" | "up";
+}) {
+  const deltaIsGood = deltaPct != null && (deltaGoodDirection === "down" ? deltaPct < 0 : deltaPct > 0);
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 flex flex-col gap-1 min-w-0">
+      <div className="text-[10px] text-zinc-500 uppercase tracking-wide truncate">{label}</div>
+      <div className="flex items-baseline gap-1.5 flex-wrap">
+        <span className="text-2xl font-bold leading-none" style={{ color: valueColor }}>
+          {value}
+        </span>
+        {unit && <span className="text-xs text-zinc-500">{unit}</span>}
+        {deltaPct != null && (
+          <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${deltaIsGood ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-700/40 text-zinc-400"}`}>
+            {deltaPct > 0 ? "+" : ""}
+            {deltaPct.toFixed(1)}%
+          </span>
+        )}
+      </div>
+      {comparison && <div className="text-[11px] text-zinc-500 leading-snug">{comparison}</div>}
+    </div>
+  );
+}
+
 function treePositions(count: number, lengthScene: number, widthScene: number): [number, number][] {
   const cols = Math.max(1, Math.ceil(Math.sqrt((count * lengthScene) / widthScene)));
   const rows = Math.max(1, Math.ceil(count / cols));
@@ -624,26 +686,21 @@ export default function UrbanLab() {
               />
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">SHADED</div>
-                <div className="text-lg font-bold">{Math.round((data?.tree_shade.shaded_fraction ?? 0) * 100)}%</div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
-                <div className="text-lg font-bold text-emerald-400">-{data?.tree_shade.temp_reduction_c ?? 0}&deg;C</div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.tree_shade.base_wbgt_c ?? null) }}>
-                    {data?.tree_shade.base_wbgt_c ?? "-"}
-                  </span>
-                  <span className="text-zinc-600">&rarr;</span>
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.tree_shade.shaded_wbgt_c ?? null) }}>
-                    {data?.tree_shade.shaded_wbgt_c ?? "-"}
-                  </span>
-                </div>
-              </div>
+              <StatCard label="Canopy coverage" value={Math.round((data?.tree_shade.shaded_fraction ?? 0) * 100)} unit="%" comparison={`full shade at ~${data?.tree_shade.max_useful_trees ?? "?"} trees`} />
+              <StatCard
+                label="Air temp"
+                value={`-${data?.tree_shade.temp_reduction_c ?? 0}`}
+                unit="&deg;C"
+                valueColor="#34d399"
+                comparison="USDA Forest Service, Davis CA"
+              />
+              <StatCard
+                label="WBGT, base &rarr; shaded"
+                value={`${data?.tree_shade.base_wbgt_c ?? "-"} → ${data?.tree_shade.shaded_wbgt_c ?? "-"}`}
+                valueColor={flagColor(data?.tree_shade.shaded_wbgt_c ?? null)}
+                deltaPct={pctDelta(data?.tree_shade.base_wbgt_c, data?.tree_shade.shaded_wbgt_c)}
+                comparison={sportsFlagLabel(data?.tree_shade.shaded_wbgt_c ?? null)}
+              />
             </div>
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI: real lot area feeds a linear shade model (mature-canopy diameter ~10.7m, a standard cited in city
@@ -704,22 +761,14 @@ export default function UrbanLab() {
               <input type="range" min={0} max={1} step={0.05} value={coolPavementCoverage} onChange={(e) => setCoolPavementCoverage(Number(e.target.value))} className="w-full" />
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
-                <div className="text-lg font-bold text-emerald-400">-{data?.cool_pavement.temp_reduction_c ?? 0}&deg;C</div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.cool_pavement.base_wbgt_c ?? null) }}>
-                    {data?.cool_pavement.base_wbgt_c ?? "-"}
-                  </span>
-                  <span className="text-zinc-600">&rarr;</span>
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.cool_pavement.treated_wbgt_c ?? null) }}>
-                    {data?.cool_pavement.treated_wbgt_c ?? "-"}
-                  </span>
-                </div>
-              </div>
+              <StatCard label="Air temp" value={`-${data?.cool_pavement.temp_reduction_c ?? 0}`} unit="&deg;C" valueColor="#34d399" comparison="EPA + Arizona pavement pilot study" />
+              <StatCard
+                label="WBGT, base &rarr; treated"
+                value={`${data?.cool_pavement.base_wbgt_c ?? "-"} → ${data?.cool_pavement.treated_wbgt_c ?? "-"}`}
+                valueColor={flagColor(data?.cool_pavement.treated_wbgt_c ?? null)}
+                deltaPct={pctDelta(data?.cool_pavement.base_wbgt_c, data?.cool_pavement.treated_wbgt_c)}
+                comparison={sportsFlagLabel(data?.cool_pavement.treated_wbgt_c ?? null)}
+              />
             </div>
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI: real cited "up to 2&deg;C" ambient air-temperature reduction at full reflective/permeable-pavement
@@ -751,31 +800,22 @@ export default function UrbanLab() {
               <input type="range" min={0} max={1} step={0.05} value={smartGrowthCoverage} onChange={(e) => setSmartGrowthCoverage(Number(e.target.value))} className="w-full" />
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
-                <div className="text-lg font-bold text-emerald-400">-{data?.smart_growth.temp_reduction_c ?? 0}&deg;C</div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.smart_growth.base_wbgt_c ?? null) }}>
-                    {data?.smart_growth.base_wbgt_c ?? "-"}
-                  </span>
-                  <span className="text-zinc-600">&rarr;</span>
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.smart_growth.treated_wbgt_c ?? null) }}>
-                    {data?.smart_growth.treated_wbgt_c ?? "-"}
-                  </span>
-                </div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">SPACES LOST</div>
-                <div className="text-lg font-bold text-orange-400">
-                  -{data?.smart_growth.spaces_lost ?? 0}
-                </div>
-                <div className="text-[9px] text-zinc-600">
-                  {data?.smart_growth.spaces_before ?? "-"} &rarr; {data?.smart_growth.spaces_after ?? "-"}
-                </div>
-              </div>
+              <StatCard label="Air temp" value={`-${data?.smart_growth.temp_reduction_c ?? 0}`} unit="&deg;C" valueColor="#34d399" comparison="same USDA Forest Service magnitude as card 1" />
+              <StatCard
+                label="WBGT, base &rarr; treated"
+                value={`${data?.smart_growth.base_wbgt_c ?? "-"} → ${data?.smart_growth.treated_wbgt_c ?? "-"}`}
+                valueColor={flagColor(data?.smart_growth.treated_wbgt_c ?? null)}
+                deltaPct={pctDelta(data?.smart_growth.base_wbgt_c, data?.smart_growth.treated_wbgt_c)}
+                comparison={sportsFlagLabel(data?.smart_growth.treated_wbgt_c ?? null)}
+              />
+              <StatCard
+                label="Real space cost"
+                value={`-${data?.smart_growth.spaces_lost ?? 0}`}
+                valueColor="#fb923c"
+                deltaPct={data?.smart_growth.spaces_before ? -((data.smart_growth.spaces_lost / data.smart_growth.spaces_before) * 100) : null}
+                deltaGoodDirection="up"
+                comparison={`${data?.smart_growth.spaces_before ?? "-"} → ${data?.smart_growth.spaces_after ?? "-"} spaces`}
+              />
             </div>
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI: converting pavement to real vegetated ground reuses the vegetative-cooling magnitude (2.2-4.4&deg;C,
@@ -807,27 +847,21 @@ export default function UrbanLab() {
               <input type="range" min={0} max={1} step={0.05} value={solarCarportCoverage} onChange={(e) => setSolarCarportCoverage(Number(e.target.value))} className="w-full" />
             </div>
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">TEMP DROP</div>
-                <div className="text-lg font-bold text-emerald-400">-{data?.solar_carport.temp_reduction_c ?? 0}&deg;C</div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">WBGT NOW</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.solar_carport.base_wbgt_c ?? null) }}>
-                    {data?.solar_carport.base_wbgt_c ?? "-"}
-                  </span>
-                  <span className="text-zinc-600">&rarr;</span>
-                  <span className="text-lg font-bold" style={{ color: flagColor(data?.solar_carport.treated_wbgt_c ?? null) }}>
-                    {data?.solar_carport.treated_wbgt_c ?? "-"}
-                  </span>
-                </div>
-              </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded p-2">
-                <div className="text-[10px] text-zinc-500">CLEAN ENERGY</div>
-                <div className="text-lg font-bold text-sky-400">{((data?.solar_carport.annual_kwh ?? 0) / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })} MWh/yr</div>
-                <div className="text-[9px] text-zinc-600">{data?.solar_carport.nameplate_kw?.toLocaleString() ?? "-"} kW nameplate</div>
-              </div>
+              <StatCard label="Air temp" value={`-${data?.solar_carport.temp_reduction_c ?? 0}`} unit="&deg;C" valueColor="#34d399" comparison="shade only, no evapotranspiration" />
+              <StatCard
+                label="WBGT, base &rarr; treated"
+                value={`${data?.solar_carport.base_wbgt_c ?? "-"} → ${data?.solar_carport.treated_wbgt_c ?? "-"}`}
+                valueColor={flagColor(data?.solar_carport.treated_wbgt_c ?? null)}
+                deltaPct={pctDelta(data?.solar_carport.base_wbgt_c, data?.solar_carport.treated_wbgt_c)}
+                comparison={sportsFlagLabel(data?.solar_carport.treated_wbgt_c ?? null)}
+              />
+              <StatCard
+                label="Clean energy"
+                value={((data?.solar_carport.annual_kwh ?? 0) / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                unit="MWh/yr"
+                valueColor="#38bdf8"
+                comparison={`${data?.solar_carport.nameplate_kw?.toLocaleString() ?? "-"} kW nameplate, 0 spaces lost`}
+              />
             </div>
             <p className="text-[11px] text-zinc-600 leading-relaxed">
               SEMI, dual-benefit: unlike the other strategies, a carport costs ZERO real spaces -- it&apos;s a structure

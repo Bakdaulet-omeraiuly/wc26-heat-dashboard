@@ -214,7 +214,15 @@ export default function StadiumPanel() {
         </div>
       </div>
 
-      <div className="h-64 border-b border-zinc-700 shrink-0 overflow-hidden">
+      {/* Reverted back to its original height: shrinking this to make
+          more room for the WBGT card above caused a real regression --
+          Stadium3D's own overlay panels (REAL LOTS, REAL AGGREGATE
+          STATS, SUN ALT/field-orientation) need this much room and
+          started visibly overlapping/garbling into each other at the
+          smaller size (screenshot-confirmed). The WBGT card stays
+          moved above (that part was a real, wanted fix); only the 3D
+          area's own height is restored. */}
+      <div className="h-96 border-b border-zinc-700 shrink-0">
         <Stadium3D stadium={stadium} focusLotOsmId={focusLotOsmId} />
       </div>
 

@@ -779,6 +779,7 @@ function StadiumBowl({
   sunDirection,
   altitudeDeg,
   roofMode,
+  onFocus,
 }: {
   stadium: StadiumInfo;
   sunDirection: [number, number, number];
@@ -789,6 +790,10 @@ function StadiumBowl({
    * roof's honest lack of a published outdoor WBGT number -- are
    * shown as text in Urban Lab, not computed from this color). */
   roofMode?: "green" | "cool" | null;
+  /** Click-to-fly-in on the stadium itself -- same CameraFocus
+   * mechanism a lot's own click already uses, just targeting the
+   * stadium's own center instead of a lot's real position. */
+  onFocus?: (position: [number, number, number]) => void;
 }) {
   // Real NFL field proportions: 120yd x 53.33yd (incl. end zones) --
   // ratio ~2.25:1, not the old placeholder 14:9 (~1.56:1). Scene units
@@ -868,8 +873,22 @@ function StadiumBowl({
 
   return (
     <group>
-      {/* Paved stadium-campus ground, stopping just past the pylons -- NOT reaching the real parking lots. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
+      {/* Paved stadium-campus ground, stopping just past the pylons --
+          NOT reaching the real parking lots. Clicking anywhere on the
+          stadium's own campus (not just the field) flies the camera
+          in close, the same one-shot CameraFocus mechanism a lot's
+          own click already uses -- a big, forgiving click target
+          rather than requiring a precise click on one small part of
+          the bowl. */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.05, 0]}
+        receiveShadow
+        onClick={(e) => {
+          e.stopPropagation();
+          onFocus?.([0, 1.6, 0]);
+        }}
+      >
         <circleGeometry args={[STADIUM_GROUND_RADIUS, 48]} />
         <meshStandardMaterial map={campusTexture} color="#8a8a90" roughness={0.95} />
       </mesh>
@@ -1312,6 +1331,7 @@ export default function Stadium3D({
             sunDirection={sunDirection}
             altitudeDeg={altitudeDeg}
             roofMode={interventions?.greenRoof ? "green" : interventions?.coolRoof ? "cool" : null}
+            onFocus={setFocusTarget}
           />
           <SunMarker direction={sunDirection} altitude={altitudeDeg} />
           {interventions?.showStreets && <Streets segments={streets} />}

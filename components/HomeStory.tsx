@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 /**
  * The homepage story: one question, the strongest verified real
- * findings, one clear next step. Every number here is real and was
- * verified directly against this app's own committed data before
- * being written (not estimated or rounded for effect):
+ * findings, one clear next step -- structured as a hero + numbered
+ * sections (a pattern referenced from another real environmental
+ * dashboard the user pointed at, caspian-dash-tr1c.vercel.app), but
+ * every number here is this app's own, verified directly against its
+ * committed data before being written:
  *   - 78 real World Cup matches with real per-match weather
  *     (data/match_weather.json, Iowa Mesonet ASOS archive)
  *   - 54 of those 78 real matches had a real peak WBGT that exceeded
@@ -14,11 +18,62 @@
  *   - 10 of 11 real stadiums show a real warming trend over the real
  *     2006-2025 NOAA record (data/discovery_trend.json's real linear
  *     regression; only SoFi Stadium's real trend is negative)
+ * The numbered sections below reuse /api/home-story, which itself
+ * reuses this app's existing real-data accessors -- no new numbers.
  */
-export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority" | "map") => void }) {
+
+type HomeStoryData = {
+  trend: {
+    warming_count: number;
+    total: number;
+    hottest_trend: { stadium_name: string; trend_c_per_decade: number } | null;
+    stadiums: { stadium_name: string; trend_c_per_decade: number; direction: "warming" | "cooling" | "flat" }[];
+  };
+  hottest_matches: { matchup_raw: string; city: string; round: string; kickoff_utc_iso: string; real_peak_wbgt_c: number }[];
+  parking: {
+    total_real_lots: number;
+    longest_real_walk: { stadium: string; lot: string; walk_minutes: number; distance_m: number; wbgt_c: number } | null;
+  };
+};
+
+function Tag({ status }: { status: "REAL" | "SEMI" | "MOCK" }) {
+  const styles: Record<string, string> = {
+    REAL: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    SEMI: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+    MOCK: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  };
+  return <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wide border shrink-0 ${styles[status]}`}>{status}</span>;
+}
+
+function Section({ n, title, tag, children }: { n: string; title: string; tag: "REAL" | "SEMI" | "MOCK"; children: React.ReactNode }) {
+  return (
+    <section className="border-t border-zinc-800 py-8">
+      <div className="flex items-baseline gap-3 mb-4">
+        <span className="text-zinc-700 text-2xl font-bold tabular-nums">{n}</span>
+        <h2 className="text-zinc-100 font-bold text-base">{title}</h2>
+        <Tag status={tag} />
+      </div>
+      {children}
+    </section>
+  );
+}
+
+export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority" | "map" | "lab" | "ask") => void }) {
+  const [data, setData] = useState<HomeStoryData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/home-story")
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  const maxTrend = data ? Math.max(...data.trend.stadiums.map((s) => Math.abs(s.trend_c_per_decade)), 0.1) : 0.1;
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-4xl mx-auto px-6 py-12 font-mono">
+        {/* --- Hero --- */}
         <div className="text-zinc-500 text-xs uppercase tracking-wide mb-3">Host-City Stadium Heat Intelligence System</div>
         <h1 className="text-2xl md:text-3xl font-bold text-zinc-50 leading-snug max-w-2xl">
           Where should cities act first to protect World Cup visitors from extreme heat?
@@ -37,11 +92,7 @@ export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority"
             { value: "10 / 11", label: "stadiums warming", sub: "real 20-year NOAA trend, 2006-2025" },
           ].map((stat) => (
             <div key={stat.label} className="rounded-lg border border-zinc-800 bg-zinc-900 p-3 flex flex-col gap-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded border bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
-                  REAL
-                </span>
-              </div>
+              <Tag status="REAL" />
               <div className="text-2xl font-bold text-zinc-100 tabular-nums leading-none mt-1">{stat.value}</div>
               <div className="text-zinc-400 text-xs">{stat.label}</div>
               <div className="text-zinc-600 text-[10px] leading-snug">{stat.sub}</div>
@@ -64,10 +115,127 @@ export default function HomeStory({ onNavigate }: { onNavigate: (tab: "priority"
           </button>
         </div>
 
-        <div className="text-zinc-600 text-[11px] mt-10 pt-4 border-t border-zinc-800 leading-relaxed max-w-2xl">
-          Every number on this page is tagged by how it was produced: REAL (measured), SEMI (real geometry plus one
-          modeled term), or MOCK (a modeled assumption from published research, not measured at these venues). Rice
-          University Urban Sustainability Hackathon &middot; Track 3, Public Health &amp; the Built Environment.
+        {/* --- 01: The trend --- */}
+        <Section n="01" title="20 real years, getting hotter" tag="REAL">
+          {data ? (
+            <>
+              <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-2xl">
+                {data.trend.warming_count} of {data.trend.total} real host stadiums show a real warming trend in
+                their own 2006-2025 NOAA record.{" "}
+                {data.trend.hottest_trend && (
+                  <>
+                    <span className="text-zinc-100 font-bold">{data.trend.hottest_trend.stadium_name}</span> warms fastest,
+                    at a real <span className="text-orange-400 font-bold">+{data.trend.hottest_trend.trend_c_per_decade.toFixed(2)}&deg;C</span> per decade.
+                  </>
+                )}
+              </p>
+              <div className="space-y-1">
+                {data.trend.stadiums.map((s) => (
+                  <div key={s.stadium_name} className="flex items-center gap-2 text-[11px]">
+                    <span className="w-40 truncate text-zinc-400">{s.stadium_name}</span>
+                    <div className="flex-1 h-3 bg-zinc-900 rounded overflow-hidden flex items-center">
+                      <div
+                        className={`h-full rounded ${s.direction === "warming" ? "bg-orange-500" : s.direction === "cooling" ? "bg-sky-500" : "bg-zinc-600"}`}
+                        style={{ width: `${(Math.abs(s.trend_c_per_decade) / maxTrend) * 100}%` }}
+                      />
+                    </div>
+                    <span className={`w-16 text-right tabular-nums ${s.direction === "warming" ? "text-orange-400" : "text-sky-400"}`}>
+                      {s.trend_c_per_decade > 0 ? "+" : ""}
+                      {s.trend_c_per_decade.toFixed(2)}&deg;C
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-zinc-600 text-xs">loading&hellip;</div>
+          )}
+        </Section>
+
+        {/* --- 02: Match-day reality --- */}
+        <Section n="02" title="Match-day reality" tag="REAL">
+          <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-2xl">
+            The 5 real hottest World Cup matches by real peak WBGT (Mesonet ASOS, same station as each stadium&apos;s
+            climatology) -- not modeled, what actually happened.
+          </p>
+          {data ? (
+            <div className="space-y-1.5">
+              {data.hottest_matches.map((m, i) => (
+                <div key={i} className="flex items-center gap-3 text-[11px] py-1 border-b border-zinc-900">
+                  <span className="text-zinc-600 w-4">{i + 1}</span>
+                  <span className="text-zinc-200 flex-1 truncate">{m.matchup_raw}</span>
+                  <span className="text-zinc-500 w-32 truncate hidden sm:inline">{m.city}</span>
+                  <span className="text-zinc-600 w-24 hidden md:inline">{m.kickoff_utc_iso.slice(0, 10)}</span>
+                  <span className="text-red-400 font-bold tabular-nums w-16 text-right">{m.real_peak_wbgt_c}&deg;C</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-zinc-600 text-xs">loading&hellip;</div>
+          )}
+        </Section>
+
+        {/* --- 03: Parking and walking exposure --- */}
+        <Section n="03" title="The walk from the car is part of the exposure" tag="SEMI">
+          <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-2xl">
+            {data?.parking.total_real_lots.toLocaleString() ?? "…"} real parking lots mapped across all 11 venues
+            (real OpenStreetMap geometry). The heat a fan experiences doesn&apos;t start at the gate -- it starts in
+            the lot.
+          </p>
+          {data?.parking.longest_real_walk && (
+            <div className="rounded border border-zinc-800 bg-zinc-900 p-3 max-w-md">
+              <div className="text-zinc-500 text-[10px] uppercase tracking-wide mb-1">Longest real walk, across all 11 venues</div>
+              <div className="text-zinc-100 font-bold">
+                {data.parking.longest_real_walk.lot}, {data.parking.longest_real_walk.stadium}
+              </div>
+              <div className="text-zinc-400 text-xs mt-1">
+                {data.parking.longest_real_walk.distance_m.toLocaleString()}m &middot;{" "}
+                <span className="text-zinc-100 font-bold">{data.parking.longest_real_walk.walk_minutes} min</span> walk in real{" "}
+                <span className="text-orange-400 font-bold">{data.parking.longest_real_walk.wbgt_c}&deg;C</span> WBGT
+              </div>
+            </div>
+          )}
+        </Section>
+
+        {/* --- 04: What cities can do --- */}
+        <Section n="04" title="What cities can do about it" tag="MOCK">
+          <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-2xl">
+            6 real, published heat-mitigation strategies (EPA&apos;s heat-island framework, plus solar carports), each
+            modeled on a real lot&apos;s real geometry -- tree shade, green/cool roofs, cool pavement, smart growth,
+            angled re-striping, and solar carports. Every effect size is cited, never invented.
+          </p>
+          <button
+            onClick={() => onNavigate("lab")}
+            className="px-3 py-1.5 rounded border border-zinc-700 text-zinc-300 text-xs hover:text-zinc-100 hover:border-zinc-500 transition-colors"
+          >
+            Open Urban Lab &rarr;
+          </button>
+        </Section>
+
+        {/* --- 05: Ask the data --- */}
+        <Section n="05" title="Ask the data directly" tag="REAL">
+          <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-2xl">
+            A function-calling agent (Claude, real tool calls only -- it narrates real numbers, it never invents one)
+            answers questions against this same real dataset: rankings, trends, live forecasts, parking exposure.
+          </p>
+          <button
+            onClick={() => onNavigate("ask")}
+            className="px-3 py-1.5 rounded border border-zinc-700 text-zinc-300 text-xs hover:text-zinc-100 hover:border-zinc-500 transition-colors"
+          >
+            Open Ask &rarr;
+          </button>
+        </Section>
+
+        {/* --- Methodology / honesty footer --- */}
+        <div className="border-t border-zinc-800 pt-6 mt-2 text-zinc-600 text-[11px] leading-relaxed max-w-2xl">
+          <div className="flex flex-wrap gap-3 mb-2">
+            <span><Tag status="REAL" /> measured directly</span>
+            <span><Tag status="SEMI" /> real geometry + one modeled term</span>
+            <span><Tag status="MOCK" /> a modeled assumption, not measured here</span>
+          </div>
+          Sources: NOAA global-hourly (2006-2025), Iowa Mesonet ASOS archive, OpenStreetMap (Overpass), api.weather.gov,
+          EPA heat-island reduction research, nflverse. Rice University Urban Sustainability Hackathon &middot; Track 3,
+          Public Health &amp; the Built Environment.
         </div>
       </div>
     </div>

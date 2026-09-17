@@ -110,12 +110,28 @@ const FLAG_HEX: Record<string, string> = {
 /** Ground-plane compass-bearing placement -- the SAME formula used for
  * the sun direction below (with altitude fixed at 0), so a parking
  * lot's marker sits at its real compass direction from the stadium.
- * Distance is compressed into a fixed visual range (15-35 scene
- * units); this is schematic, not to scale -- same honesty convention
+ * Distance is compressed into a fixed visual range (lotRadius(), just
+ * below); this is schematic, not to scale -- same honesty convention
  * as the stand bowl itself (see the file's top comment). */
 function bearingToXZ(bearingDeg: number, radius: number): [number, number] {
   const rad = (bearingDeg * Math.PI) / 180;
   return [Math.sin(rad) * radius, -Math.cos(rad) * radius];
+}
+
+// How far out (in scene units) a parking lot/street node sits, given
+// its REAL distance from the stadium -- one shared function so every
+// caller (lot markers, cars, streets, street trees, the focus-camera
+// lookup) agrees exactly, and so the gap from the stadium is set in
+// ONE place. Previously this range started at 15 units, which
+// overlapped the stadium bowl's own outer structures (the upper deck
+// reaches ~19, the floodlight pylons ~22-24) -- a real reported bug:
+// lots visually fused into the stadium model instead of reading as a
+// separate structure across a plaza. Pushed out to 34-52 so there's a
+// clear visible gap (the plaza ring below sits in between).
+const LOT_RADIUS_MIN = 34;
+const LOT_RADIUS_SPAN = 18;
+function lotRadius(distanceM: number): number {
+  return LOT_RADIUS_MIN + (Math.min(distanceM, 1200) / 1200) * LOT_RADIUS_SPAN;
 }
 
 function rotateXZ(x: number, z: number, rad: number): [number, number] {
@@ -262,7 +278,7 @@ function ParkingLots({
     if (!showCars) return [];
     const items: CarInstance[] = [];
     for (const le of lots) {
-      const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+      const scaledRadius = lotRadius(le.lot.distance_m);
       const [cx, cz] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
       items.push(...realCarsForLot(le, cx, cz));
     }
@@ -272,7 +288,7 @@ function ParkingLots({
   return (
     <group>
       {lots.map((le) => {
-        const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+        const scaledRadius = lotRadius(le.lot.distance_m);
         const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
         const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
         const color = le.sports_flag ? FLAG_HEX[le.sports_flag] : "#555555";
@@ -318,7 +334,7 @@ function ParkingLots({
           text figure in Urban Lab, computed exactly per lot). */}
       {(coolPavementCoverage > 0 || smartGrowthCoverage > 0) &&
         lots.map((le) => {
-          const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+          const scaledRadius = lotRadius(le.lot.distance_m);
           const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
           const { lengthScene, widthScene, rotationRad } = footprintFor(le.lot);
           return (
@@ -403,8 +419,8 @@ function Streets({ segments }: { segments: StreetSegment[] }) {
       for (let i = 0; i < seg.points.length - 1; i++) {
         const a = seg.points[i];
         const b = seg.points[i + 1];
-        const ra = 15 + (Math.min(a.distance_m, 1200) / 1200) * 8;
-        const rb = 15 + (Math.min(b.distance_m, 1200) / 1200) * 8;
+        const ra = lotRadius(a.distance_m);
+        const rb = lotRadius(b.distance_m);
         const [ax, az] = bearingToXZ(a.bearing_deg, ra);
         const [bx, bz] = bearingToXZ(b.bearing_deg, rb);
         const dx = bx - ax;
@@ -460,8 +476,8 @@ function StreetTrees({ segments }: { segments: StreetSegment[] }) {
       for (let i = 0; i < seg.points.length - 1; i++) {
         const a = seg.points[i];
         const b = seg.points[i + 1];
-        const ra = 15 + (Math.min(a.distance_m, 1200) / 1200) * 8;
-        const rb = 15 + (Math.min(b.distance_m, 1200) / 1200) * 8;
+        const ra = lotRadius(a.distance_m);
+        const rb = lotRadius(b.distance_m);
         const [ax, az] = bearingToXZ(a.bearing_deg, ra);
         const [bx, bz] = bearingToXZ(b.bearing_deg, rb);
         const segLen = Math.hypot(bx - ax, bz - az);
@@ -541,10 +557,16 @@ function StadiumBowl({
   const FIELD_LEN = 16;
   const FIELD_WID = 7.1;
 
+  // Vomitoria: real stadium bowls aren't one continuous ring -- they're
+  // built as distinct seating sections separated by narrow radial
+  // access aisles. Skipping one slot every few segments (offset
+  // between decks so the gaps stagger, same as real multi-deck design)
+  // reads as sectioned seating instead of a solid drum.
   const lowerBowl = useMemo(() => {
     const segments = 28;
     const items = [];
     for (let i = 0; i < segments; i++) {
+      if (i % 7 === 0) continue; // vomitoria gap
       const angle = (i / segments) * Math.PI * 2;
       items.push({ angle, x: Math.cos(angle) * (FIELD_LEN * 0.95), z: Math.sin(angle) * (FIELD_WID * 1.55) });
     }
@@ -554,6 +576,7 @@ function StadiumBowl({
     const segments = 28;
     const items = [];
     for (let i = 0; i < segments; i++) {
+      if (i % 7 === 3) continue; // vomitoria gap, offset from the lower deck's
       const angle = (i / segments) * Math.PI * 2 + Math.PI / segments; // offset so upper deck seams don't line up with lower -- real stadiums stagger deck sections
       items.push({ angle, x: Math.cos(angle) * (FIELD_LEN * 1.18), z: Math.sin(angle) * (FIELD_WID * 1.85) });
     }
@@ -578,19 +601,41 @@ function StadiumBowl({
   const fieldRotationRad = ((stadium.field_orientation_deg ?? 0) * Math.PI) / 180;
   const roofColor = roofMode === "green" ? "#2e7d32" : roofMode === "cool" ? "#f2f2f2" : "#8a8f98";
 
+  // A real reported bug: the stadium's own ground/structures and the
+  // real parking lots (placed by lotRadius(), starting at 34 scene
+  // units) used to overlap -- the concourse disc alone used to reach
+  // ~42 units, well past the lots' inner edge. Fixed by (1) shrinking
+  // the stadium's own paved ground to stop just past its outermost
+  // real structure (the floodlight pylons, ~24 units out) and (2)
+  // adding a visually distinct plaza/walkway ring filling the gap up
+  // to exactly where lotRadius() begins -- so the stadium campus and
+  // the surrounding real lots read as two separate, adjoining things,
+  // not one fused blob.
+  const STADIUM_GROUND_RADIUS = 25;
+  const PLAZA_OUTER_RADIUS = LOT_RADIUS_MIN; // meets the real lots' inner edge exactly, no gap and no overlap
+
   return (
     <group>
-      {/* Paved concourse ground -- everything else used to float over
-          nothing. Subtle asphalt tone, distinct from the parking lots'
-          own (brighter/flag-colored) ground markers further out. */}
+      {/* Paved stadium-campus ground, stopping just past the pylons -- NOT reaching the real parking lots. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
-        <circleGeometry args={[FIELD_LEN * 2.6, 48]} />
+        <circleGeometry args={[STADIUM_GROUND_RADIUS, 48]} />
         <meshStandardMaterial color="#26262b" roughness={0.95} />
       </mesh>
+      {/* Plaza/walkway ring -- a distinct lighter concrete tone filling
+          the real gap between the stadium campus and the parking
+          lots, so the two read as adjoining but separate structures. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.045, 0]} receiveShadow>
+        <ringGeometry args={[STADIUM_GROUND_RADIUS, PLAZA_OUTER_RADIUS, 48]} />
+        <meshStandardMaterial color="#57575e" roughness={0.9} />
+      </mesh>
 
-      {/* Field + yard markings -- rotated to this stadium's own REAL
-          measured compass field orientation (see this file's own
-          field-orientation research), not left at a fixed scene angle. */}
+      {/* Everything below (field, bowl decks, pylons, roof, scoreboard)
+          is ONE rigid building, rotated together to this stadium's own
+          REAL measured compass field orientation -- not just the field
+          paint alone. Rotating only the field inside a fixed bowl
+          would leave the field sitting at a strange angle inside an
+          oval that wasn't built around it; real stadiums are built as
+          one oriented structure, so this model rotates as one too. */}
       <group rotation={[0, fieldRotationRad, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <planeGeometry args={[FIELD_LEN, FIELD_WID]} />
@@ -616,7 +661,59 @@ function StadiumBowl({
             </mesh>
           );
         })}
-      </group>
+
+        {/* Center-hung halo videoboard -- a real, modern NFL feature
+            (SoFi Stadium's "Infinity Screen" is the famous example:
+            a double-sided board spanning ~120 real yards, suspended
+            ~122ft above the field -- epa/espn/athleticbusiness
+            coverage). Not every one of these 11 venues has one this
+            large in reality, so this is a generic, schematic hang
+            (not claimed as any specific venue's real board), scaled
+            proportionally to the same real field length. */}
+        <group position={[0, 4.3, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[FIELD_LEN * 0.85, 0.9, 0.25]} />
+            <meshStandardMaterial color="#0c0d10" roughness={0.7} />
+          </mesh>
+          {[1, -1].map((face) => (
+            <mesh key={face} position={[0, 0, (face * 0.13)]} rotation={[0, face > 0 ? 0 : Math.PI, 0]}>
+              <planeGeometry args={[FIELD_LEN * 0.8, 0.75]} />
+              <meshStandardMaterial
+                color={isNight ? "#bfe6ff" : "#33424c"}
+                emissive={isNight ? "#bfe6ff" : "#000000"}
+                emissiveIntensity={isNight ? 0.85 : 0}
+              />
+            </mesh>
+          ))}
+          {/* Suspension cables down to the roof structure */}
+          {[-1, 1].map((side) =>
+            [-1, 1].map((end) => (
+              <mesh key={`${side}-${end}`} position={[end * FIELD_LEN * 0.35, 1.0, side * 0.1]}>
+                <cylinderGeometry args={[0.015, 0.015, 1.8, 4]} />
+                <meshStandardMaterial color="#222" />
+              </mesh>
+            ))
+          )}
+        </group>
+
+        {/* Press box -- one long side, between the upper deck and the
+            roofline; a real physical feature of every large stadium,
+            not previously represented at all. Window strip is a
+            plain visual cue, not data-driven. */}
+        <group position={[0, 3.9, -FIELD_WID * 1.55]}>
+          <mesh castShadow>
+            <boxGeometry args={[FIELD_LEN * 0.55, 1.1, 1.0]} />
+            <meshStandardMaterial color="#2c2e34" roughness={0.75} />
+          </mesh>
+          <mesh position={[0, 0.15, 0.51]}>
+            <planeGeometry args={[FIELD_LEN * 0.5, 0.35]} />
+            <meshStandardMaterial
+              color={isNight ? "#ffe9b8" : "#7a8a94"}
+              emissive={isNight ? "#ffe9b8" : "#000000"}
+              emissiveIntensity={isNight ? 0.5 : 0}
+            />
+          </mesh>
+        </group>
 
       {/* Lower bowl -- closer, shorter. Each segment darkens on the
           shaded side, computed from the real sun direction. */}
@@ -675,6 +772,16 @@ function StadiumBowl({
             />
           </mesh>
           {isNight && <pointLight position={[0, 6.5, 0]} intensity={4} distance={18} color="#ffe6b0" />}
+          {/* Volumetric-looking light shaft, angled in toward the field
+              -- a cheap additive-blended cone, not a real light
+              simulation, but reads immediately as "stadium lights at
+              night" the way a real point light alone doesn't. */}
+          {isNight && (
+            <mesh position={[-p.x * 0.35, 3.2, -p.z * 0.35]} rotation={[Math.atan2(p.x, 6.5) * 0.6, 0, -Math.atan2(p.z, 6.5) * 0.6]}>
+              <coneGeometry args={[2.2, 6.6, 12, 1, true]} />
+              <meshBasicMaterial color="#fff3d0" transparent opacity={0.05} side={THREE.DoubleSide} depthWrite={false} />
+            </mesh>
+          )}
         </group>
       ))}
 
@@ -718,6 +825,7 @@ function StadiumBowl({
         </mesh>
       )}
       {/* "open" roof_type: genuinely no roof structure at all -- honest, not an omission. */}
+      </group>
     </group>
   );
 }
@@ -790,7 +898,7 @@ export default function Stadium3D({
     if (focusLotOsmId == null) return;
     const le = lots.find((l) => l.lot.osm_id === focusLotOsmId);
     if (!le) return;
-    const scaledRadius = 15 + (Math.min(le.lot.distance_m, 1200) / 1200) * 8;
+    const scaledRadius = lotRadius(le.lot.distance_m);
     const [x, z] = bearingToXZ(le.lot.bearing_from_stadium_deg, scaledRadius);
     setFocusTarget([x, 0.15, z]);
   }, [focusLotOsmId, lots]);

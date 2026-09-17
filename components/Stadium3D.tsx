@@ -149,6 +149,18 @@ function lotRadius(distanceM: number): number {
   return LOT_RADIUS_MIN + (Math.min(distanceM, 1200) / 1200) * LOT_RADIUS_SPAN;
 }
 
+// IMPORTANT, verified directly (a real bug this exact mismatch caused:
+// a lot's own boundary outline/stall stripes rendering at a visibly
+// different angle than its own paved pad): this rotates a point by
+// `rad` in the OPPOSITE sense from Three.js's own mesh `rotation.y`
+// prop (their rotation matrices are mirrors of each other -- rotateXZ(rad)
+// puts a point where Three's `rotation.y = -rad` would). Any code that
+// both (a) positions a lot's children via rotateXZ(..., rotationRad)
+// AND (b) rotates a mesh directly via `rotation={[0, rotationRad, 0]}`
+// for that SAME lot must negate one of the two, or they visually
+// disagree. This file's convention: rotateXZ's sense is the "real"
+// one; every direct `rotation.y` prop for a lot-oriented mesh uses
+// `-rotationRad` to match it (see footprintFor() callers).
 function rotateXZ(x: number, z: number, rad: number): [number, number] {
   return [x * Math.cos(rad) - z * Math.sin(rad), x * Math.sin(rad) + z * Math.cos(rad)];
 }
@@ -270,7 +282,15 @@ function realCarsForLot(le: LotExposure, cx: number, cz: number): CarInstance[] 
     const bandParity = Math.floor(p.across_m / (STALL_DEPTH_M * 2)) % 2;
     items.push({
       position: [cx + offsetX, 0.02, cz + offsetZ],
-      rotationY: rotationRad + (bandParity === 0 ? 0 : Math.PI),
+      // NOTE: rotateXZ()'s angle convention is the OPPOSITE sense from
+      // Three.js's own mesh `rotation.y` prop (verified directly: the
+      // two use mirrored rotation matrices) -- this car's OWN facing
+      // must be negated to actually align with the lot footprint box's
+      // real visual rotation (which uses Three's rotation prop
+      // directly, see footprintFor() callers below). Mixing the two
+      // conventions un-negated is the exact bug that made a lot's
+      // outline/stripes render at a mismatched angle from its own pad.
+      rotationY: -rotationRad + (bandParity === 0 ? 0 : Math.PI),
       color: CAR_COLORS[(le.lot.osm_id + i) % CAR_COLORS.length],
     });
   }
@@ -369,7 +389,7 @@ function ParkingLots({
           <group key={le.lot.osm_id}>
             <mesh
               position={[x, 0.03, z]}
-              rotation={[0, rotationRad, 0]}
+              rotation={[0, -rotationRad, 0]}
               onPointerOver={(e) => {
                 e.stopPropagation();
                 onHover(le);
@@ -398,7 +418,7 @@ function ParkingLots({
               const acrossOffset = (row.across_m / widthM - 0.5) * widthScene;
               const [lx, lz] = rotateXZ(0, acrossOffset, rotationRad);
               return (
-                <mesh key={i} position={[x + lx, 0.05, z + lz]} rotation={[0, rotationRad, 0]}>
+                <mesh key={i} position={[x + lx, 0.05, z + lz]} rotation={[0, -rotationRad, 0]}>
                   <boxGeometry args={[lengthScene * 0.92, 0.01, 0.025]} />
                   <meshStandardMaterial color="#d8d8dc" />
                 </mesh>
@@ -428,13 +448,13 @@ function ParkingLots({
           return (
             <group key={`overlay-${le.lot.osm_id}`}>
               {coolPavementCoverage > 0 && (
-                <mesh position={[x, 0.06, z]} rotation={[0, rotationRad, 0]}>
+                <mesh position={[x, 0.06, z]} rotation={[0, -rotationRad, 0]}>
                   <boxGeometry args={[lengthScene, 0.02, widthScene]} />
                   <meshStandardMaterial color="#f4f4f4" transparent opacity={coolPavementCoverage * 0.7} />
                 </mesh>
               )}
               {smartGrowthCoverage > 0 && (
-                <mesh position={[x, 0.07, z]} rotation={[0, rotationRad, 0]}>
+                <mesh position={[x, 0.07, z]} rotation={[0, -rotationRad, 0]}>
                   <boxGeometry args={[lengthScene, 0.02, widthScene]} />
                   <meshStandardMaterial color="#2e7d32" transparent opacity={smartGrowthCoverage * 0.7} />
                 </mesh>

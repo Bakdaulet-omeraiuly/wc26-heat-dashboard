@@ -15,7 +15,7 @@ import path from "node:path";
 import * as SunCalc from "suncalc";
 import { findStadium, getStadiumSnapshot } from "./agentData";
 import { wbgtToSportsFlag, type SportsFlagColor } from "./wbgt";
-import { computeRealParkingLayout, type RealParkingLayout } from "./parkingLayout";
+import { computeRealParkingLayout, compareParkingAngles, type RealParkingLayout, type AngleComparison } from "./parkingLayout";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
@@ -189,4 +189,72 @@ export function computeLotOccupancy(stadiumId: string, hoursFromKickoff: number)
       data_status: "SEMI",
     };
   });
+}
+
+// --- "Urban Lab" what-if scenarios ---------------------------------
+//
+// Two real, computable questions the parking-lot data can already
+// answer beyond "how hot is the walk right now": (1) how much cooler
+// would this lot's air actually get if it had tree shade, and (2)
+// does re-striping this lot's real dimensions at an angle actually
+// fit more cars, or fewer. Both are grounded in real cited standards,
+// never invented, and both are always tagged SEMI/MOCK -- neither is
+// a survey of these specific venues.
+
+// Real research basis (Akbari/Pomerantz/Taha and the USDA Forest
+// Service's Davis, CA parking-lot shade study, both cited in this
+// file's header): full tree-canopy shade over a parking lot measurably
+// lowers not just surface and vehicle-interior temperature but also
+// near-surface AIR temperature, by roughly 4-8F (~2.2-4.4C) at full
+// coverage versus open sun-exposed asphalt. This scales that real
+// air-temperature finding LINEARLY by how much of the lot's real area
+// the requested tree count would actually shade.
+export const MATURE_CANOPY_DIAMETER_M = 10.7; // ~35 ft: a "large shade tree" mature canopy size commonly cited in city parking-lot tree-shading ordinances (e.g. Sacramento's, Davis CA's)
+export const MATURE_CANOPY_AREA_M2 = Math.PI * (MATURE_CANOPY_DIAMETER_M / 2) ** 2;
+export const MAX_AIR_TEMP_REDUCTION_C = 3.3; // ~6F: midpoint of the real 4-8F Davis CA study's cited full-shade air-temperature reduction
+
+export type TreeShadeScenario = {
+  lot: ParkingLot;
+  tree_count: number;
+  shaded_fraction: number; // 0..1 -- capped at full coverage; canopy overlap beyond that isn't modeled
+  temp_reduction_c: number;
+  base_wbgt_c: number | null;
+  shaded_wbgt_c: number | null;
+  max_useful_trees: number; // tree count at which shaded_fraction first reaches 1.0 for this lot's real area
+  data_status: "SEMI";
+};
+
+export function simulateTreeShade(
+  stadiumId: string,
+  osmId: number,
+  treeCount: number,
+  month: number,
+  hour: number
+): TreeShadeScenario | null {
+  const lot = getStadiumParkingLots(stadiumId).find((l) => l.osm_id === osmId);
+  if (!lot) return null;
+  const snapshot = getStadiumSnapshot(stadiumId, month, hour);
+  const baseWbgt = snapshot?.wbgt_mean_c ?? null;
+  const clampedTrees = Math.max(0, Math.round(treeCount));
+  const shadedFraction = Math.min(1, (clampedTrees * MATURE_CANOPY_AREA_M2) / lot.area_m2);
+  const tempReduction = Math.round(shadedFraction * MAX_AIR_TEMP_REDUCTION_C * 10) / 10;
+  const shadedWbgt = baseWbgt !== null ? Math.round((baseWbgt - tempReduction) * 10) / 10 : null;
+  return {
+    lot,
+    tree_count: clampedTrees,
+    shaded_fraction: Math.round(shadedFraction * 100) / 100,
+    temp_reduction_c: tempReduction,
+    base_wbgt_c: baseWbgt,
+    shaded_wbgt_c: shadedWbgt,
+    max_useful_trees: Math.ceil(lot.area_m2 / MATURE_CANOPY_AREA_M2),
+    data_status: "SEMI",
+  };
+}
+
+/** Real 90/60/45-degree capacity comparison for one lot -- undefined
+ * when the lot predates length_m/width_m (oriented-rectangle) data. */
+export function getLotAngleComparison(stadiumId: string, osmId: number): AngleComparison | null {
+  const lot = getStadiumParkingLots(stadiumId).find((l) => l.osm_id === osmId);
+  if (!lot || !lot.length_m || !lot.width_m) return null;
+  return compareParkingAngles(lot.length_m, lot.width_m);
 }

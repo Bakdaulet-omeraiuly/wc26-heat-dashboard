@@ -8,9 +8,10 @@ import HistoricalExplorer from "@/components/HistoricalExplorer";
 import PriorityList from "@/components/PriorityList";
 import AskAgent from "@/components/AskAgent";
 import ForecastSidebar from "@/components/ForecastSidebar";
+import UrbanLab from "@/components/UrbanLab";
 
 export default function Home() {
-  const [tab, setTab] = useState<"map" | "history" | "priority" | "ask">("map");
+  const [tab, setTab] = useState<"map" | "history" | "priority" | "ask" | "lab">("map");
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
@@ -46,6 +47,12 @@ export default function Home() {
           >
             ASK
           </button>
+          <button
+            onClick={() => setTab("lab")}
+            className={`px-3 py-1 rounded border ${tab === "lab" ? "bg-zinc-100 text-zinc-900 border-zinc-100" : "border-zinc-700 text-zinc-400 hover:text-zinc-100"}`}
+          >
+            URBAN LAB
+          </button>
         </nav>
       </header>
       <main className="flex-1 relative overflow-auto">
@@ -74,6 +81,11 @@ export default function Home() {
               <AskAgent />
             </div>
             <ForecastSidebar />
+          </div>
+        )}
+        {tab === "lab" && (
+          <div className="absolute inset-0 overflow-auto">
+            <UrbanLab />
           </div>
         )}
       </main>
